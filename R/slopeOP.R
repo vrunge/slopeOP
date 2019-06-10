@@ -31,3 +31,34 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, type = "null")
 
   return(response)
 }
+
+
+
+#' slopeData
+#' @description Generate data with a given model, continuous piecewise linear
+#' @param index changepoint indexes
+#' @param states vector of successive states
+#' @param noise noise level = standard deviation of a normal noise
+#' @return a vector of data
+slopeData <- function(index = c(0), states = c(0), noise = 0)
+{
+  ############
+  ### STOP ###
+  ############
+  if(!is.numeric(index)){stop('data values are not all numeric')}
+  if(is.unsorted(index)){stop('index should be an increasing vector')}
+  if(!is.numeric(states)){stop('states are not all numeric')}
+  if(length(index) != length(states)){stop('index and states vectors are of different size')}
+  if(!is.double(noise)){stop('noise is not a double.')}
+  if(noise < 0){stop('noise must be nonnegative')}
+
+  steps <- diff(states)/diff(index)
+  response <- rep(steps,diff(index))
+  response <- c(states[1],cumsum(response)+ states[1])
+  response <- response + rnorm(length(response),0, noise)
+
+  return(response)
+}
+
+
+

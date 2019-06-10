@@ -20,8 +20,6 @@
 
 ## Introduction
 
-To be done ;)
-
 <a id="mf"></a>
 
 ## The main function
@@ -32,6 +30,14 @@ We install the package from Github:
 #devtools::install_github("vrunge/slopeOP")
 library(slopeOP)
 ```
+
+We simulate data with the function `slopeData`
+
+```r
+data <- slopeData(c(1,100,200,300,500),c(0,1,0,3,2),1)
+```
+And the changepoint detection is done by using the function `slopeOP`
+
 
 ```r
 slopeOP(c(1,2,3,2,1,2,3,2,1,2,3),c(1,2,3),0.5)
