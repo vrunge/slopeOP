@@ -5,9 +5,9 @@
 
 using namespace Rcpp;
 
-// slopeOP
-List slopeOP(std::vector<double> data, std::vector<double> states, double penalty, std::string type);
-RcppExport SEXP _slopeOP_slopeOP(SEXP dataSEXP, SEXP statesSEXP, SEXP penaltySEXP, SEXP typeSEXP) {
+// slopeOPtransfer
+List slopeOPtransfer(std::vector<double> data, std::vector<double> states, double penalty, std::string type);
+RcppExport SEXP _slopeOP_slopeOPtransfer(SEXP dataSEXP, SEXP statesSEXP, SEXP penaltySEXP, SEXP typeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -15,13 +15,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<double> >::type states(statesSEXP);
     Rcpp::traits::input_parameter< double >::type penalty(penaltySEXP);
     Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
-    rcpp_result_gen = Rcpp::wrap(slopeOP(data, states, penalty, type));
+    rcpp_result_gen = Rcpp::wrap(slopeOPtransfer(data, states, penalty, type));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_slopeOP_slopeOP", (DL_FUNC) &_slopeOP_slopeOP, 4},
+    {"_slopeOP_slopeOPtransfer", (DL_FUNC) &_slopeOP_slopeOPtransfer, 4},
     {NULL, NULL, 0}
 };
 
