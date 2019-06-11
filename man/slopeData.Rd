@@ -7,15 +7,15 @@
 slopeData(index = c(0), states = c(0), noise = 0)
 }
 \arguments{
-\item{index}{changepoint indexes}
+\item{index}{a vector of increasing changepoint indexes}
 
 \item{states}{vector of successive states}
 
-\item{noise}{noise level = standard deviation of a normal noise}
+\item{noise}{noise level = standard deviation of an additional normal noise}
 }
 \value{
-a vector of data
+a vector of simulated data
 }
 \description{
-Generate data with a given model, continuous piecewise linear
+Generate data with a given continuous piecewise linear model
 }

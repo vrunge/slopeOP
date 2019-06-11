@@ -1,14 +1,14 @@
 
 #' slopeOP
 #' @description Optimal partitioning algorithm for change-in-slope problem with a finite number of states (initial and final values of each segment is restricted to a finite set of values).
-#' The algorithm takes into account a continuity constraint between successive segments
+#' The algorithm takes into account a continuity constraint between successive segments and thus infers a continuous piecewise linear signal
 #' @param data vector of data to segment
-#' @param states vector of states = accessible ending values
-#' @param penalty the penalty coefficient. A positive number
-#' @param type string defining the pruning type to use
-#' @return a list of two vectors and a value  = (changepoints, state parameters, global cost)
-#' 'changepoints' is the vector of changepoints (we give the last element of each segment (+ 1 the starting index))
-#' 'states' is the vector of successive final values of each segment (+ the very first value)
+#' @param states vector of states = set of accessible starting/ending values for segments
+#' @param penalty the penalty value A positive number
+#' @param type string defining the pruning type to use. "null" = no pruning or "channel" = use monotonicity property
+#' @return a list of three elements  = (changepoints, state parameters, global cost)
+#' 'changepoints' is the vector of changepoints (we give the extremal values of all segments from left to right)
+#' 'states' is the vector of successive states. states[i] is the value we infered at position changepoints[i]
 #' 'globalCost' is a number equal to the global cost of the penalized changepoint problem
 slopeOP <- function(data = c(0), states = c(0), penalty = 0, type = "null")
 {
@@ -18,7 +18,7 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, type = "null")
   if(!is.numeric(data)){stop('data values are not all numeric')}
   if(!is.numeric(states)){stop('states are not all numeric')}
   if(is.unsorted(states)){stop('states should be an increasing vector')}
-  if(type != "null" && type != "channel"){stop('Arugment "type" not appropriate. Choose among "null", "channel"')}
+  if(type != "null" && type != "channel"){stop('Arugment "type" not appropriate. Choose among "null" and "channel"')}
   if(!is.double(penalty)){stop('penalty is not a double.')}
   if(penalty < 0){stop('penalty must be nonnegative')}
 
@@ -35,11 +35,11 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, type = "null")
 
 
 #' slopeData
-#' @description Generate data with a given model, continuous piecewise linear
-#' @param index changepoint indexes
+#' @description Generate data with a given continuous piecewise linear model
+#' @param index a vector of increasing changepoint indexes
 #' @param states vector of successive states
-#' @param noise noise level = standard deviation of a normal noise
-#' @return a vector of data
+#' @param noise noise level = standard deviation of an additional normal noise
+#' @return a vector of simulated data
 slopeData <- function(index = c(0), states = c(0), noise = 0)
 {
   ############

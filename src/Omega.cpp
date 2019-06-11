@@ -14,9 +14,9 @@ Omega::Omega(std::vector< double >& values, double beta)
   states = new double[nbStates];
   for(unsigned int i = 0; i < nbStates; i++){states[i] = values[i];}
 
-  Q = new double*[nbStates]; ///matrix of cost
-  lastChpt = new unsigned int*[nbStates]; ///matrix of cost
-  lastIndState = new unsigned int*[nbStates]; ///matrix of cost
+  Q = new double*[nbStates]; ///matrix of costs
+  lastChpt = new unsigned int*[nbStates]; ///matrix of best last changepoints
+  lastIndState = new unsigned int*[nbStates]; ///matrix of starting states for the best last segment
 
   penalty = beta;
 }
@@ -25,7 +25,6 @@ Omega::~Omega()
 {
   delete [] states;
   states = NULL;
-
   for(unsigned int i = 0; i < nbStates; i++){delete [] Q[i]; Q[i] = NULL;}
   for(unsigned int i = 0; i < nbStates; i++){delete [] lastChpt[i]; lastChpt[i] = NULL;}
   for(unsigned int i = 0; i < nbStates; i++){delete [] lastIndState[i]; lastIndState[i] = NULL;}
@@ -38,7 +37,6 @@ Omega::~Omega()
 std::vector< int > Omega::GetChangepoints() const {return(changepoints);}
 std::vector< double > Omega::GetParameters() const {return(parameters);}
 double Omega::GetGlobalCost() const {return(globalCost);}
-
 
 //####### algo #######////####### algo #######////####### algo #######//
 //####### algo #######////####### algo #######////####### algo #######//
@@ -70,7 +68,7 @@ void Omega::algo(std::vector< double >& data)
 
   Costs cost;
   ///
-  /// FIRST STEP
+  /// FILL FIRST COLUMN in Q
   ///
   for(unsigned int i = 0; i < p; i++)
   {
@@ -87,18 +85,16 @@ void Omega::algo(std::vector< double >& data)
   unsigned int temp_indState = 0;
   unsigned int zero = 0;
 
-  //////////////////////////////////////////////////
-  //////////////////////////////////////////////////
-  //////////////////////////////////////////////////
-
-  /// states u to v /// time position t to T
-
+  ///
+  /// states u to v -> time position t to T
+  /// explore in (u,t) for fixed (v,T)
+  ///
   for(unsigned int T = 1; T < n; T++)
   {
     for(unsigned int v = 0; v < p; v++)
     {
       /////
-      ///// EXPLORE MATRIX size p*j
+      ///// EXPLORE MATRIX size p*T
       /////
       temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S1[0], S1[T], S2[0], S2[T], SP[0], SP[T]) + penalty;
       temp_indState = 0;
@@ -124,10 +120,6 @@ void Omega::algo(std::vector< double >& data)
       Q[v][T] = temp_Q;
     }
   }
-
-  //////////////////////////////////////////////////
-  //////////////////////////////////////////////////
-  //////////////////////////////////////////////////
 
   delete [] S1;
   delete [] S2;
@@ -165,7 +157,7 @@ void Omega::algoChannel(std::vector< double >& data)
 
   Costs cost;
   ///
-  /// FIRST STEP
+  /// FILL FIRST COLUMN in Q
   ///
   for(unsigned int i = 0; i < p; i++)
   {
@@ -183,20 +175,27 @@ void Omega::algoChannel(std::vector< double >& data)
 
   //////////////////////////////////////////////////
   //////////////////////////////////////////////////
-
+  ///
+  /// CHANNEL INFORMATION
+  /// u1 / u2 = "min / max" in each column of Q
+  ///
   unsigned int* u1 = new unsigned int[n];
   unsigned int* u2 = new unsigned int[n];
   unsigned int theStart;
   unsigned int theEnd;
   double theV = 0;
   unsigned int indexTheV = 0;
+
   unsigned int zero = 0;
-
-  /// states u to v /// time position t to T
-
+  ///
+  /// states u to v -> time position t to T
+  /// explore in (u,t) for fixed (v,T)
+  ///
   for(unsigned int T = 1; T < n; T++)
   {
+    ///
     /// FILL u1 and u2 vectors
+    ///
     theStart = 0;
     while(theStart < (p - 1) && Q[theStart][T - 1] > Q[theStart + 1][T - 1]){theStart = theStart + 1;}
     u1[T-1] = theStart;
@@ -208,7 +207,7 @@ void Omega::algoChannel(std::vector< double >& data)
     for(unsigned int v = 0; v < p; v++)
     {
       /////
-      ///// EXPLORE MATRIX size p*j
+      ///// EXPLORE MATRIX size p*T -> restricted on each column
       /////
       temp_indState = 0;
       temp_chpt = 0;

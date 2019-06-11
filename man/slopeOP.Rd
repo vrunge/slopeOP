@@ -9,19 +9,19 @@ slopeOP(data = c(0), states = c(0), penalty = 0, type = "null")
 \arguments{
 \item{data}{vector of data to segment}
 
-\item{states}{vector of states = accessible ending values}
+\item{states}{vector of states = set of accessible starting/ending values for segments}
 
-\item{penalty}{the penalty coefficient. A positive number}
+\item{penalty}{the penalty value A positive number}
 
-\item{type}{string defining the pruning type to use}
+\item{type}{string defining the pruning type to use. "null" = no pruning or "channel" = use monotonicity property}
 }
 \value{
-a list of two vectors and a value  = (changepoints, state parameters, global cost)
-'changepoints' is the vector of changepoints (we give the last element of each segment (+ 1 the starting index))
-'states' is the vector of successive final values of each segment (+ the very first value)
+a list of three elements  = (changepoints, state parameters, global cost)
+'changepoints' is the vector of changepoints (we give the extremal values of all segments from left to right)
+'states' is the vector of successive states. states[i] is the value we infered at position changepoints[i]
 'globalCost' is a number equal to the global cost of the penalized changepoint problem
 }
 \description{
 Optimal partitioning algorithm for change-in-slope problem with a finite number of states (initial and final values of each segment is restricted to a finite set of values).
-The algorithm takes into account a continuity constraint between successive segments
+The algorithm takes into account a continuity constraint between successive segments and thus infers a continuous piecewise linear signal
 }
