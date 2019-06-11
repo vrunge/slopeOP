@@ -8,28 +8,40 @@
 //####### constructor #######////####### constructor #######////####### constructor #######//
 //####### constructor #######////####### constructor #######////####### constructor #######//
 
-Omega::Omega(std::vector< double >& values, double beta)
+Omega::Omega(std::vector< double >& values, double beta, unsigned int n)
 {
   nbStates = values.size();
   states = new double[nbStates];
   for(unsigned int i = 0; i < nbStates; i++){states[i] = values[i];}
 
+  ///
+  /// MATRIX INITIALIZATION
+  ///
   Q = new double*[nbStates]; ///matrix of costs
   lastChpt = new unsigned int*[nbStates]; ///matrix of best last changepoints
   lastIndState = new unsigned int*[nbStates]; ///matrix of starting states for the best last segment
 
+  for(unsigned int i = 0; i < nbStates; i++){Q[i] = new double[n];}
+  for(unsigned int i = 0; i < nbStates; i++){lastChpt[i] = new unsigned int[n];}
+  for(unsigned int i = 0; i < nbStates; i++){lastIndState[i] = new unsigned int[n];}
+
   penalty = beta;
 }
+
+
 
 Omega::~Omega()
 {
   delete(states);
   states = NULL;
+  for(unsigned int i = 0; i < nbStates; i++){delete(Q[i]);}
+  for(unsigned int i = 0; i < nbStates; i++){delete(lastChpt[i]);}
+  for(unsigned int i = 0; i < nbStates; i++){delete(lastIndState[i]);}
   delete [] Q;
   Q = NULL;
-  delete(lastChpt);
+  delete [] lastChpt;
   lastChpt = NULL;
-  delete(lastIndState);
+  delete [] lastIndState;
   lastIndState = NULL;
 }
 
@@ -60,13 +72,6 @@ void Omega::algo(std::vector< double >& data)
   for(unsigned int i = 1; i < n; i++){S1[i] = S1[i-1] + data[i];}
   for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
   for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
-
-  ///
-  /// MATRIX INITIALIZATION
-  ///
-  for(unsigned int i = 0; i < p; i++){Q[i] = new double[n];}
-  for(unsigned int i = 0; i < p; i++){lastChpt[i] = new unsigned int[n];}
-  for(unsigned int i = 0; i < p; i++){lastIndState[i] = new unsigned int[n];}
 
   Costs cost;
   ///
@@ -129,9 +134,6 @@ void Omega::algo(std::vector< double >& data)
   S2 = NULL;
   delete(SP);
   SP = NULL;
-  for(unsigned int i = 0; i < p; i++){delete(Q[i]);}
-  for(unsigned int i = 0; i < p; i++){delete(lastChpt[i]);}
-  for(unsigned int i = 0; i < p; i++){delete(lastIndState[i]);}
 }
 
 
@@ -155,13 +157,6 @@ void Omega::algoChannel(std::vector< double >& data)
   for(unsigned int i = 1; i < n; i++){S1[i] = S1[i-1] + data[i];}
   for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
   for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
-
-  ///
-  /// MATRIX INITIALIZATION
-  ///
-  for(unsigned int i = 0; i < p; i++){Q[i] = new double[n];}
-  for(unsigned int i = 0; i < p; i++){lastChpt[i] = new unsigned int[n];}
-  for(unsigned int i = 0; i < p; i++){lastIndState[i] = new unsigned int[n];}
 
   Costs cost;
   ///
@@ -265,12 +260,113 @@ void Omega::algoChannel(std::vector< double >& data)
   S2 = NULL;
   delete(SP);
   SP = NULL;
-  for(unsigned int i = 0; i < p; i++){delete(Q[i]);}
-  for(unsigned int i = 0; i < p; i++){delete(lastChpt[i]);}
-  for(unsigned int i = 0; i < p; i++){delete(lastIndState[i]);}
 }
 
 
+
+//####### algoPruning #######////####### algoPruning #######////####### algoPruning #######//
+//####### algoPruning #######////####### algoPruning #######////####### algoPruning #######//
+
+void Omega::algoPruning(std::vector< double >& data)
+{
+  unsigned int n = data.size();
+  unsigned int p = nbStates;
+
+  ///
+  /// PREPROCESSING
+  ///
+  double* S1 = new double[n];
+  double* S2 = new double[n];
+  double* SP = new double[n];
+  S1[0] = data[0];
+  S2[0] = data[0] * data[0];
+  SP[0] = data[0] ;
+  for(unsigned int i = 1; i < n; i++){S1[i] = S1[i-1] + data[i];}
+  for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
+  for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
+
+  std::vector< unsigned int>* t_pos = new std::vector< unsigned int>[p];
+  std::vector< unsigned int>* u_pos = new std::vector< unsigned int>[p];
+
+  Costs cost;
+  ///
+  /// FILL FIRST COLUMN in Q
+  ///
+  for(unsigned int i = 0; i < p; i++)
+  {
+    Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
+    lastChpt[i][0] = 0;
+    lastIndState[i][0] = 0;
+  }
+
+  ///
+  /// ALGO
+  ///
+  double temp_Q = -1;
+  int temp_chpt = -1;
+  unsigned int temp_indState = 0;
+
+  ///
+  /// states u to v -> time position t to T
+  /// explore in (u,t) for fixed (v,T)
+  ///
+  for(unsigned int T = 1; T < n; T++)
+  {
+    for(unsigned int v = 0; v < p; v++)
+    {
+      /////
+      ///// Add last column to explore
+      /////
+      for(unsigned int w = 0; w < p; w++)
+      {
+        t_pos[v].push_back(T-1);
+        u_pos[v].push_back(w);
+      }
+
+      /// FIRST ELEMENT
+      temp_Q = Q[u_pos[v][0]][t_pos[v][0]] + cost.slopeCost(states[t_pos[v][0]], states[v], t_pos[v][0], T, S1[t_pos[v][0]], S1[T], S2[t_pos[v][0]], S2[T], SP[t_pos[v][0]], SP[T]) + penalty;
+      temp_indState = u_pos[v][0];
+      temp_chpt = t_pos[v][0];
+
+      for(unsigned int i = 0; i < t_pos[v].size(); i++)
+      {
+          if(temp_Q > Q[u_pos[v][i]][t_pos[v][i]] + cost.slopeCost(states[u_pos[v][i]], states[v], t_pos[v][i], T, S1[t_pos[v][i]], S1[T], S2[t_pos[v][i]], S2[T], SP[t_pos[v][i]], SP[T]) + penalty)
+          {
+            temp_Q = Q[u_pos[v][i]][t_pos[v][i]] + cost.slopeCost(states[u_pos[v][i]], states[v], t_pos[v][i], T, S1[t_pos[v][i]], S1[T], S2[t_pos[v][i]], S2[T], SP[t_pos[v][i]], SP[T]) + penalty;
+            temp_indState = u_pos[v][i];
+            temp_chpt = t_pos[v][i];
+          }
+      }
+      /////
+      ///// Write response
+      /////
+      lastChpt[v][T] = temp_chpt;
+      lastIndState[v][T] = temp_indState;
+      Q[v][T] = temp_Q;
+
+      /////
+      ///// PRUNING STEP TO BE DONE
+      /////
+      for(unsigned int j = 0; j < t_pos[v].size(); j++)
+      {
+
+      }
+
+
+    }
+  }
+
+  delete(S1);
+  S1 = NULL;
+  delete(S2);
+  S2 = NULL;
+  delete(SP);
+  SP = NULL;
+  delete [] t_pos;
+  t_pos = NULL;
+  delete [] u_pos;
+  u_pos = NULL;
+}
 
 
 //####### backtracking #######////####### backtracking #######////####### backtracking #######//

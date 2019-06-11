@@ -10,9 +10,10 @@ using namespace std;
 // [[Rcpp::export]]
 List slopeOPtransfer(std::vector<double> data, std::vector<double> states, double penalty, std::string type = "null")
 {
-  Omega omega = Omega(states, penalty);
+  Omega omega = Omega(states, penalty, data.size());
   if(type == "null"){omega.algo(data);}
   if(type == "channel"){omega.algoChannel(data);}
+  if(type == "pruning"){omega.algoPruning(data);}
   omega.backtracking(data.size());
 
   /// RETURN

@@ -13,7 +13,7 @@ slopeOP(data = c(0), states = c(0), penalty = 0, type = "null")
 
 \item{penalty}{the penalty value A positive number}
 
-\item{type}{string defining the pruning type to use. "null" = no pruning or "channel" = use monotonicity property}
+\item{type}{string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property or "pruning"}
 }
 \value{
 a list of three elements  = (changepoints, state parameters, global cost)

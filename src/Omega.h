@@ -10,7 +10,7 @@
 class Omega
 {
   public:
-    Omega(std::vector< double >& values, double beta);
+    Omega(std::vector< double >& values, double beta, unsigned int n);
     ~Omega();
 
     std::vector< int > GetChangepoints() const;
@@ -19,6 +19,7 @@ class Omega
 
     void algo(std::vector< double >& data);
     void algoChannel(std::vector< double >& data);
+    void algoPruning(std::vector< double >& data);
     void backtracking(unsigned int n);
 
   private:
