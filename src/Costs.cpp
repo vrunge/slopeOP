@@ -32,3 +32,17 @@ unsigned int Costs::closestState(double& v, double* states, unsigned int p)
   }
   return(index);
 }
+
+
+bool Costs::pruningTest(unsigned int& tau, unsigned int& t, unsigned int& testT, double& delta, double& DELTA, double& K, double& v)
+{
+  bool response = false;
+  double res = (delta - DELTA/3.0)*(testT+1) - (v + delta)*(t+2) + (v + DELTA/3.0)*(tau+1) + ((2*K)+ (DELTA/6.0))/(t-tau);
+  if(DELTA > 0 && res <= 0){response = true;}
+  if(DELTA < 0 && res >= 0){response = true;}
+  if(DELTA == 0){response = false;} /// to be done
+  return(response);
+}
+
+
+

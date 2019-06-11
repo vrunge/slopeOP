@@ -280,13 +280,23 @@ void Omega::algoPruning(std::vector< double >& data)
   double* SP = new double[n];
   S1[0] = data[0];
   S2[0] = data[0] * data[0];
-  SP[0] = data[0] ;
+  SP[0] = data[0];
   for(unsigned int i = 1; i < n; i++){S1[i] = S1[i-1] + data[i];}
   for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
   for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
 
+  double* MAX_Y = new double[n];
+  double* MIN_Y = new double[n];
+  MAX_Y[n-1] = data[n-2];
+  MIN_Y[n-1] = data[n-2];
+  for(unsigned int i = n-2; i > -1; i--){MAX_Y[i] = std::max(data[i], MAX_Y[i+1]);}
+  for(unsigned int i = n-2; i > -1; i--){MIN_Y[i] = std::min(data[i], MIN_Y[i+1]);}
+
   std::vector< unsigned int>* t_pos = new std::vector< unsigned int>[p];
   std::vector< unsigned int>* u_pos = new std::vector< unsigned int>[p];
+  //std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
+  //std::list< unsigned int>* u_pos = new std::list< unsigned int>[p];
+  //std::list<unsigned int>::iterator it;
 
   Costs cost;
   ///
@@ -305,6 +315,10 @@ void Omega::algoPruning(std::vector< double >& data)
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
+  ///variables for pruning
+  double delta;
+  double DELTA;
+  double K;
 
   ///
   /// states u to v -> time position t to T
@@ -347,10 +361,33 @@ void Omega::algoPruning(std::vector< double >& data)
       /////
       ///// PRUNING STEP TO BE DONE
       /////
-      for(unsigned int j = 0; j < t_pos[v].size(); j++)
+      //std::cout << t_pos[v].size() << " ";
+      int count = 0;
+      for(unsigned int k = 0; k < t_pos[v].size(); k++)
       {
+        unsigned int Tp1 = T+1;
+        unsigned int nm1 = n-1;
+        DELTA = states[u_pos[v][k]] - states[v];
+        if(DELTA >= 0){delta = MAX_Y[T] - states[v];}else{delta = MIN_Y[T] - states[v];}
 
+        K = SP[T] - SP[t_pos[v][k]] -  (t_pos[v][k] + 1) * (S1[T] - S1[t_pos[v][k]]);
+
+
+        //if(Q[u_pos[v][k]][t_pos[v][k]] + cost.slopeCost(states[u_pos[v][k]], states[v], t_pos[v][k], T, S1[t_pos[v][k]], S1[T], S2[t_pos[v][k]], S2[T], SP[t_pos[v][k]], SP[T]) < Q[v][T]){std::cout << T << " " << v << " " << "A ";}
+
+        if((Q[u_pos[v][k]][t_pos[v][k]] + cost.slopeCost(states[u_pos[v][k]], states[v], t_pos[v][k], T, S1[t_pos[v][k]], S1[T], S2[t_pos[v][k]], S2[T], SP[t_pos[v][k]], SP[T]) > Q[v][T]) && cost.pruningTest(t_pos[v][k], T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(t_pos[v][k], T, nm1, delta, DELTA, K, states[v]))
+        {count = count +1; t_pos[v][k] = 0; u_pos[v][k] = 0;}
+          //{t_pos[v][k] = 0; u_pos[v][k] = 0;}
       }
+
+      int save = t_pos[v].size();
+      for(unsigned int l = 0; l <  t_pos[v].size(); l++)
+      {
+       //if(u_pos[v][l] != 0 || t_pos[v][l] != 0){u_pos[v].push_back(u_pos[v][l]); t_pos[v].push_back(t_pos[v][l]);}
+      }
+
+
+      //std::cout << " count " << count <<std::endl;
 
 
     }
@@ -362,6 +399,10 @@ void Omega::algoPruning(std::vector< double >& data)
   S2 = NULL;
   delete(SP);
   SP = NULL;
+  delete(MAX_Y);
+  MAX_Y = NULL;
+  delete(MIN_Y);
+  MIN_Y = NULL;
   delete [] t_pos;
   t_pos = NULL;
   delete [] u_pos;
