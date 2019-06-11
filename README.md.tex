@@ -1,7 +1,8 @@
-<!-- 
-%\VignetteEngine{knitr::rmarkdown} 
+<!--
+%\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{An Introduction to gfpop}
---> 
+-->
+
 
 <a id="top"></a>
 
@@ -22,7 +23,7 @@ The package `slopeOP` is designed to segment univariate data $y_{1:n} = \{y_1,..
 
 $$Q_n = \min_{\overline{\tau} \in S_n}\left[ \sum_{i=0}^{k}\lbrace \mathcal{C}(y_{(\tau_i+1):\tau_{i+1}}) + \beta \rbrace \right]\,,$$
 
-where $\beta > 0$ is a penalty parameter and $\mathcal{C}(y_{u:v})$ is the minimal cost over the segment $\{u,...,v\}$. The penalty $\beta$ is understood as an additional cost when introducing a new segment. 
+where $\beta > 0$ is a penalty parameter and $\mathcal{C}(y_{u:v})$ is the minimal cost over the segment $\{u,...,v\}$. The penalty $\beta$ is understood as an additional cost when introducing a new segment.
 
 The cost for data $y_{\tau+1:t}$ with linear interpolation from value $a$ to value $b$ is given by
 
@@ -30,7 +31,7 @@ $$
 \mathcal{C}(y_{\tau+1:t},a,b) = \sum_{i=\tau+1}^{t}\left(y_i - [a + (b-a)\frac{i-\tau}{t-\tau}]\right)^2\,.
 $$
 
-which can be computed in constant time with the formula 
+which can be computed in constant time with the formula
 
 $$\mathcal{C}(y_{\tau+1:t},a,b) = S_{t}^2 - S_{\tau}^2 +\frac{b^2-a^2}{2} + \frac{a^2 + ab +b^2}{3}(t-\tau) + \frac{(b-a)^2}{6(t-\tau)}$$
 
@@ -56,7 +57,7 @@ $$
 Q_t(v) = \min_{0 \le \tau < t}\left( \min_{u}\{Q_{\tau}(u) + \mathcal{C}(y_{\tau+1:t},u,v) + \beta\}\right)\,,
 $$
 
-where the presence of the same value value $u$ in $Q_{\tau}$ and the cost realizes the continuity constraint. At initial step we simply have $Q_0(v) = -\beta$. 
+where the presence of the same value $u$ in $Q_{\tau}$ and the cost realizes the continuity constraint. At initial step we simply have $Q_0(v) = -\beta$.
 
 
 <a id="rf"></a>
@@ -71,7 +72,7 @@ We install the package from Github:
 library(slopeOP)
 ```
 
-We simulate data with the function `slopeData` given the indices for extremal values and in second vector these values to reach a corresponding indices. The last parameter is the standard deviation of a normal standard noise.
+We simulate data with the function `slopeData` given the indices for extremal values and in second vector these values to reach corresponding indices. The last parameter is the standard deviation of a normal standard noise.
 
 
 ```r
@@ -88,13 +89,13 @@ slopeOP(data, c(0,1,2,3), 10)
 ```
 ## changepoints
 ## [1]   1  78 197 293 500
-## 
+##
 ## parameters
 ## [1] 0 1 0 3 2
-## 
+##
 ## globalCost
 ## [1] 573.4121
-## 
+##
 ## attr(,"class")
 ## [1] "slopeOP"
 ```
