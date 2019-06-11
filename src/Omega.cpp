@@ -1,7 +1,7 @@
 #include "Omega.h"
 #include "Costs.h"
 
-#include <algorithm>    // std::reverse // std::min // std::max
+#include <algorithm> // std::reverse // std::min // std::max
 #include<iostream>
 #include <stdlib.h>
 
@@ -23,13 +23,15 @@ Omega::Omega(std::vector< double >& values, double beta)
 
 Omega::~Omega()
 {
-  delete [] states;
+  delete(states);
   states = NULL;
-  for(unsigned int i = 0; i < nbStates; i++){delete [] Q[i]; Q[i] = NULL;}
-  for(unsigned int i = 0; i < nbStates; i++){delete [] lastChpt[i]; lastChpt[i] = NULL;}
-  for(unsigned int i = 0; i < nbStates; i++){delete [] lastIndState[i]; lastIndState[i] = NULL;}
+  delete [] Q;
+  Q = NULL;
+  delete(lastChpt);
+  lastChpt = NULL;
+  delete(lastIndState);
+  lastIndState = NULL;
 }
-
 
 //####### accessors #######////####### accessors #######////####### accessors #######//
 //####### accessors #######////####### accessors #######////####### accessors #######//
@@ -121,9 +123,15 @@ void Omega::algo(std::vector< double >& data)
     }
   }
 
-  delete [] S1;
-  delete [] S2;
-  delete [] SP;
+  delete(S1);
+  S1 = NULL;
+  delete(S2);
+  S2 = NULL;
+  delete(SP);
+  SP = NULL;
+  for(unsigned int i = 0; i < p; i++){delete(Q[i]);}
+  for(unsigned int i = 0; i < p; i++){delete(lastChpt[i]);}
+  for(unsigned int i = 0; i < p; i++){delete(lastIndState[i]);}
 }
 
 
@@ -215,13 +223,18 @@ void Omega::algoChannel(std::vector< double >& data)
       temp_Q = Q[0][0] + cost.slopeCost(states[0], states[0], zero, T, S1[0], S1[T], S2[0], S2[T], SP[0], SP[T]) + penalty;
 
 
-      for(unsigned int t = 0; t < T-1; t++)
+      for(unsigned int t = 0; t < T; t++)
       {
+        /////
+        ///// FIND the minimum of the cost in start state
+        /////
+        if(t < T-1){
         theV = cost.vhat(states[v], t, T, S1[t], S1[T], SP[t], SP[T]);
         indexTheV = cost.closestState(theV, states, p);
+        }else{indexTheV = u1[T-1];}
 
-        //std::cout << T << " theV " << theV << "  indexTheV " << indexTheV << "  --u1[t] " << u1[t] << "  u2[t] " << u2[t] << std::endl;
-
+        /// std::cout << T << " theV " << theV << "  indexTheV " << indexTheV << "  --u1[t] " << u1[t] << "  u2[t] " << u2[t] << std::endl;
+        /// explore values between min(u1[t],indexTheV) and max(u2[t],indexTheV)
         for(unsigned int u = std::min(u1[t],indexTheV); u < std::max(u2[t],indexTheV) + 1; u++) /////explore colum of states
         {
           if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
@@ -232,18 +245,7 @@ void Omega::algoChannel(std::vector< double >& data)
           }
         }
       }
-      //std::cout << T << "  u1[t] " << u1[T-1] << "  u2[t] " << u2[T-1] << std::endl;
 
-      unsigned int Tm1 = T-1;
-      for(unsigned int u = u1[Tm1]; u < u2[Tm1]+1; u++) /////explore colum of states
-      {
-        if(temp_Q > Q[u][T-1] + cost.slopeCost(states[u], states[v], Tm1, T, S1[Tm1], S1[T], S2[Tm1], S2[T], SP[Tm1], SP[T]) + penalty)
-        {
-          temp_Q = Q[u][T-1] + cost.slopeCost(states[u], states[v], Tm1, T, S1[Tm1], S1[T], S2[Tm1], S2[T], SP[Tm1], SP[T]) + penalty;
-          temp_indState = u;
-          temp_chpt = Tm1;
-        }
-      }
       /////
       ///// Write response
       /////
@@ -253,16 +255,19 @@ void Omega::algoChannel(std::vector< double >& data)
     }
   }
 
-  delete [] u1;
-  delete [] u2;
-
-  //////////////////////////////////////////////////
-  //////////////////////////////////////////////////
-  //////////////////////////////////////////////////
-
-  delete [] S1;
-  delete [] S2;
-  delete [] SP;
+  delete(u1);
+  u1 = NULL;
+  delete(u2);
+  u2 = NULL;
+  delete(S1);
+  S1 = NULL;
+  delete(S2);
+  S2 = NULL;
+  delete(SP);
+  SP = NULL;
+  for(unsigned int i = 0; i < p; i++){delete(Q[i]);}
+  for(unsigned int i = 0; i < p; i++){delete(lastChpt[i]);}
+  for(unsigned int i = 0; i < p; i++){delete(lastIndState[i]);}
 }
 
 
