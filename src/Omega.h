@@ -28,8 +28,9 @@ class Omega
     double* states;
 
     double** Q;
-    unsigned int** lastChpt;
     unsigned int** lastIndState;
+    unsigned int** lastChpt;
+
 
 
     std::vector< int > changepoints; ///vector of changepoints build by fpop (first index of each segment). size c

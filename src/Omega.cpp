@@ -52,6 +52,10 @@ std::vector< int > Omega::GetChangepoints() const {return(changepoints);}
 std::vector< double > Omega::GetParameters() const {return(parameters);}
 double Omega::GetGlobalCost() const {return(globalCost);}
 
+
+//####### algo #######////####### algo #######////####### algo #######//
+//####### algo #######////####### algo #######////####### algo #######//
+//####### algo #######////####### algo #######////####### algo #######//
 //####### algo #######////####### algo #######////####### algo #######//
 //####### algo #######////####### algo #######////####### algo #######//
 
@@ -122,9 +126,9 @@ void Omega::algo(std::vector< double >& data)
       /////
       ///// Write response
       /////
-      lastChpt[v][T] = temp_chpt;
-      lastIndState[v][T] = temp_indState;
       Q[v][T] = temp_Q;
+      lastIndState[v][T] = temp_indState;
+      lastChpt[v][T] = temp_chpt;
     }
   }
 
@@ -136,7 +140,9 @@ void Omega::algo(std::vector< double >& data)
   SP = NULL;
 }
 
-
+//####### algoChannel #######////####### algoChannel #######////####### algoChannel #######//
+//####### algoChannel #######////####### algoChannel #######////####### algoChannel #######//
+//####### algoChannel #######////####### algoChannel #######////####### algoChannel #######//
 //####### algoChannel #######////####### algoChannel #######////####### algoChannel #######//
 //####### algoChannel #######////####### algoChannel #######////####### algoChannel #######//
 
@@ -165,8 +171,8 @@ void Omega::algoChannel(std::vector< double >& data)
   for(unsigned int i = 0; i < p; i++)
   {
     Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
-    lastChpt[i][0] = 0;
     lastIndState[i][0] = 0;
+    lastChpt[i][0] = 0;
   }
 
   ///
@@ -215,7 +221,7 @@ void Omega::algoChannel(std::vector< double >& data)
       temp_indState = 0;
       temp_chpt = 0;
 
-      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[0], zero, T, S1[0], S1[T], S2[0], S2[T], SP[0], SP[T]) + penalty;
+      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S1[0], S1[T], S2[0], S2[T], SP[0], SP[T]) + penalty;
 
 
       for(unsigned int t = 0; t < T; t++)
@@ -266,6 +272,9 @@ void Omega::algoChannel(std::vector< double >& data)
 
 //####### algoPruning #######////####### algoPruning #######////####### algoPruning #######//
 //####### algoPruning #######////####### algoPruning #######////####### algoPruning #######//
+//####### algoPruning #######////####### algoPruning #######////####### algoPruning #######//
+//####### algoPruning #######////####### algoPruning #######////####### algoPruning #######//
+//####### algoPruning #######////####### algoPruning #######////####### algoPruning #######//
 
 void Omega::algoPruning(std::vector< double >& data)
 {
@@ -292,11 +301,11 @@ void Omega::algoPruning(std::vector< double >& data)
   for(unsigned int i = n-2; i > -1; i--){MAX_Y[i] = std::max(data[i], MAX_Y[i+1]);}
   for(unsigned int i = n-2; i > -1; i--){MIN_Y[i] = std::min(data[i], MIN_Y[i+1]);}
 
-  std::vector< unsigned int>* t_pos = new std::vector< unsigned int>[p];
-  std::vector< unsigned int>* u_pos = new std::vector< unsigned int>[p];
-  //std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
-  //std::list< unsigned int>* u_pos = new std::list< unsigned int>[p];
-  //std::list<unsigned int>::iterator it;
+  std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
+  std::list< unsigned int>* u_pos = new std::list< unsigned int>[p];
+  std::list<unsigned int>::iterator t_it;
+  std::list<unsigned int>::iterator u_it;
+
 
   Costs cost;
   ///
@@ -333,62 +342,66 @@ void Omega::algoPruning(std::vector< double >& data)
       /////
       for(unsigned int w = 0; w < p; w++)
       {
-        t_pos[v].push_back(T-1);
         u_pos[v].push_back(w);
+        t_pos[v].push_back(T-1);
       }
 
       /// FIRST ELEMENT
-      temp_Q = Q[u_pos[v][0]][t_pos[v][0]] + cost.slopeCost(states[t_pos[v][0]], states[v], t_pos[v][0], T, S1[t_pos[v][0]], S1[T], S2[t_pos[v][0]], S2[T], SP[t_pos[v][0]], SP[T]) + penalty;
-      temp_indState = u_pos[v][0];
-      temp_chpt = t_pos[v][0];
+      u_it = u_pos[v].begin();
+      t_it = t_pos[v].begin();
 
-      for(unsigned int i = 0; i < t_pos[v].size(); i++)
+      //std::cout << u_pos[v].size() << " " << t_pos[v].size() << *u_it << *t_it;
+
+      temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty;
+      temp_indState = *u_it;
+      temp_chpt = *t_it;
+
+      u_it = u_pos[v].begin();
+      t_it = t_pos[v].begin();
+      while (t_it != t_pos[v].end())
       {
-          if(temp_Q > Q[u_pos[v][i]][t_pos[v][i]] + cost.slopeCost(states[u_pos[v][i]], states[v], t_pos[v][i], T, S1[t_pos[v][i]], S1[T], S2[t_pos[v][i]], S2[T], SP[t_pos[v][i]], SP[T]) + penalty)
-          {
-            temp_Q = Q[u_pos[v][i]][t_pos[v][i]] + cost.slopeCost(states[u_pos[v][i]], states[v], t_pos[v][i], T, S1[t_pos[v][i]], S1[T], S2[t_pos[v][i]], S2[T], SP[t_pos[v][i]], SP[T]) + penalty;
-            temp_indState = u_pos[v][i];
-            temp_chpt = t_pos[v][i];
-          }
+        if(temp_Q > Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty)
+        {
+          temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty;
+          temp_indState = *u_it;
+          temp_chpt = *t_it;
+        }
+
+        ++u_it;
+        ++t_it;
       }
+
+      //std::cout << " end "<< *u_it << " "<< *t_it << std::endl;
+
       /////
       ///// Write response
       /////
-      lastChpt[v][T] = temp_chpt;
-      lastIndState[v][T] = temp_indState;
       Q[v][T] = temp_Q;
+      lastIndState[v][T] = temp_indState;
+      lastChpt[v][T] = temp_chpt;
+
 
       /////
       ///// PRUNING STEP TO BE DONE
       /////
-      //std::cout << t_pos[v].size() << " ";
-      int count = 0;
-      for(unsigned int k = 0; k < t_pos[v].size(); k++)
+      u_it = u_pos[v].begin();
+      t_it = t_pos[v].begin();
+      while (t_it != t_pos[v].end())
       {
         unsigned int Tp1 = T+1;
         unsigned int nm1 = n-1;
-        DELTA = states[u_pos[v][k]] - states[v];
+        DELTA = states[*u_it] - states[v];
         if(DELTA >= 0){delta = MAX_Y[T] - states[v];}else{delta = MIN_Y[T] - states[v];}
 
-        K = SP[T] - SP[t_pos[v][k]] -  (t_pos[v][k] + 1) * (S1[T] - S1[t_pos[v][k]]);
+        K = SP[T] - SP[*t_it] -  (*t_it + 1) * (S1[T] - S1[*t_it]);
 
-
-        //if(Q[u_pos[v][k]][t_pos[v][k]] + cost.slopeCost(states[u_pos[v][k]], states[v], t_pos[v][k], T, S1[t_pos[v][k]], S1[T], S2[t_pos[v][k]], S2[T], SP[t_pos[v][k]], SP[T]) < Q[v][T]){std::cout << T << " " << v << " " << "A ";}
-
-        if((Q[u_pos[v][k]][t_pos[v][k]] + cost.slopeCost(states[u_pos[v][k]], states[v], t_pos[v][k], T, S1[t_pos[v][k]], S1[T], S2[t_pos[v][k]], S2[T], SP[t_pos[v][k]], SP[T]) > Q[v][T]) && cost.pruningTest(t_pos[v][k], T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(t_pos[v][k], T, nm1, delta, DELTA, K, states[v]))
-        {count = count +1; t_pos[v][k] = 0; u_pos[v][k] = 0;}
-          //{t_pos[v][k] = 0; u_pos[v][k] = 0;}
+        //if(*t_it < T-1){
+        //  if(Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q)
+        //  {if(cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
+        //  {u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}
+        //  else{++u_it; ++t_it;}}else{++u_it; ++t_it;}}else{++u_it; ++t_it;}
+        ++u_it; ++t_it;
       }
-
-      int save = t_pos[v].size();
-      for(unsigned int l = 0; l <  t_pos[v].size(); l++)
-      {
-       //if(u_pos[v][l] != 0 || t_pos[v][l] != 0){u_pos[v].push_back(u_pos[v][l]); t_pos[v].push_back(t_pos[v][l]);}
-      }
-
-
-      //std::cout << " count " << count <<std::endl;
-
 
     }
   }
@@ -410,6 +423,9 @@ void Omega::algoPruning(std::vector< double >& data)
 }
 
 
+//####### backtracking #######////####### backtracking #######////####### backtracking #######//
+//####### backtracking #######////####### backtracking #######////####### backtracking #######//
+//####### backtracking #######////####### backtracking #######////####### backtracking #######//
 //####### backtracking #######////####### backtracking #######////####### backtracking #######//
 //####### backtracking #######////####### backtracking #######////####### backtracking #######//
 
