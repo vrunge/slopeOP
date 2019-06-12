@@ -5,7 +5,7 @@
 \title{slopeOP}
 \usage{
 slopeOP(data = c(0), states = c(0), penalty = 0,
-  constraint = "null", type = "channel")
+  constraint = "null", minAngle = 0, type = "channel")
 }
 \arguments{
 \item{data}{vector of data to segment}
@@ -14,7 +14,9 @@ slopeOP(data = c(0), states = c(0), penalty = 0,
 
 \item{penalty}{the penalty value A positive number}
 
-\item{constraint}{string defining a constraint : "up", "updow"}
+\item{constraint}{string defining a constraint : "null", "up", "updown" or "smoothing"}
+
+\item{minAngle}{a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"}
 
 \item{type}{string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property or "pruning"}
 }

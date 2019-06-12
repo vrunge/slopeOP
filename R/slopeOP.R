@@ -5,13 +5,14 @@
 #' @param data vector of data to segment
 #' @param states vector of states = set of accessible starting/ending values for segments
 #' @param penalty the penalty value A positive number
-#' @param constraint string defining a constraint : "up", "updow"
+#' @param constraint string defining a constraint : "null", "up", "updown" or "smoothing"
+#' @param minAngle a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"
 #' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property or "pruning"
 #' @return a list of three elements  = (changepoints, state parameters, global cost)
 #' 'changepoints' is the vector of changepoints (we give the extremal values of all segments from left to right)
 #' 'states' is the vector of successive states. states[i] is the value we infered at position changepoints[i]
 #' 'globalCost' is a number equal to the global cost of the penalized changepoint problem
-slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null", type = "channel")
+slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null", minAngle = 0, type = "channel")
 {
   ############
   ### STOP ###
@@ -19,12 +20,22 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null"
   if(!is.numeric(data)){stop('data values are not all numeric')}
   if(!is.numeric(states)){stop('states are not all numeric')}
   if(is.unsorted(states)){stop('states should be an increasing vector')}
-  if(type != "null" && type != "channel" && type != "pruning"){stop('Arugment "type" not appropriate. Choose among "null", "channel" and "pruning"')}
+
   if(!is.double(penalty)){stop('penalty is not a double.')}
   if(penalty < 0){stop('penalty must be nonnegative')}
 
+  if(!is.double(minAngle)){stop('minAngle is not a double.')}
+  if(minAngle < 0 || minAngle > 180){stop('minAngle must lie between 0 and 180')}
+
+  if(constraint != "null" && constraint != "up" && constraint != "updown" && constraint != "smoothing")
+    {stop('Arugment "constraint" not appropriate. Choose among "null", "up", "down" and "smoothing"')}
+  if(type != "null" && type != "channel" && type != "pruning")
+    {stop('Arugment "type" not appropriate. Choose among "null", "channel" and "pruning"')}
+
+
+
   ###CALL Rcpp functions###
-  res <- slopeOPtransfer(data, states, penalty, type)
+  res <- slopeOPtransfer(data, states, penalty, constraint, minAngle, type)
 
   ###Response class slopeOP###
   response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost)

@@ -22,6 +22,10 @@ class Omega
     void algoPruning(std::vector< double >& data);
     void backtracking(unsigned int n);
 
+    void algoChannelUP(std::vector< double >& data);
+    void algoUPDOWM(std::vector< double >& data);
+    void algoSMOOTHING(std::vector< double >& data, double minAngle);
+
   private:
     double penalty;
     unsigned int nbStates;

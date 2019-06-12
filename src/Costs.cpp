@@ -1,6 +1,8 @@
 #include "Costs.h"
 #include<iostream>
 
+#include "math.h"
+
 //####### constructor #######////####### constructor #######////####### constructor #######//
 //####### constructor #######////####### constructor #######////####### constructor #######//
 
@@ -45,4 +47,17 @@ bool Costs::pruningTest(unsigned int& tau, unsigned int& t, unsigned int& testT,
 }
 
 
+bool Costs::angleTest(unsigned int& t1, unsigned int& t2, unsigned int& t3, double& v1, double& v2, double& v3, double& minAngle)
+{
+  bool response = false;
+
+  double angle1 = atan2(v2 - v1, 1.0*(t2 - t1));
+  double angle2 = atan2(v3 - v2, 1.0*(t3 - t2));
+
+  double theta = fabs(angle1 - angle2) *  180.0 / M_PI; // in degree
+  if(theta <= (180-minAngle)){response = true;}
+  //std::cout << " angle1 " << angle1 *  180.0 / M_PI  << " angle2 " << angle2*  180.0 / M_PI << " t1 " << t1 << " v1 " << v1 << " t2 " << t2 << " v2 " << v2 << " t3 " << t3 << " v3 " << v3 << std::endl;
+
+  return(response);
+}
 

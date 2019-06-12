@@ -1,6 +1,8 @@
 #include "Omega.h"
 #include "Costs.h"
 
+#include "math.h"
+
 #include <algorithm> // std::reverse // std::min // std::max
 #include<iostream>
 #include <stdlib.h>
@@ -463,4 +465,339 @@ void Omega::backtracking(unsigned int n)
   std::reverse(changepoints.begin(), changepoints.end());
   std::reverse(parameters.begin(), parameters.end());
 
+}
+
+
+
+
+//####### algoChannelUP #######////####### algoChannelUP #######////####### algoChannelUP #######//
+//####### algoChannelUP #######////####### algoChannelUP #######////####### algoChannelUP #######//
+//####### algoChannelUP #######////####### algoChannelUP #######////####### algoChannelUP #######//
+//####### algoChannelUP #######////####### algoChannelUP #######////####### algoChannelUP #######//
+//####### algoChannelUP #######////####### algoChannelUP #######////####### algoChannelUP #######//
+
+
+void Omega::algoChannelUP(std::vector< double >& data)
+{
+  unsigned int n = data.size();
+  unsigned int p = nbStates;
+
+  ///
+  /// PREPROCESSING
+  ///
+  double* S1 = new double[n];
+  double* S2 = new double[n];
+  double* SP = new double[n];
+  S1[0] = data[0];
+  S2[0] = data[0] * data[0];
+  SP[0] = data[0] ;
+  for(unsigned int i = 1; i < n; i++){S1[i] = S1[i-1] + data[i];}
+  for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
+  for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
+
+  Costs cost;
+  ///
+  /// FILL FIRST COLUMN in Q
+  ///
+  for(unsigned int i = 0; i < p; i++)
+  {
+    Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
+    lastIndState[i][0] = 0;
+    lastChpt[i][0] = 0;
+  }
+
+  ///
+  /// ALGO
+  ///
+  double temp_Q = -1;
+  int temp_chpt = -1;
+  unsigned int temp_indState = 0;
+
+  //////////////////////////////////////////////////
+  //////////////////////////////////////////////////
+  ///
+  /// CHANNEL INFORMATION
+  /// u1 / u2 = "min / max" in each column of Q
+  ///
+  unsigned int* u1 = new unsigned int[n];
+  unsigned int* u2 = new unsigned int[n];
+  unsigned int theStart;
+  unsigned int theEnd;
+  double theV = 0;
+  unsigned int indexTheV = 0;
+
+  unsigned int zero = 0;
+  ///
+  /// states u to v -> time position t to T
+  /// explore in (u,t) for fixed (v,T)
+  ///
+  for(unsigned int T = 1; T < n; T++)
+  {
+    ///
+    /// FILL u1 and u2 vectors
+    ///
+    theStart = 0;
+    while(theStart < (p - 1) && Q[theStart][T - 1] > Q[theStart + 1][T - 1]){theStart = theStart + 1;}
+    u1[T-1] = theStart;
+    theEnd = p - 1;
+    while(theEnd > 0 && Q[theEnd][T - 1] > Q[theEnd - 1][T - 1]){theEnd = theEnd - 1;}
+    u2[T-1] = theEnd;
+
+
+    for(unsigned int v = 0; v < p; v++)
+    {
+      /////
+      ///// EXPLORE MATRIX size p*T -> restricted on each column
+      /////
+      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S1[0], S1[T], S2[0], S2[T], SP[0], SP[T]) + penalty;
+      temp_indState = 0;
+      temp_chpt = 0;
+
+      for(unsigned int t = 0; t < T; t++)
+      {
+        /////
+        ///// FIND the minimum of the cost in start state
+        /////
+        if(t < T-1){
+          theV = cost.vhat(states[v], t, T, S1[t], S1[T], SP[t], SP[T]);
+          indexTheV = cost.closestState(theV, states, p);
+        }else{indexTheV = u1[T-1];}
+
+        ///
+        /// explore values between min(u1[t],indexTheV) and max(u2[t],indexTheV) + MIN with v
+        ///
+        for(unsigned int u = std::min(std::min(u1[t],indexTheV), v); u < std::min(std::max(u2[t],indexTheV), v) + 1; u++) /////explore colum of states
+        {
+          if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
+          {
+            temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+            temp_indState = u;
+            temp_chpt = t;
+          }
+        }
+      }
+
+      /////
+      ///// Write response
+      /////
+      lastChpt[v][T] = temp_chpt;
+      lastIndState[v][T] = temp_indState;
+      Q[v][T] = temp_Q;
+    }
+  }
+
+  delete(u1);
+  u1 = NULL;
+  delete(u2);
+  u2 = NULL;
+  delete(S1);
+  S1 = NULL;
+  delete(S2);
+  S2 = NULL;
+  delete(SP);
+  SP = NULL;
+}
+
+
+
+
+//####### algoUPDOWN #######////####### algoUPDOWN #######////####### algoUPDOWN #######//
+//####### algoUPDOWN #######////####### algoUPDOWN #######////####### algoUPDOWN #######//
+//####### algoUPDOWN #######////####### algoUPDOWN #######////####### algoUPDOWN #######//
+//####### algoUPDOWN #######////####### algoUPDOWN #######////####### algoUPDOWN #######//
+//####### algoUPDOWN #######////####### algoUPDOWN #######////####### algoUPDOWN #######//
+
+void Omega::algoUPDOWM(std::vector< double >& data)
+{
+  unsigned int n = data.size();
+  unsigned int p = nbStates;
+
+  ///
+  /// PREPROCESSING
+  ///
+  double* S1 = new double[n];
+  double* S2 = new double[n];
+  double* SP = new double[n];
+  S1[0] = data[0];
+  S2[0] = data[0] * data[0];
+  SP[0] = data[0] ;
+  for(unsigned int i = 1; i < n; i++){S1[i] = S1[i-1] + data[i];}
+  for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
+  for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
+
+  int** SLOPE = new int*[p];
+  for(int i = 0; i < p; i++){SLOPE[i] = new int[n];}
+
+  Costs cost;
+  ///
+  /// FILL FIRST COLUMN in Q
+  ///
+  for(unsigned int i = 0; i < p; i++)
+  {
+    Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
+    lastChpt[i][0] = 0;
+    lastIndState[i][0] = 0;
+    SLOPE[i][0] = 0;
+  }
+
+  ///
+  /// ALGO
+  ///
+  double temp_Q = -1;
+  int temp_chpt = -1;
+  unsigned int temp_indState = 0;
+  unsigned int zero = 0;
+
+  ///
+  /// states u to v -> time position t to T
+  /// explore in (u,t) for fixed (v,T)
+  ///
+
+
+  for(unsigned int T = 1; T < n; T++)
+  {
+    for(unsigned int v = 0; v < p; v++)
+    {
+      /////
+      ///// EXPLORE MATRIX size p*T
+      /////
+      temp_Q = INFINITY;
+      temp_indState = 0;
+      temp_chpt = 0;
+
+      for(unsigned int t = 0; t < T; t++)
+      {
+        for(unsigned int u = 0; u < p; u++) /////explore colum of states
+        {
+          if(!(u < v && SLOPE[u][t] == -1))
+          {
+            if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
+            {
+              temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+              temp_indState = u;
+              temp_chpt = t;
+            }
+          }
+        }
+
+      }
+      /////
+      ///// Write response
+      /////
+      Q[v][T] = temp_Q;
+      lastIndState[v][T] = temp_indState;
+      lastChpt[v][T] = temp_chpt;
+
+      if(temp_indState > v){SLOPE[v][T] = -1;}
+      if(temp_indState < v){SLOPE[v][T] = 1;}
+      if(temp_indState == v){if(SLOPE[temp_indState][temp_chpt] == -1){SLOPE[v][T] = -1;}}
+    }
+  }
+
+  delete(S1);
+  S1 = NULL;
+  delete(S2);
+  S2 = NULL;
+  delete(SP);
+  SP = NULL;
+}
+
+
+
+
+
+//####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
+//####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
+//####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
+//####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
+//####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
+
+void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
+{
+  unsigned int n = data.size();
+  unsigned int p = nbStates;
+
+  ///
+  /// PREPROCESSING
+  ///
+  double* S1 = new double[n];
+  double* S2 = new double[n];
+  double* SP = new double[n];
+  S1[0] = data[0];
+  S2[0] = data[0] * data[0];
+  SP[0] = data[0] ;
+  for(unsigned int i = 1; i < n; i++){S1[i] = S1[i-1] + data[i];}
+  for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
+  for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
+
+  Costs cost;
+  ///
+  /// FILL FIRST COLUMN in Q
+  ///
+  for(unsigned int i = 0; i < p; i++)
+  {
+    Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
+    lastChpt[i][0] = 0;
+    lastIndState[i][0] = i;
+  }
+
+  ///
+  /// ALGO
+  ///
+  double temp_Q = -1;
+  int temp_chpt = -1;
+  unsigned int temp_indState = 0;
+  unsigned int zero = 0;
+
+  ///
+  /// states u to v -> time position t to T
+  /// explore in (u,t) for fixed (v,T)
+  ///
+  //std::cout << "minAngle " << minAngle << std::endl;
+
+  for(unsigned int T = 1; T < n; T++)
+  {
+    for(unsigned int v = 0; v < p; v++)
+    {
+      /////
+      ///// EXPLORE MATRIX size p*T
+      /////
+      temp_Q = INFINITY;
+      temp_indState = 0;
+      temp_chpt = 0;
+
+      for(unsigned int t = 0; t < T; t++)
+      {
+        for(unsigned int u = 0; u < p; u++) /////explore colum of states
+        {
+          //std::cout << "-- " << lastChpt[u][t] << " -- ";
+          if(cost.angleTest(lastChpt[u][t], t, T, states[lastIndState[u][t]], states[u], states[v], minAngle))
+          {
+            if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
+            {
+              temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+              temp_indState = u;
+              temp_chpt = t;
+            }
+          }
+        }
+
+
+      }
+      /////
+      ///// Write response
+      /////
+      Q[v][T] = temp_Q;
+      lastIndState[v][T] = temp_indState;
+      lastChpt[v][T] = temp_chpt;
+
+    }
+  }
+
+  delete(S1);
+  S1 = NULL;
+  delete(S2);
+  S2 = NULL;
+  delete(SP);
+  SP = NULL;
 }

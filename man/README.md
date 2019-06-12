@@ -1,3 +1,11 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+<a id="top"></a>
+
 <!-- 
 %\VignetteEngine{knitr::rmarkdown} 
 %\VignetteIndexEntry{An Introduction to slopeOP}
@@ -20,9 +28,7 @@
 
 The package `slopeOP` is designed to segment univariate data $y_{1:n} = \{y_1,...,y_n\}$ by a continuous piecewise linear signal with restriction on starting/ending values for the segments. The changepoint vector $\overline{\tau} = (\tau_0 < \cdots < \tau_{k+1}) \in \mathbb{N}^{k+2}$ defines the $k+1$ segments $\{\tau_i+1,...,\tau_{i+1}\}$, $i = 0,...,k$ with fixed bounds $\tau_0 = 0$ and  $\tau_{k+1} = n$. We use the set $S_n = \{\hbox{changepoint vector } \overline{\tau} \in \mathbb{N}^{k+2}\}$ to define the minimal global cost given by
 
-$$
-Q_n = \min_{\overline{\tau} \in S_n}\left[ \sum_{i=0}^{k}\lbrace \mathcal{C}(y_{(\tau_i+1):\tau_{i+1}}) + \beta \rbrace \right]\,,
-$$
+$$Q_n = \min_{\overline{\tau} \in S_n}\left[ \sum_{i=0}^{k}\lbrace \mathcal{C}(y_{(\tau_i+1):\tau_{i+1}}) + \beta \rbrace \right]\,,$$
 
 where $\beta > 0$ is a penalty parameter and $\mathcal{C}(y_{u:v})$ is the minimal cost over the segment $\{u,...,v\}$. The penalty $\beta$ is understood as an additional cost when introducing a new segment. 
 
@@ -92,10 +98,10 @@ slopeOP(data, c(0,1,2,3), 10)
 ## $changepoints
 ## [1]   1 101 201 307 500
 ## 
-## parameters
+## $parameters
 ## [1] 0 1 0 3 2
 ## 
-## globalCost
+## $globalCost
 ## [1] 496.4254
 ## 
 ## attr(,"class")
@@ -118,13 +124,13 @@ slopeOP(data, 71:80, 5, constraint = "up")
 ```
 
 ```
-## changepoints
+## $changepoints
 ## [1]    1   63  254  356  828 1000
 ## 
-## parameters
+## $parameters
 ## [1] 71 72 72 75 75 80
 ## 
-## globalCost
+## $globalCost
 ## [1] 1768.407
 ## 
 ## attr(,"class")
@@ -140,13 +146,13 @@ slopeOP(data, 71:80, 5, constraint = "updown")
 ```
 
 ```
-## changepoints
+## $changepoints
 ## [1]    1  316  317  502  697 1000
 ## 
-## parameters
+## $parameters
 ## [1] 71 73 74 78 74 74
 ## 
-## globalCost
+## $globalCost
 ## [1] 1407.936
 ## 
 ## attr(,"class")
@@ -162,14 +168,14 @@ slopeOP(data,70:80,5, constraint = "smoothing", minAngle = 170)
 ```
 
 ```
-## changepoints
+## $changepoints
 ##  [1]   1   7  19  25  28  34  40  46  47  53  62  68  73  79  94 100 103
 ## [18] 149 154 160 200
 ## 
-## parameters
+## $parameters
 ##  [1] 71 72 76 77 77 76 74 73 73 74 77 78 78 77 72 71 71 79 79 78 70
 ## 
-## globalCost
+## $globalCost
 ## [1] 319.9376
 ## 
 ## attr(,"class")
@@ -179,4 +185,3 @@ slopeOP(data,70:80,5, constraint = "smoothing", minAngle = 170)
 
 
 [Back to Top](#top)
-

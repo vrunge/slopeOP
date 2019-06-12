@@ -205,24 +205,27 @@ $(document).ready(function () {
 <h4>LaMME, Evry University</h4>
 </div>
 </div>
-<div id="june-10-2019" class="section level3">
-<h3>June 10, 2019</h3>
+<div id="june-13-2019" class="section level3">
+<h3>June 13, 2019</h3>
 <blockquote>
 <p><a href="#intro">Introduction</a></p>
 </blockquote>
 <blockquote>
-<p><a href="#rf">The R functions</a></p>
+<p><a href="#sf">The slopeOP function</a></p>
+</blockquote>
+<blockquote>
+<p><a href="#options">Options for constraining inference</a></p>
 </blockquote>
 <p><a id="intro"></a></p>
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The package <code>slopeOP</code> is designed to segment univariate data <span class="math inline">\(y_{1:n} = \{y_1,...,y_n\}\)</span> by a continuous piecewise linear signal. The changepoint vector <span class="math inline">\(\overline{\tau} = (\tau_0 &lt; \cdots &lt; \tau_{k+1}) \in \mathbb{N}^{k+2}\)</span> defines the <span class="math inline">\(k+1\)</span> segments <span class="math inline">\(\{\tau_i+1,...,\tau_{i+1}\}\)</span>, <span class="math inline">\(i = 0,...,k\)</span> with fixed bounds <span class="math inline">\(\tau_0 = 0\)</span> and <span class="math inline">\(\tau_{k+1} = n\)</span>. We use the set <span class="math inline">\(S_n = \{\hbox{changepoint vector } \overline{\tau} \in \mathbb{N}^{k+2}\}\)</span> to define the nonconstrained minimal global cost given by</p>
+<p>The package <code>slopeOP</code> is designed to segment univariate data <span class="math inline">\(y_{1:n} = \{y_1,...,y_n\}\)</span> by a continuous piecewise linear signal with restriction on starting/ending values for the segments. The changepoint vector <span class="math inline">\(\overline{\tau} = (\tau_0 &lt; \cdots &lt; \tau_{k+1}) \in \mathbb{N}^{k+2}\)</span> defines the <span class="math inline">\(k+1\)</span> segments <span class="math inline">\(\{\tau_i+1,...,\tau_{i+1}\}\)</span>, <span class="math inline">\(i = 0,...,k\)</span> with fixed bounds <span class="math inline">\(\tau_0 = 0\)</span> and <span class="math inline">\(\tau_{k+1} = n\)</span>. We use the set <span class="math inline">\(S_n = \{\hbox{changepoint vector } \overline{\tau} \in \mathbb{N}^{k+2}\}\)</span> to define the minimal global cost given by</p>
 <p><span class="math display">\[Q_n = \min_{\overline{\tau} \in S_n}\left[ \sum_{i=0}^{k}\lbrace \mathcal{C}(y_{(\tau_i+1):\tau_{i+1}}) + \beta \rbrace \right]\,,\]</span></p>
 <p>where <span class="math inline">\(\beta &gt; 0\)</span> is a penalty parameter and <span class="math inline">\(\mathcal{C}(y_{u:v})\)</span> is the minimal cost over the segment <span class="math inline">\(\{u,...,v\}\)</span>. The penalty <span class="math inline">\(\beta\)</span> is understood as an additional cost when introducing a new segment.</p>
 <p>The cost for data <span class="math inline">\(y_{\tau+1:t}\)</span> with linear interpolation from value <span class="math inline">\(a\)</span> to value <span class="math inline">\(b\)</span> is given by</p>
 <p><span class="math display">\[
-\mathcal{C}(y_{\tau+1:t},a,b) = \sum_{i=\tau+1}^{t}\left(y_i - [a + (b-a)\frac{i-\tau}{t-\tau}]\right)^2\,.
+\mathcal{C}(y_{\tau+1:t},a,b) = \sum_{i=\tau+1}^{t}\left(y_i - [a + (b-a)\frac{i-\tau}{t-\tau}]\right)^2\,,
 \]</span></p>
 <p>which can be computed in constant time with the formula</p>
 <p><span class="math display">\[\mathcal{C}(y_{\tau+1:t},a,b) = S_{t}^2 - S_{\tau}^2 +\frac{b^2-a^2}{2} + \frac{a^2 + ab +b^2}{3}(t-\tau) + \frac{(b-a)^2}{6(t-\tau)}\]</span></p>
@@ -240,19 +243,77 @@ S^1_t = \sum_{i=1}^t y_i\quad , \quad S^2_t = \sum_{i=1}^t y_i^2\quad \hbox{and}
 <p><span class="math display">\[
 Q_t(v) = \min_{0 \le \tau &lt; t}\left( \min_{u}\{Q_{\tau}(u) + \mathcal{C}(y_{\tau+1:t},u,v) + \beta\}\right)\,,
 \]</span></p>
-<p>where the presence of the same value value <span class="math inline">\(u\)</span> in <span class="math inline">\(Q_{\tau}\)</span> and the cost realizes the continuity constraint. At initial step we simply have <span class="math inline">\(Q_0(v) = -\beta\)</span>.</p>
-<p><a id="rf"></a></p>
+<p>where the presence of the same value <span class="math inline">\(u\)</span> in <span class="math inline">\(Q_{\tau}\)</span> and the cost realizes the continuity constraint. At initial step we simply have <span class="math inline">\(Q_0(v) = -\beta\)</span>.</p>
+<p><a id="sf"></a></p>
 </div>
-<div id="the-r-functions" class="section level2">
-<h2>The R functions</h2>
+<div id="the-slopeop-function" class="section level2">
+<h2>The slopeOP function</h2>
 <p>We install the package from Github:</p>
 <pre class="r"><code>#devtools::install_github(&quot;vrunge/slopeOP&quot;)
 library(slopeOP)</code></pre>
-<p>We simulate data with the function <code>slopeData</code></p>
+<p>We simulate data with the function <code>slopeData</code> given the indices for extremal values and in second vector these values to reach for corresponding indices. The last parameter is the standard deviation of a normal standard noise.</p>
 <pre class="r"><code>data &lt;- slopeData(c(1,100,200,300,500), c(0,1,0,3,2), 1)</code></pre>
-<p>And the changepoint detection is done by using the function <code>slopeOP</code></p>
-<pre class="r"><code>slopeOP(data,c(0,1,2,3),5)</code></pre>
-<p>In <code>slopeOP</code> function, the parameter <code>type</code> is <code>null</code> by default. If it is equal to <code>channel</code> we use the monotonicity property in optimal cost matrix to reduce time complexity. If it is equal to <code>pruning</code> we prune some positions using a theorem taking into account unseen data.</p>
+<p>The changepoint detection is done by using the function <code>slopeOP</code></p>
+<pre class="r"><code>slopeOP(data, c(0,1,2,3), 10)</code></pre>
+<pre><code>## $changepoints
+## [1]   1 101 203 293 500
+## 
+## $parameters
+## [1] 0 1 0 3 2
+## 
+## $globalCost
+## [1] 536.7241
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;slopeOP&quot;</code></pre>
+<p>In <code>slopeOP</code> function, the parameter <code>type</code> is <code>channel</code> by default. With type equal to <code>channel</code> we use the monotonicity property in optimal cost matrix to reduce time complexity. If it is equal to <code>pruning</code> we prune some positions using a theorem taking into account unseen data.</p>
+<p><a id="options"></a></p>
+</div>
+<div id="options-for-constraining-inference" class="section level2">
+<h2>Options for constraining inference</h2>
+<p>Parameter <code>constraint</code> can be set to <code>up</code> which corresponds to a restriction to nondecreasing vector parameter.</p>
+<pre class="r"><code>data &lt;- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,77,73,80), 1)
+slopeOP(data, 71:80, 5, constraint = &quot;up&quot;)</code></pre>
+<pre><code>## $changepoints
+## [1]    1   84  270  344  816 1000
+## 
+## $parameters
+## [1] 71 72 72 75 75 80
+## 
+## $globalCost
+## [1] 1857.934
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;slopeOP&quot;</code></pre>
+<p>With <code>constraint</code> equal to <code>updown</code> the infered vector is unimodal (with a maximum).</p>
+<pre class="r"><code>data &lt;- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,78,73,75), 1)
+slopeOP(data, 71:80, 5, constraint = &quot;updown&quot;)</code></pre>
+<pre><code>## $changepoints
+## [1]    1   34  114  323  325  502  702 1000
+## 
+## $parameters
+## [1] 71 72 72 73 75 78 74 74
+## 
+## $globalCost
+## [1] 1390.297
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;slopeOP&quot;</code></pre>
+<p>We also can limit the angles between successive segments with <code>constraint</code> equal to <code>smoothing</code> and the parameter <code>minAngle</code> in degree.</p>
+<pre class="r"><code>data &lt;- slopeData(c(1,30,40,70,100,150,200),c(70,80,70,80,70,80,70),0.5)
+slopeOP(data,70:80,5, constraint = &quot;smoothing&quot;, minAngle = 170)</code></pre>
+<pre><code>## $changepoints
+##  [1]   1   7  19  25  28  34  40  46  47  53  62  68  74  80  95 101 104
+## [18] 150 153 159 200
+## 
+## $parameters
+##  [1] 71 72 76 77 77 76 74 73 73 74 77 78 78 77 72 71 71 79 79 78 70
+## 
+## $globalCost
+## [1] 308.5966
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;slopeOP&quot;</code></pre>
 <p><a href="#top">Back to Top</a></p>
 </div>
 </div>
