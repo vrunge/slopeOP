@@ -5,12 +5,13 @@
 #' @param data vector of data to segment
 #' @param states vector of states = set of accessible starting/ending values for segments
 #' @param penalty the penalty value A positive number
+#' @param constraint string defining a constraint : "up", "updow"
 #' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property or "pruning"
 #' @return a list of three elements  = (changepoints, state parameters, global cost)
 #' 'changepoints' is the vector of changepoints (we give the extremal values of all segments from left to right)
 #' 'states' is the vector of successive states. states[i] is the value we infered at position changepoints[i]
 #' 'globalCost' is a number equal to the global cost of the penalized changepoint problem
-slopeOP <- function(data = c(0), states = c(0), penalty = 0, type = "null")
+slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null", type = "channel")
 {
   ############
   ### STOP ###
@@ -60,6 +61,4 @@ slopeData <- function(index = c(0), states = c(0), noise = 0)
 
   return(response)
 }
-
-
 

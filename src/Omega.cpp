@@ -296,10 +296,11 @@ void Omega::algoPruning(std::vector< double >& data)
 
   double* MAX_Y = new double[n];
   double* MIN_Y = new double[n];
-  MAX_Y[n-1] = data[n-2];
-  MIN_Y[n-1] = data[n-2];
-  for(unsigned int i = n-2; i > -1; i--){MAX_Y[i] = std::max(data[i], MAX_Y[i+1]);}
-  for(unsigned int i = n-2; i > -1; i--){MIN_Y[i] = std::min(data[i], MIN_Y[i+1]);}
+  MAX_Y[n-1] = 1.0*data[n-2];
+  MIN_Y[n-1] = 1.0*data[n-2];
+  for(int i = n-2; i > -1; i--){MAX_Y[i] = std::max(1.0*data[i], MAX_Y[i+1]);}
+  for(int i = n-2; i > -1; i--){MIN_Y[i] = std::min(1.0*data[i], MIN_Y[i+1]);}
+
 
   std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
   std::list< unsigned int>* u_pos = new std::list< unsigned int>[p];
@@ -394,17 +395,16 @@ void Omega::algoPruning(std::vector< double >& data)
         if(DELTA >= 0){delta = MAX_Y[T] - states[v];}else{delta = MIN_Y[T] - states[v];}
 
         K = SP[T] - SP[*t_it] -  (*t_it + 1) * (S1[T] - S1[*t_it]);
+        //std::cout << "delta " << delta << " DELTA " << DELTA << " K " << K << std::endl;
 
-        //if(*t_it < T-1){
-        //  if(Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q)
-        //  {if(cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
-        //  {u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}
-        //  else{++u_it; ++t_it;}}else{++u_it; ++t_it;}}else{++u_it; ++t_it;}
-        ++u_it; ++t_it;
+        if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
+          {u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
+
       }
 
     }
   }
+
 
   delete(S1);
   S1 = NULL;
