@@ -134,11 +134,11 @@ void Omega::algo(std::vector< double >& data)
     }
   }
 
-  delete(S1);
+  delete [] S1;
   S1 = NULL;
-  delete(S2);
+  delete [] S2;
   S2 = NULL;
-  delete(SP);
+  delete [] SP;
   SP = NULL;
 }
 
@@ -258,15 +258,15 @@ void Omega::algoChannel(std::vector< double >& data)
     }
   }
 
-  delete(u1);
+  delete [] u1;
   u1 = NULL;
-  delete(u2);
+  delete [] u2;
   u2 = NULL;
-  delete(S1);
+  delete [] S1;
   S1 = NULL;
-  delete(S2);
+  delete [] S2;
   S2 = NULL;
-  delete(SP);
+  delete [] SP;
   SP = NULL;
 }
 
@@ -408,15 +408,15 @@ void Omega::algoPruning(std::vector< double >& data)
   }
 
 
-  delete(S1);
+  delete [] S1;
   S1 = NULL;
-  delete(S2);
+  delete [] S2;
   S2 = NULL;
-  delete(SP);
+  delete [] SP;
   SP = NULL;
-  delete(MAX_Y);
+  delete [] MAX_Y;
   MAX_Y = NULL;
-  delete(MIN_Y);
+  delete [] MIN_Y;
   MIN_Y = NULL;
   delete [] t_pos;
   t_pos = NULL;
@@ -586,15 +586,15 @@ void Omega::algoChannelUP(std::vector< double >& data)
     }
   }
 
-  delete(u1);
+  delete [] u1;
   u1 = NULL;
-  delete(u2);
+  delete [] u2;
   u2 = NULL;
-  delete(S1);
+  delete [] S1;
   S1 = NULL;
-  delete(S2);
+  delete [] S2;
   S2 = NULL;
-  delete(SP);
+  delete [] SP;
   SP = NULL;
 }
 
@@ -646,7 +646,6 @@ void Omega::algoUPDOWM(std::vector< double >& data)
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
-  unsigned int zero = 0;
 
   ///
   /// states u to v -> time position t to T
@@ -694,12 +693,17 @@ void Omega::algoUPDOWM(std::vector< double >& data)
     }
   }
 
-  delete(S1);
+  delete [] S1;
   S1 = NULL;
-  delete(S2);
+  delete [] S2;
   S2 = NULL;
-  delete(SP);
+  delete [] SP;
   SP = NULL;
+
+  for(unsigned int i = 0; i < p; i++){delete(SLOPE[i]);}
+  delete [] SLOPE;
+  SLOPE = NULL;
+
 }
 
 
@@ -747,7 +751,6 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
-  unsigned int zero = 0;
 
   ///
   /// states u to v -> time position t to T
@@ -794,10 +797,10 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
     }
   }
 
-  delete(S1);
+  delete [] S1;
   S1 = NULL;
-  delete(S2);
+  delete [] S2;
   S2 = NULL;
-  delete(SP);
+  delete [] SP;
   SP = NULL;
 }
