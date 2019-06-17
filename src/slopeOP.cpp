@@ -1,3 +1,6 @@
+// MIT License
+// Copyright (c) 2019 Vincent Runge
+
 #include<Rcpp.h>
 // Enable C++11 via this plugin (Rcpp 0.10.3 or later)
 // [[Rcpp::plugins(cpp11)]]
@@ -29,9 +32,6 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
   );
   return res;
 }
-
-
-
 
 
 // [[Rcpp::export]]

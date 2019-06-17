@@ -1,3 +1,6 @@
+// MIT License
+// Copyright (c) 2019 Vincent Runge
+
 #ifndef COSTS_H
 #define COSTS_H
 

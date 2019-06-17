@@ -1,3 +1,6 @@
+// MIT License
+// Copyright (c) 2019 Marco Pascucci
+
 #include <vector>
 #include <iostream>
 #include <assert.h>
@@ -104,7 +107,7 @@ void lin_reg(vector<T1> &x, vector<T2> &y, double *coeff, double *intercept, siz
     i00 = m11/det;
     i11 = m00/det;
     i01 = -m01/det;
-    
+
     double v1 = accumulate(y.begin()+start,y.begin()+end,0.0);
     double v2 = inner_product(x.begin()+start,x.begin()+end,y.begin()+start,0.0);
 
@@ -130,7 +133,7 @@ vector<double> line(const vector<T> &x,
                     size_t end,
                     const double inter=0) {
     /* calculate a linear segment, given a vector x, and the line coefficients
-     * from start to end (excluded) 
+     * from start to end (excluded)
      */
 
     if(start < 0 || end > x.size() ){

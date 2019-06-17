@@ -1,3 +1,6 @@
+// MIT License
+// Copyright (c) 2019 Vincent Runge
+
 #ifndef OMEGA_H
 #define OMEGA_H
 

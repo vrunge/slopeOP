@@ -1,3 +1,6 @@
+// MIT License
+// Copyright (c) 2019 Marco Pascucci
+
 #include <vector>
 #include <numeric>
 #include <iostream>
@@ -50,7 +53,7 @@ double cost_linear(vector<T1> &x, vector<T2> &y,
     /* calculate the sum of square errors between y and x*coeff+inter */
     assert(y.size() == x.size());
     assert(start >= 0 && end <= x.size());
-    
+
     double cost = 0;
     for (uint i=start; i<end; i++) {
         cost = cost + pow((y[i] - (x[i]*coeff+inter)),2);
@@ -75,7 +78,7 @@ double cost_linear_point(vector<T1> &x, vector<T2> &y,
     /* calculate the sum of square errors between y and x*coeff+inter */
     assert(y.size() == x.size());
     assert(start >= 0 && end <= x.size());
-    
+
     double cost = 0;
     for (uint i=start; i<end; i++) {
         cost = cost + pow((y[i] - ((x[i]-p.x)*coeff + p.y)),2);
@@ -122,7 +125,7 @@ vector<uint> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
 
     for (size_t t=1; t<n; ++t) {
         // possible changepoint @ t
-        
+
         lin_reg(x,y,&coeff,&inter,0,t+1);
         q_temp = cost_linear(x,y,coeff,inter,0,t+1);
         cp_temp = 0;
@@ -153,9 +156,9 @@ vector<uint> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
             }
         }
         temp.push_back(t);
-        P = temp;       
+        P = temp;
         // printv(P);
-        
+
     }
     return cp;
 }
@@ -182,7 +185,7 @@ vector<uint> peltcc(vector<Tx> &x, vector<Ty> &y, double beta) {
 
     for (size_t t=1; t<n; ++t) {
         // possible changepoint @ t
-        
+
         lin_reg(x,y,&coeff,&inter,0,t+1);
         q_temp = cost_linear(x,y,coeff,inter,0,t+1);
         cp_temp = 0;
@@ -224,9 +227,9 @@ vector<uint> peltcc(vector<Tx> &x, vector<Ty> &y, double beta) {
             }
         }
         temp.push_back(t);
-        P = temp;       
+        P = temp;
         // printv(P);
-        
+
     }
     return cp;
 }

@@ -1,3 +1,6 @@
+// MIT License
+// Copyright (c) 2019 Vincent Runge
+
 #include "Costs.h"
 #include<iostream>
 
