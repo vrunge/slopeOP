@@ -34,18 +34,28 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
 }
 
 
-// [[Rcpp::export]]
-std::vector<unsigned int> linearOP(std::vector<double> x, std::vector<double> data, double penalty, bool cc = false)
-{
-  std::vector<unsigned int> res;
-  if(cc == false){res = backtrack(pelt(x,data,penalty));}
-    else{res = backtrack(peltcc(x,data,penalty));}
 
-  res.push_back(x.size()-1);
-  res.insert(res.begin(), 0);
-  for(unsigned int i = 0; i < res.size(); i++){res[i] = res[i] + 1;}
+// [[Rcpp::export]]
+List linearOP(std::vector<double> x, std::vector<double> data, double penalty, bool cc = false)
+{
+  PeltResult<double,double> pr;
+  if(cc == false){
+    pr = pelt(x,data,penalty);
+  } else {
+    pr = peltcc(x,data,penalty);
+  }
+
+  for(unsigned int i = 0; i < pr.cp.size(); i++){
+    pr.cp[i] = pr.cp[i] + 1;
+  }
+
+  // RETURN
+  List res = List::create(
+    _["cp_indexes"] = pr.cp,
+    _["x"] = pr.x,
+    _["y"] = pr.y,
+    _["globalCost"] = pr.cost
+  );
 
   return(res);
 }
-
-
