@@ -21,9 +21,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// linearOP
+std::vector<unsigned int> linearOP(std::vector<double> x, std::vector<double> data, double penalty, bool cc);
+RcppExport SEXP _slopeOP_linearOP(SEXP xSEXP, SEXP dataSEXP, SEXP penaltySEXP, SEXP ccSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< double >::type penalty(penaltySEXP);
+    Rcpp::traits::input_parameter< bool >::type cc(ccSEXP);
+    rcpp_result_gen = Rcpp::wrap(linearOP(x, data, penalty, cc));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_slopeOP_slopeOPtransfer", (DL_FUNC) &_slopeOP_slopeOPtransfer, 6},
+    {"_slopeOP_linearOP", (DL_FUNC) &_slopeOP_linearOP, 4},
     {NULL, NULL, 0}
 };
 

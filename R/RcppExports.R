@@ -5,3 +5,7 @@ slopeOPtransfer <- function(data, states, penalty, constraint = "null", minAngle
     .Call('_slopeOP_slopeOPtransfer', PACKAGE = 'slopeOP', data, states, penalty, constraint, minAngle, type)
 }
 
+linearOP <- function(x, data, penalty, cc = FALSE) {
+    .Call('_slopeOP_linearOP', PACKAGE = 'slopeOP', x, data, penalty, cc)
+}
+

@@ -4,6 +4,7 @@
 
 #include<math.h>
 #include"Omega.h"
+#include"peltcc_template.hpp" //Marco Pascucci code
 using namespace Rcpp;
 using namespace std;
 
@@ -28,3 +29,23 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
   );
   return res;
 }
+
+
+
+
+
+// [[Rcpp::export]]
+std::vector<unsigned int> linearOP(std::vector<double> x, std::vector<double> data, double penalty, bool cc = false)
+{
+  std::vector<unsigned int> res;
+  if(cc == false){res = backtrack(pelt(x,data,penalty));}
+    else{res = backtrack(peltcc(x,data,penalty));}
+
+  res.push_back(x.size()-1);
+  res.insert(res.begin(), 0);
+  for(unsigned int i = 0; i < res.size(); i++){res[i] = res[i] + 1;}
+
+  return(res);
+}
+
+

@@ -1,4 +1,4 @@
-export(slopeOP,slopeData)
+export(slopeOP,slopeData, linearOP)
 importFrom(Rcpp, evalCpp)
 importFrom("stats", "rnorm")
 useDynLib(slopeOP)
