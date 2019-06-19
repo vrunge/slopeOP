@@ -38,6 +38,10 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
 // [[Rcpp::export]]
 List linearOP(std::vector<double> x, std::vector<double> data, double penalty, bool cc = false)
 {
+  if (x.size() != data.size()) {
+    stop("x and y must have the same length.");
+  }
+
   PeltResult<double,double> pr;
   if(cc == false){
     pr = pelt(x,data,penalty);
