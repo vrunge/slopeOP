@@ -160,8 +160,8 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
 
         for (uint i = 0; i<P.size(); i++) {
             tau = P[i];
-            // if (t-tau == 1) continue;
-            lin_reg(x,y,&coeff,&inter,tau,t+1);
+            if (t-tau == 1) continue;
+            lin_reg(x,y,&coeff,&inter,tau+1,t+1);
             this_cost = cost_linear(x,y,coeff,inter,tau+1,t+1);
             q_new[tau] = q[tau] + this_cost; // q_new
             if (q_new[tau] + beta < q_temp) {
@@ -194,12 +194,28 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
     vector<uint> cp1(cp);
     cp1.insert(cp1.begin(), 0);
     cp1.push_back(n-1);
-    vector<Ty> ys(cp1.size());
-    vector<Tx> xs(cp1.size());
+    vector<Ty> ys((cp1.size()-1)*2);
+    vector<Tx> xs((cp1.size()-1)*2);
 
-    for (uint i = 0; i<cp1.size(); i++) {
-        xs[i] = x[cp1[i]];
-        ys[i] = y[cp1[i]];
+    Tx xa, xb;
+    Ty ya, yb;
+
+    for (uint i = 0; i<cp1.size()-1; i++) {
+        if (i == 0) {
+            xa = x[cp1[i]];
+        } else {
+            xa = x[cp1[i]] + 1;
+        }
+            
+        xb = x[cp1[i+1]];
+            
+        ya = coeffs[cp1[i+1]]*xa + inters[cp1[i+1]];
+        yb = coeffs[cp1[i+1]]*xb + inters[cp1[i+1]];
+        
+        xs[i*2] = xa;
+        xs[i*2+1] = xb;
+        ys[i*2] = ya;
+        ys[i*2+1] = yb;
     }
 
     return PeltResult<Tx,Ty>(cp, xs, ys, q[y.size()-2]);
@@ -249,8 +265,8 @@ PeltResult<Tx,Ty> peltcc(vector<Tx> &x, vector<Ty> &y, double beta) {
             pt.y =  y_end[tau];
             transform(x.begin(), x.end(), x_trans.begin(), bind2nd(std::plus<int>(), -pt.x));
             transform(y.begin(), y.end(), y_trans.begin(), bind2nd(std::plus<double>(), -pt.y));
-            lin_reg_no_const(x_trans, y_trans, &coeff, tau, t+1);
-            this_cost = cost_linear_point(x,y,pt,coeff,tau,t+1);
+            lin_reg_no_const(x_trans, y_trans, &coeff, tau+1, t+1);
+            this_cost = cost_linear_point(x,y,pt,coeff,tau+1,t+1);
             q_new[tau] = q[tau] + this_cost; // q_new
             if (q_new[tau] + beta < q_temp) {
                 q_temp = q_new[tau] + beta;
