@@ -22,7 +22,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // linearOP
-std::vector<unsigned int> linearOP(std::vector<double> x, std::vector<double> data, double penalty, bool cc);
+List linearOP(std::vector<double> x, std::vector<double> data, double penalty, bool cc);
 RcppExport SEXP _slopeOP_linearOP(SEXP xSEXP, SEXP dataSEXP, SEXP penaltySEXP, SEXP ccSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
