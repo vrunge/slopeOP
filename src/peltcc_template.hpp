@@ -194,8 +194,8 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
     vector<uint> cp1(cp);
     cp1.insert(cp1.begin(), 0);
     cp1.push_back(n-1);
-    vector<Ty> ys((cp1.size()-1)*2);
-    vector<Tx> xs((cp1.size()-1)*2);
+    vector<Ty> ys(cp1.size());
+    vector<Tx> xs(cp1.size());
 
     for (uint i = 0; i<cp1.size(); i++) {
         xs[i] = x[cp1[i]];
