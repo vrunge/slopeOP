@@ -29,7 +29,7 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null"
 
   if(constraint != "null" && constraint != "up" && constraint != "updown" && constraint != "smoothing")
     {stop('Arugment "constraint" not appropriate. Choose among "null", "up", "down" and "smoothing"')}
-  if(type != "null" && type != "channel" && type != "pruning")
+  if(type != "null" && type != "channel" && type != "pruning" && type != "pruning2")
     {stop('Arugment "type" not appropriate. Choose among "null", "channel" and "pruning"')}
 
 
@@ -72,4 +72,7 @@ slopeData <- function(index = c(0), states = c(0), noise = 0)
 
   return(response)
 }
+
+
+
 

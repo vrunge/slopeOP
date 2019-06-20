@@ -335,6 +335,9 @@ void Omega::algoPruning(std::vector< double >& data)
   double DELTA;
   double K;
 
+  unsigned int Tp1;
+  unsigned int nm1 = n-1;
+
   ///
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
@@ -394,8 +397,7 @@ void Omega::algoPruning(std::vector< double >& data)
       t_it = t_pos[v].begin();
       while (t_it != t_pos[v].end())
       {
-        unsigned int Tp1 = T+1;
-        unsigned int nm1 = n-1;
+        Tp1 = T+1;
         DELTA = states[*u_it] - states[v];
         if(DELTA >= 0){delta = MAX_Y[T] - states[v];}else{delta = MIN_Y[T] - states[v];}
 
@@ -807,3 +809,187 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
   delete [] SP;
   SP = NULL;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//####### algoPruning2 #######////####### algoPruning2 #######////####### algoPruning2 #######//
+//####### algoPruning2 #######////####### algoPruning2 #######////####### algoPruning2 #######//
+//####### algoPruning2 #######////####### algoPruning2 #######////####### algoPruning2 #######//
+//####### algoPruning2 #######////####### algoPruning2 #######////####### algoPruning2 #######//
+//####### algoPruning2 #######////####### algoPruning2 #######////####### algoPruning2 #######//
+
+void Omega::algoPruning2(std::vector< double >& data)
+{
+  unsigned int n = data.size();
+  unsigned int p = nbStates;
+
+  ///
+  /// PREPROCESSING
+  ///
+  double* S1 = new double[n];
+  double* S2 = new double[n];
+  double* SP = new double[n];
+  S1[0] = data[0];
+  S2[0] = data[0] * data[0];
+  SP[0] = data[0];
+  for(unsigned int i = 1; i < n; i++){S1[i] = S1[i-1] + data[i];}
+  for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
+  for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
+
+  double* S1decay = new double[n];
+  S1decay[0] = 0;
+  for(unsigned int i = 1; i < n; i++){S1decay[i] = S1decay[i-1] + data[i-1];} //cumsum from 0, y_1,...
+
+  double* MAX_Y = new double[n]; //new type of max
+  double* MIN_Y = new double[n]; //new type of min
+  for(int i = 0; i < n; i++)
+  {
+    MAX_Y[i] = 1.0*data[i];
+    MIN_Y[i] = 1.0*data[i];
+  }
+
+  for(int i = 0; i < n-1; i++)
+  {
+    for(int j = i + 1; j < n-1; j++)
+    {
+      MAX_Y[i] = std::max(S1decay[j+1] - S1decay[i], MAX_Y[i]);
+      MIN_Y[i] = std::min(S1decay[j+1] - S1decay[i], MIN_Y[i]);
+    }
+  }
+
+
+  std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
+  std::list< unsigned int>* u_pos = new std::list< unsigned int>[p];
+  std::list<unsigned int>::iterator t_it;
+  std::list<unsigned int>::iterator u_it;
+
+
+  Costs cost;
+  ///
+  /// FILL FIRST COLUMN in Q
+  ///
+  for(unsigned int i = 0; i < p; i++)
+  {
+    Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
+    lastChpt[i][0] = 0;
+    lastIndState[i][0] = 0;
+  }
+
+  ///
+  /// ALGO
+  ///
+  double temp_Q = -1;
+  int temp_chpt = -1;
+  unsigned int temp_indState = 0;
+  ///variables for pruning
+  double delta;
+  double DELTA;
+  double K;
+
+  unsigned int Tp1;
+  unsigned int nm1 = n-1;
+  ///
+  /// states u to v -> time position t to T
+  /// explore in (u,t) for fixed (v,T)
+  ///
+  for(unsigned int T = 1; T < n; T++)
+  {
+    for(unsigned int v = 0; v < p; v++)
+    {
+      /////
+      ///// Add last column to explore
+      /////
+      for(unsigned int w = 0; w < p; w++)
+      {
+        u_pos[v].push_back(w);
+        t_pos[v].push_back(T-1);
+      }
+
+      /// FIRST ELEMENT
+      u_it = u_pos[v].begin();
+      t_it = t_pos[v].begin();
+
+      //std::cout << u_pos[v].size() << " " << t_pos[v].size() << *u_it << *t_it;
+
+      temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty;
+      temp_indState = *u_it;
+      temp_chpt = *t_it;
+
+      u_it = u_pos[v].begin();
+      t_it = t_pos[v].begin();
+      while (t_it != t_pos[v].end())
+      {
+        if(temp_Q > Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty)
+        {
+          temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty;
+          temp_indState = *u_it;
+          temp_chpt = *t_it;
+        }
+        ++u_it;
+        ++t_it;
+      }
+
+      //std::cout << " end "<< *u_it << " "<< *t_it << std::endl;
+
+      /////
+      ///// Write response
+      /////
+      Q[v][T] = temp_Q;
+      lastIndState[v][T] = temp_indState;
+      lastChpt[v][T] = temp_chpt;
+
+
+      ////////////////////////
+      ///// PRUNING STEP /////
+      ////////////////////////
+      u_it = u_pos[v].begin();
+      t_it = t_pos[v].begin();
+      while (t_it != t_pos[v].end())
+      {
+        Tp1 = T+1;
+        DELTA = states[*u_it] - states[v];
+        if(DELTA >= 0){delta = 2*MAX_Y[T] - states[v];}else{delta = 2*MIN_Y[T] - states[v];}
+        delta = delta/((T-*t_it)*(T-*t_it-1));
+        K = SP[T] - SP[*t_it] -  (*t_it + 1) * (S1[T] - S1[*t_it]);
+        //std::cout << "delta " << delta << " DELTA " << DELTA << " K " << K << std::endl;
+
+        if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
+          {u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
+      }
+    }
+  }
+
+  delete [] S1decay;
+  S1decay = NULL;
+  delete [] S1;
+  S1 = NULL;
+  delete [] S2;
+  S2 = NULL;
+  delete [] SP;
+  SP = NULL;
+  delete [] MAX_Y;
+  MAX_Y = NULL;
+  delete [] MIN_Y;
+  MIN_Y = NULL;
+  delete [] t_pos;
+  t_pos = NULL;
+  delete [] u_pos;
+  u_pos = NULL;
+}
+

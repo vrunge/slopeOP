@@ -23,6 +23,7 @@ class Omega
     void algo(std::vector< double >& data);
     void algoChannel(std::vector< double >& data);
     void algoPruning(std::vector< double >& data);
+    void algoPruning2(std::vector< double >& data);
     void backtracking(unsigned int n);
 
     void algoChannelUP(std::vector< double >& data);
