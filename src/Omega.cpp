@@ -962,20 +962,22 @@ void Omega::algoPruning2(std::vector< double >& data)
       ////////////////////////
       ///// PRUNING STEP /////
       ////////////////////////
-      u_it = u_pos[v].begin();
-      t_it = t_pos[v].begin();
-      while (t_it != t_pos[v].end())
-      {
-        Tp1 = T+1;
-        DELTA = states[*u_it] - states[v];
-        if(DELTA >= 0){delta = 2*MAX_Y[T] - states[v];}else{delta = 2*MIN_Y[T] - states[v];}
-        delta = delta/((T-*t_it)*(T-*t_it-1));
-        K = SP[T] - SP[*t_it] -  (*t_it + 1) * (S1[T] - S1[*t_it]);
+      //u_it = u_pos[v].begin();
+      //t_it = t_pos[v].begin();
+      //while (t_it != t_pos[v].end())
+      //{
+      //  Tp1 = T+1;
+      //  DELTA = states[*u_it] - states[v];
+      //  if(DELTA >= 0){delta = 2*MAX_Y[T] - states[v];}else{delta = 2*MIN_Y[T] - states[v];}
+      //  delta = delta/((T-*t_it)*(T-*t_it-1));
+      //  K = SP[T] - SP[*t_it] -  (*t_it + 1) * (S1[T] - S1[*t_it]);
         //std::cout << "delta " << delta << " DELTA " << DELTA << " K " << K << std::endl;
 
-        if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
-          {nbnb = nbnb +1;u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
-      }
+        //    if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
+        //    {nbnb = nbnb +1;u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
+
+        //  ++u_it; ++t_it;
+        //}
     }
   }
 
