@@ -337,7 +337,7 @@ void Omega::algoPruning(std::vector< double >& data)
 
   unsigned int Tp1;
   unsigned int nm1 = n-1;
-
+  int nbnb = 0;
   ///
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
@@ -405,13 +405,14 @@ void Omega::algoPruning(std::vector< double >& data)
         //std::cout << "delta " << delta << " DELTA " << DELTA << " K " << K << std::endl;
 
         if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
-          {u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
+          {nbnb =nbnb +1; u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
 
       }
 
     }
   }
 
+  //std::cout << "nbnb " << nbnb << std::endl;
 
   delete [] S1;
   S1 = NULL;
@@ -904,6 +905,8 @@ void Omega::algoPruning2(std::vector< double >& data)
 
   unsigned int Tp1;
   unsigned int nm1 = n-1;
+
+  int nbnb = 0;
   ///
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
@@ -912,6 +915,7 @@ void Omega::algoPruning2(std::vector< double >& data)
   {
     for(unsigned int v = 0; v < p; v++)
     {
+
       /////
       ///// Add last column to explore
       /////
@@ -970,10 +974,12 @@ void Omega::algoPruning2(std::vector< double >& data)
         //std::cout << "delta " << delta << " DELTA " << DELTA << " K " << K << std::endl;
 
         if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
-          {u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
+          {nbnb = nbnb +1;u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
       }
     }
   }
+
+  //std::cout << "nbnb " << nbnb << std::endl;
 
   delete [] S1decay;
   S1decay = NULL;
