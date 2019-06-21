@@ -38,7 +38,7 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null"
   res <- slopeOPtransfer(data, states, penalty, constraint, minAngle, type)
 
   ###Response class slopeOP###
-  response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost)
+  response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - penalty)
   attr(response, "class") <- "slopeOP"
 
   return(response)
