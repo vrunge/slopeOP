@@ -859,15 +859,15 @@ void Omega::algoPruning2(std::vector< double >& data)
 
   double* MAX_Y = new double[n]; //new type of max
   double* MIN_Y = new double[n]; //new type of min
-  for(int i = 0; i < n; i++)
+  for(unsigned int i = 0; i < n; i++)
   {
     MAX_Y[i] = 1.0*data[i];
     MIN_Y[i] = 1.0*data[i];
   }
 
-  for(int i = 0; i < n-1; i++)
+  for(unsigned int i = 0; i < n-1; i++)
   {
-    for(int j = i + 1; j < n-1; j++)
+    for(unsigned int j = i + 1; j < n-1; j++)
     {
       MAX_Y[i] = std::max(S1decay[j+1] - S1decay[i], MAX_Y[i]);
       MIN_Y[i] = std::min(S1decay[j+1] - S1decay[i], MIN_Y[i]);
@@ -899,14 +899,14 @@ void Omega::algoPruning2(std::vector< double >& data)
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
   ///variables for pruning
-  double delta;
-  double DELTA;
-  double K;
+  //double delta;
+  //double DELTA;
+  //double K;
 
-  unsigned int Tp1;
-  unsigned int nm1 = n-1;
+  //unsigned int Tp1;
+  //unsigned int nm1 = n-1;
 
-  int nbnb = 0;
+  //int nbnb = 0;
   ///
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
