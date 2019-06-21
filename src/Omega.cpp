@@ -632,7 +632,7 @@ void Omega::algoUPDOWM(std::vector< double >& data)
   for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
 
   int** SLOPE = new int*[p];
-  for(int i = 0; i < p; i++){SLOPE[i] = new int[n];}
+  for(unsigned int i = 0; i < p; i++){SLOPE[i] = new int[n];}
 
   Costs cost;
   ///
