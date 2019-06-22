@@ -9,7 +9,6 @@
 #include "linalg.hpp"
 #include <algorithm>
 
-
 template<typename Tx, typename Ty>
 struct Point {
     Tx x;
