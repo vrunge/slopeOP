@@ -72,7 +72,7 @@ double cost_linear(vector<T1> &x, vector<T2> &y,
     assert(start >= 0 && end <= x.size());
     
     double cost = 0;
-    for (uint i=start; i<end; i++) {
+    for (unsigned int i=start; i<end; i++) {
         cost = cost + pow((y[i] - (x[i]*coeff+inter)),2);
     }
     if (average) cost = cost/x.size();
@@ -97,7 +97,7 @@ double cost_linear_point(vector<T1> &x, vector<T2> &y,
     assert(start >= 0 && end <= x.size());
     
     double cost = 0;
-    for (uint i=start; i<end; i++) {
+    for (unsigned int i=start; i<end; i++) {
         cost = cost + pow((y[i] - ((x[i]-p.x)*coeff + p.y)),2);
     }
     if (average) cost = cost/x.size();
@@ -112,10 +112,10 @@ double cost_linear_point(vector<T1> &x, vector<T2> &y,
 }
 
 
-vector<uint> backtrack(vector<uint> cp_raw){
+vector<unsigned int> backtrack(vector<unsigned int> cp_raw){
     /* @brief  backtrack the changepoint vector */
-    uint x = cp_raw[cp_raw.size()-1];
-    vector<uint> cp;
+    unsigned int x = cp_raw[cp_raw.size()-1];
+    vector<unsigned int> cp;
     while (x > 0) {
         cp.push_back(x);
         x = cp_raw[x];
@@ -130,13 +130,13 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
     /* detect changepoints with PELT algorithm */
     assert(x.size() == y.size());
     int n = y.size();
-    uint tau;
+    unsigned int tau;
     vector<double> q(n);
-    vector<uint> P(1,0);
-    vector<uint> temp;
+    vector<unsigned int> P(1,0);
+    vector<unsigned int> temp;
     vector<double> coeffs(n); // for result output
     vector<double> inters(n); // for result output
-    vector<uint> cp_raw(n,0);
+    vector<unsigned int> cp_raw(n,0);
     double coeff_temp,inter_temp; // for result output
 
     double coeff,inter,this_cost,q_temp,cp_temp;
@@ -158,7 +158,7 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
 
         // return vector<int>(1,1);
 
-        for (uint i = 0; i<P.size(); i++) {
+        for (unsigned int i = 0; i<P.size(); i++) {
             tau = P[i];
             if (t-tau == 1) continue;
             lin_reg(x,y,&coeff,&inter,tau+1,t+1);
@@ -190,8 +190,8 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
     }
 
     // construct result structure
-    vector<uint> cp = backtrack(cp_raw);
-    vector<uint> cp1(cp);
+    vector<unsigned int> cp = backtrack(cp_raw);
+    vector<unsigned int> cp1(cp);
     cp1.insert(cp1.begin(), 0);
     cp1.push_back(n-1);
     vector<Ty> ys((cp1.size()-1)*2);
@@ -200,7 +200,7 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
     Tx xa, xb;
     Ty ya, yb;
 
-    for (uint i = 0; i<cp1.size()-1; i++) {
+    for (unsigned int i = 0; i<cp1.size()-1; i++) {
         if (i == 0) {
             xa = x[cp1[i]];
         } else {
@@ -227,11 +227,11 @@ PeltResult<Tx,Ty> peltcc(vector<Tx> &x, vector<Ty> &y, double beta) {
     /* detect changepoints with PELT algorithm */
     assert(x.size() == y.size());
     int n = y.size();
-    uint tau;
+    unsigned int tau;
     vector<double> q(n);
-    vector<uint> cp_raw(n,0);
-    vector<uint> P(1,0);
-    vector<uint> temp;
+    vector<unsigned int> cp_raw(n,0);
+    vector<unsigned int> P(1,0);
+    vector<unsigned int> temp;
     vector<Tx> x_trans(y.size());
     vector<Ty> y_trans(y.size());
     vector<Ty> y_end(y.size());
@@ -258,7 +258,7 @@ PeltResult<Tx,Ty> peltcc(vector<Tx> &x, vector<Ty> &y, double beta) {
 
         // return vector<int>(1,1);
 
-        for (uint i = 0; i<P.size(); i++) {
+        for (unsigned int i = 0; i<P.size(); i++) {
             // if (t-tau == 1) continue;
             tau = P[i];
             pt.x = x[tau];
@@ -294,14 +294,14 @@ PeltResult<Tx,Ty> peltcc(vector<Tx> &x, vector<Ty> &y, double beta) {
     }
 
     // construct result structure
-    vector<uint> cp = backtrack(cp_raw);
-    vector<uint> cp1(cp);
+    vector<unsigned int> cp = backtrack(cp_raw);
+    vector<unsigned int> cp1(cp);
     cp1.insert(cp1.begin(),0);
     cp1.push_back(n-1);
     vector<Ty> ys(cp1.size());
     vector<Tx> xs(cp1.size());
 
-    for (uint i = 0; i<cp1.size(); i++) {
+    for (unsigned int i = 0; i<cp1.size(); i++) {
         xs[i] = x[cp1[i]];
         ys[i] = y_end[cp1[i]];
     }
