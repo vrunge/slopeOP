@@ -19,6 +19,7 @@ class Omega
     std::vector< int > GetChangepoints() const;
     std::vector< double > GetParameters() const;
     double GetGlobalCost() const;
+    double GetPruningPower() const;
 
     void algo(std::vector< double >& data);
     void algoChannel(std::vector< double >& data);
@@ -44,6 +45,7 @@ class Omega
     std::vector< int > changepoints; ///vector of changepoints build by fpop (first index of each segment). size c
     std::vector< double > parameters; ///vector of means build by fpop. size c
     double globalCost;
+    double pruningPower;
 };
 
 #endif // OMEGA_H

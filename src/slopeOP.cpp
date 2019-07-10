@@ -29,7 +29,8 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
   List res = List::create(
     _["changepoints"] = omega.GetChangepoints(),
     _["parameters"] = omega.GetParameters(),
-    _["globalCost"] = omega.GetGlobalCost()
+    _["globalCost"] = omega.GetGlobalCost(),
+    _["pruningPower"] = omega.GetPruningPower()
   );
   return res;
 }

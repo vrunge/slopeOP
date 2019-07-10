@@ -12,7 +12,8 @@
 #' 'changepoints' is the vector of changepoints (we give the extremal values of all segments from left to right)
 #' 'states' is the vector of successive states. states[i] is the value we infered at position changepoints[i]
 #' 'globalCost' is a number equal to the global cost of the penalized changepoint problem
-slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null", minAngle = 0, type = "channel")
+#' 'pruningPower' is the percent of values that has been pruned among all the values considered by the minimum
+slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
 {
   ############
   ### STOP ###
@@ -38,7 +39,9 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null"
   res <- slopeOPtransfer(data, states, penalty, constraint, minAngle, type)
 
   ###Response class slopeOP###
-  response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - penalty)
+  if(testMode == FALSE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - penalty)}
+  if(testMode == TRUE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - penalty, pruningPower = res$pruningPower)}
+
   attr(response, "class") <- "slopeOP"
 
   return(response)

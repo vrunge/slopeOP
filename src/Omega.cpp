@@ -3,6 +3,8 @@
 
 #include "Omega.h"
 #include "Costs.h"
+#include "ListPoint.h"
+#include "Point.h"
 
 #include "math.h"
 
@@ -56,6 +58,7 @@ Omega::~Omega()
 std::vector< int > Omega::GetChangepoints() const {return(changepoints);}
 std::vector< double > Omega::GetParameters() const {return(parameters);}
 double Omega::GetGlobalCost() const {return(globalCost);}
+double Omega::GetPruningPower() const {return(pruningPower);}
 
 
 //####### algo #######////####### algo #######////####### algo #######//
@@ -875,12 +878,6 @@ void Omega::algoPruning2(std::vector< double >& data)
   }
 
 
-  std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
-  std::list< unsigned int>* u_pos = new std::list< unsigned int>[p];
-  std::list<unsigned int>::iterator t_it;
-  std::list<unsigned int>::iterator u_it;
-
-
   Costs cost;
   ///
   /// FILL FIRST COLUMN in Q
@@ -896,7 +893,7 @@ void Omega::algoPruning2(std::vector< double >& data)
   /// ALGO
   ///
   double temp_Q = -1;
-  int temp_chpt = -1;
+  unsigned int temp_chpt = 0;
   unsigned int temp_indState = 0;
   ///variables for pruning
   //double delta;
@@ -911,6 +908,18 @@ void Omega::algoPruning2(std::vector< double >& data)
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
   ///
+
+  ListPoint* myList = new ListPoint[p];
+  for(unsigned int q = 0; q < p; q++)
+  {
+    myList[q] = ListPoint(); ///danger. Add elements
+  }
+
+  bool test = true;
+  unsigned int t;
+  unsigned int u;
+
+
   for(unsigned int T = 1; T < n; T++)
   {
     for(unsigned int v = 0; v < p; v++)
@@ -921,35 +930,32 @@ void Omega::algoPruning2(std::vector< double >& data)
       /////
       for(unsigned int w = 0; w < p; w++)
       {
-        u_pos[v].push_back(w);
-        t_pos[v].push_back(T-1);
+        myList[v].addPoint(new Point(w, T-1));
       }
 
       /// FIRST ELEMENT
-      u_it = u_pos[v].begin();
-      t_it = t_pos[v].begin();
+      myList[v].initializeCurrentPosition();
+      u = myList[v].getState();
+      t = myList[v].getTime();
 
-      //std::cout << u_pos[v].size() << " " << t_pos[v].size() << *u_it << *t_it;
+      temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+      temp_indState = u;
+      temp_chpt = t;
+      test = myList[v].move();
 
-      temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty;
-      temp_indState = *u_it;
-      temp_chpt = *t_it;
-
-      u_it = u_pos[v].begin();
-      t_it = t_pos[v].begin();
-      while (t_it != t_pos[v].end())
+      while(test == true)
       {
-        if(temp_Q > Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty)
+        u = myList[v].getState();
+        t = myList[v].getTime();
+        if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
         {
-          temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty;
-          temp_indState = *u_it;
-          temp_chpt = *t_it;
+          temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+          temp_indState = u;
+          temp_chpt = t;
         }
-        ++u_it;
-        ++t_it;
-      }
+        test = myList[v].move();
 
-      //std::cout << " end "<< *u_it << " "<< *t_it << std::endl;
+      }
 
       /////
       ///// Write response
@@ -995,9 +1001,7 @@ void Omega::algoPruning2(std::vector< double >& data)
   MAX_Y = NULL;
   delete [] MIN_Y;
   MIN_Y = NULL;
-  delete [] t_pos;
-  t_pos = NULL;
-  delete [] u_pos;
-  u_pos = NULL;
+  delete [] myList;
+  myList = NULL;
 }
 
