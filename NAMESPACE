@@ -1,5 +1,7 @@
-export(slopeOP,slopeData, linearOP)
+export(slopeOP,slopeData, plot.slopeOP, linearOP)
+S3method(plot, slopeOP)
 importFrom(Rcpp, evalCpp)
 importFrom("stats", "rnorm")
+importFrom("graphics", "plot", "segments")
 useDynLib(slopeOP)
 
