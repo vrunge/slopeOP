@@ -19,7 +19,7 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
   if(type == "null" && constraint == "null"){omega.algo(data);}
   if(type == "channel" && constraint == "null"){omega.algoChannel(data);}
   if(type == "pruning" && constraint == "null"){omega.algoPruning(data);}
-  if(type == "pruning2" && constraint == "null"){omega.algoPruning2(data);}
+  if(type == "pruningMax" && constraint == "null"){omega.algoPruningMax(data);}
 
   //DIFFERENT CONSTRAINTS
   if(constraint == "up"){omega.algoChannelUP(data);}

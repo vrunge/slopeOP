@@ -139,6 +139,7 @@ void Omega::algo(std::vector< double >& data)
       lastChpt[v][T] = temp_chpt;
     }
   }
+  pruning = 1;
 
   delete [] S1;
   S1 = NULL;
@@ -203,6 +204,8 @@ void Omega::algoChannel(std::vector< double >& data)
   double theV = 0;
   unsigned int indexTheV = 0;
 
+  unsigned int nbPosition = 0;
+
   unsigned int zero = 0;
   ///
   /// states u to v -> time position t to T
@@ -242,10 +245,12 @@ void Omega::algoChannel(std::vector< double >& data)
         indexTheV = cost.closestState(theV, states, p);
         }else{indexTheV = u1[T-1];}
 
-        /// std::cout << T << " theV " << theV << "  indexTheV " << indexTheV << "  --u1[t] " << u1[t] << "  u2[t] " << u2[t] << std::endl;
+        ///
         /// explore values between min(u1[t],indexTheV) and max(u2[t],indexTheV)
+        ///
         for(unsigned int u = std::min(u1[t],indexTheV); u < std::max(u2[t],indexTheV) + 1; u++) /////explore colum of states
         {
+          nbPosition = nbPosition + 1;
           if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
           {
             temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
@@ -263,6 +268,9 @@ void Omega::algoChannel(std::vector< double >& data)
       Q[v][T] = temp_Q;
     }
   }
+
+  pruning = 2.0*nbPosition/(1.0*p*p*n*(n-1)); //nbPosition seen / nbPosition total
+
 
   delete [] u1;
   u1 = NULL;
@@ -340,7 +348,7 @@ void Omega::algoPruning(std::vector< double >& data)
 
   unsigned int Tp1;
   unsigned int nm1 = n-1;
-  int nbnb = 0;
+  int nbPosition = 0;
   ///
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
@@ -362,8 +370,6 @@ void Omega::algoPruning(std::vector< double >& data)
       u_it = u_pos[v].begin();
       t_it = t_pos[v].begin();
 
-      //std::cout << u_pos[v].size() << " " << t_pos[v].size() << *u_it << *t_it;
-
       temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty;
       temp_indState = *u_it;
       temp_chpt = *t_it;
@@ -378,12 +384,9 @@ void Omega::algoPruning(std::vector< double >& data)
           temp_indState = *u_it;
           temp_chpt = *t_it;
         }
-
         ++u_it;
         ++t_it;
       }
-
-      //std::cout << " end "<< *u_it << " "<< *t_it << std::endl;
 
       /////
       ///// Write response
@@ -392,30 +395,27 @@ void Omega::algoPruning(std::vector< double >& data)
       lastIndState[v][T] = temp_indState;
       lastChpt[v][T] = temp_chpt;
 
-
       /////
-      ///// PRUNING STEP TO BE DONE
+      ///// PRUNING STEP
       /////
       u_it = u_pos[v].begin();
       t_it = t_pos[v].begin();
-      while (t_it != t_pos[v].end())
+      while(t_it != t_pos[v].end())
       {
+        nbPosition =nbPosition + 1;
         Tp1 = T+1;
         DELTA = states[*u_it] - states[v];
         if(DELTA >= 0){delta = MAX_Y[T] - states[v];}else{delta = MIN_Y[T] - states[v];}
-
         K = SP[T] - SP[*t_it] -  (*t_it + 1) * (S1[T] - S1[*t_it]);
-        //std::cout << "delta " << delta << " DELTA " << DELTA << " K " << K << std::endl;
 
         if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
-          {nbnb =nbnb +1; u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
-
+          {u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
       }
 
     }
   }
 
-  //std::cout << "nbnb " << nbnb << std::endl;
+  pruning = 2.0*nbPosition/(1.0*p*p*n*(n-1)); //nbPosition seen / nbPosition total
 
   delete [] S1;
   S1 = NULL;
@@ -455,7 +455,7 @@ void Omega::backtracking(unsigned int n)
     }
   }
 
-  globalCost = Q[temp_indState][n-1];
+  globalCost = Q[temp_indState][n-1]; ///fill the globalCost Omega variable
   unsigned int temp_chpt = n-1;
 
   while(temp_chpt > 0)
@@ -475,7 +475,6 @@ void Omega::backtracking(unsigned int n)
   std::reverse(parameters.begin(), parameters.end());
 
 }
-
 
 
 
@@ -535,6 +534,8 @@ void Omega::algoChannelUP(std::vector< double >& data)
   double theV = 0;
   unsigned int indexTheV = 0;
 
+  unsigned int nbPosition = 0;
+
   unsigned int zero = 0;
   ///
   /// states u to v -> time position t to T
@@ -573,10 +574,11 @@ void Omega::algoChannelUP(std::vector< double >& data)
         }else{indexTheV = u1[T-1];}
 
         ///
-        /// explore values between min(u1[t],indexTheV) and max(u2[t],indexTheV) + MIN with v
+        /// explore values between std::min(std::min(u1[t],indexTheV), v); u < std::min(std::max(u2[t],indexTheV), v) + 1
         ///
         for(unsigned int u = std::min(std::min(u1[t],indexTheV), v); u < std::min(std::max(u2[t],indexTheV), v) + 1; u++) /////explore colum of states
         {
+          nbPosition = nbPosition + 1;
           if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
           {
             temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
@@ -594,6 +596,8 @@ void Omega::algoChannelUP(std::vector< double >& data)
       Q[v][T] = temp_Q;
     }
   }
+
+  pruning = 2.0*nbPosition/(1.0*p*p*n*(n-1)); //nbPosition seen / nbPosition total
 
   delete [] u1;
   u1 = NULL;
@@ -702,6 +706,8 @@ void Omega::algoUPDOWM(std::vector< double >& data)
     }
   }
 
+  pruning = 1;
+
   delete [] S1;
   S1 = NULL;
   delete [] S2;
@@ -714,8 +720,6 @@ void Omega::algoUPDOWM(std::vector< double >& data)
   SLOPE = NULL;
 
 }
-
-
 
 
 
@@ -806,6 +810,8 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
     }
   }
 
+  pruning = 1;
+
   delete [] S1;
   S1 = NULL;
   delete [] S2;
@@ -832,13 +838,13 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
 
 
 
-//####### algoPruning2 #######////####### algoPruning2 #######////####### algoPruning2 #######//
-//####### algoPruning2 #######////####### algoPruning2 #######////####### algoPruning2 #######//
-//####### algoPruning2 #######////####### algoPruning2 #######////####### algoPruning2 #######//
-//####### algoPruning2 #######////####### algoPruning2 #######////####### algoPruning2 #######//
-//####### algoPruning2 #######////####### algoPruning2 #######////####### algoPruning2 #######//
+//####### algoPruningMax #######////####### algoPruningMax #######////####### algoPruningMax #######//
+//####### algoPruningMax #######////####### algoPruningMax #######////####### algoPruningMax #######//
+//####### algoPruningMax #######////####### algoPruningMax #######////####### algoPruningMax #######//
+//####### algoPruningMax #######////####### algoPruningMax #######////####### algoPruningMax #######//
+//####### algoPruningMax #######////####### algoPruningMax #######////####### algoPruningMax #######//
 
-void Omega::algoPruning2(std::vector< double >& data)
+void Omega::algoPruningMax(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;

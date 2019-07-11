@@ -24,7 +24,7 @@ class Omega
     void algo(std::vector< double >& data);
     void algoChannel(std::vector< double >& data);
     void algoPruning(std::vector< double >& data);
-    void algoPruning2(std::vector< double >& data);
+    void algoPruningMax(std::vector< double >& data);
     void backtracking(unsigned int n);
 
     void algoChannelUP(std::vector< double >& data);
@@ -45,7 +45,7 @@ class Omega
     std::vector< int > changepoints; ///vector of changepoints build by fpop (first index of each segment). size c
     std::vector< double > parameters; ///vector of means build by fpop. size c
     double globalCost;
-    double pruning;
+    double pruning; /// between 0 and 1. 1 if no pruning.
 };
 
 #endif // OMEGA_H
