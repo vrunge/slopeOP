@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "// MIT License\n// Copyright (c) 2019 Vincent Runge\n\n#ifndef OMEGA_H\n#define OMEGA_H\n\n#include <math.h>\n#include<vector>\n\n#include \"Rcpp.h\"\n\n\nclass Omega\n{\n  public:\n    Omega(std::vector< double >& values, double beta, unsigned int n);\n    ~Omega();\n\n    std::vector< int > GetChangepoints() const;\n    std::vector< double > GetParameters() const;\n    double GetGlobalCost() const;\n    double GetPruning() const;\n\n    void algo(std::vector< double >& data);\n    void algoChannel(std::vector< double >& data);\n    void algoPruning(std::vector< double >& data);\n    void algoPruning2(std::vector< double >& data);\n    void backtracking(unsigned int n);\n\n    void algoChannelUP(std::vector< double >& data);\n    void algoUPDOWM(std::vector< double >& data);\n    void algoSMOOTHING(std::vector< double >& data, double minAngle);\n\n  private:\n    double penalty;\n    unsigned int nbStates;\n    double* states;\n\n    double** Q;\n    unsigned int** lastIndState;\n    unsigned int** lastChpt;\n\n\n\n    std::vector< int > changepoints; ///vector of changepoints build by fpop (first index of each segment). size c\n    std::vector< double > parameters; ///vector of means build by fpop. size c\n    double globalCost;\n    double pruning;\n};\n\n#endif // OMEGA_H\n",
+    "created" : 1561449852872.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3320496428",
+    "id" : "2AD04880",
+    "lastKnownWriteTime" : 1562831215,
+    "last_content_update" : 1562831215493,
+    "path" : "C:/slopeOP/src/Omega.h",
+    "project_path" : "src/Omega.h",
+    "properties" : {
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "h"
+}
