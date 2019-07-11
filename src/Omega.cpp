@@ -58,7 +58,7 @@ Omega::~Omega()
 std::vector< int > Omega::GetChangepoints() const {return(changepoints);}
 std::vector< double > Omega::GetParameters() const {return(parameters);}
 double Omega::GetGlobalCost() const {return(globalCost);}
-double Omega::GetPruningPower() const {return(pruningPower);}
+double Omega::GetPruning() const {return(pruning);}
 
 
 //####### algo #######////####### algo #######////####### algo #######//

@@ -6,7 +6,7 @@
 #include <iostream>
 #include <assert.h>
 #include <cmath>
-#include "linalg.hpp"
+#include "linalg.h"
 #include <algorithm>
 
 template<typename Tx, typename Ty>
@@ -34,7 +34,7 @@ struct PeltResult {
     // void operator=(PeltResult<Tx,Ty> pr) {
     //     cp = pr.cp;
     //     x = pr.x;
-    //     y = pr.y; 
+    //     y = pr.y;
     //     cost = pr.cost;
     // }
 };
@@ -69,7 +69,7 @@ double cost_linear(vector<T1> &x, vector<T2> &y,
     /* calculate the sum of square errors between y and x*coeff+inter */
     assert(y.size() == x.size());
     assert(start >= 0 && end <= x.size());
-    
+
     double cost = 0;
     for (unsigned int i=start; i<end; i++) {
         cost = cost + pow((y[i] - (x[i]*coeff+inter)),2);
@@ -94,7 +94,7 @@ double cost_linear_point(vector<T1> &x, vector<T2> &y,
     /* calculate the sum of square errors between y and x*coeff+inter */
     assert(y.size() == x.size());
     assert(start >= 0 && end <= x.size());
-    
+
     double cost = 0;
     for (unsigned int i=start; i<end; i++) {
         cost = cost + pow((y[i] - ((x[i]-p.x)*coeff + p.y)),2);
@@ -128,14 +128,14 @@ template<typename Tx, typename Ty>
 PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
     /* detect changepoints with PELT algorithm */
     assert(x.size() == y.size());
-    int n = y.size();
+    unsigned int n = y.size();
     unsigned int tau;
     vector<double> q(n);
     vector<unsigned int> P(1,0);
     vector<unsigned int> temp;
     vector<double> coeffs(n); // for result output
     vector<double> inters(n); // for result output
-    vector<unsigned int> cp_raw(n,0);
+    vector<unsigned int> cp_raw(n, 0);
     double coeff_temp,inter_temp; // for result output
 
     double coeff,inter,this_cost,q_temp,cp_temp;
@@ -144,7 +144,7 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
 
     for (size_t t=1; t<n; ++t) {
         // possible changepoint @ t
-        
+
         lin_reg(x,y,&coeff,&inter,0,t+1);
         q_temp = cost_linear(x,y,coeff,inter,0,t+1);
         // cp_temp = 0;
@@ -152,7 +152,7 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
         q_new[0] = q_temp;
         coeff_temp = coeff; // for result output
         inter_temp = inter; // for result output
-        
+
 
 
         // return vector<int>(1,1);
@@ -184,7 +184,7 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
             }
         }
         temp.push_back(t);
-        P = temp;       
+        P = temp;
         // printv(P);
     }
 
@@ -205,12 +205,12 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
         } else {
             xa = x[cp1[i]] + 1;
         }
-            
+
         xb = x[cp1[i+1]];
-            
+
         ya = coeffs[cp1[i+1]]*xa + inters[cp1[i+1]];
         yb = coeffs[cp1[i+1]]*xb + inters[cp1[i+1]];
-        
+
         xs[i*2] = xa;
         xs[i*2+1] = xb;
         ys[i*2] = ya;
@@ -225,7 +225,7 @@ template<typename Tx, typename Ty>
 PeltResult<Tx,Ty> peltcc(vector<Tx> &x, vector<Ty> &y, double beta) {
     /* detect changepoints with PELT algorithm */
     assert(x.size() == y.size());
-    int n = y.size();
+    unsigned int n = y.size();
     unsigned int tau;
     vector<double> q(n);
     vector<unsigned int> cp_raw(n,0);
@@ -244,7 +244,7 @@ PeltResult<Tx,Ty> peltcc(vector<Tx> &x, vector<Ty> &y, double beta) {
 
     for (size_t t=1; t<n; ++t) {
         // possible changepoint @ t
-        
+
         lin_reg(x,y,&coeff,&inter,0,t+1);
         q_temp = cost_linear(x,y,coeff,inter,0,t+1);
         cp_temp = 0;
@@ -287,9 +287,9 @@ PeltResult<Tx,Ty> peltcc(vector<Tx> &x, vector<Ty> &y, double beta) {
             }
         }
         temp.push_back(t);
-        P = temp;       
+        P = temp;
         // printv(P);
-        
+
     }
 
     // construct result structure
