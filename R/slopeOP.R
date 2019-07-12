@@ -78,23 +78,23 @@ slopeData <- function(index = c(0), states = c(0), noise = 0)
 
 #' plot.slopeOP
 #' @description Plot the result of the slopeOP function with the data
-#' @param res a slopeOP class object
+#' @param x a slopeOP class object
+#' @param ... Other parameters
 #' @param data the data from which we get res
 #' @param chpt vector of changepoints of the model
 #' @param states vector of states of the model
-#' @param ... Other parameters
 #' @return plot data and the inferred slopeOP result
-plot.slopeOP <- function(res, data, chpt = NULL, states = NULL,...)
+plot.slopeOP <- function(x, ..., data, chpt = NULL, states = NULL)
 {
   n <- 1:length(data)
-  p <- length(res$changepoints)
-  x <- res$changepoints
-  y <- res$parameters
+  p <- length(x$changepoints)
+  xbis <- x$changepoints
+  y <- x$parameters
 
   plot(1:length(data), data, pch = '+')
   for(i in 1:(p-1))
   {
-    segments(x[i], y[i], x[i+1], y[i+1], col= 2, lty = 1, lwd = 5)
+    segments(xbis[i], y[i], xbis[i+1], y[i+1], col= 2, lty = 1, lwd = 5)
   }
   if(length(chpt) > 0 && length(chpt) == length(states))
   {

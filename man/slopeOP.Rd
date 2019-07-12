@@ -4,9 +4,8 @@
 \alias{slopeOP}
 \title{slopeOP}
 \usage{
-slopeOP(data = c(0), states = c(0), penalty = 0,
-  constraint = "null", minAngle = 0, type = "channel",
-  testMode = FALSE)
+slopeOP(data = c(0), states = c(0), penalty = 0, constraint = "null",
+  minAngle = 0, type = "channel", testMode = FALSE)
 }
 \arguments{
 \item{data}{vector of data to segment}

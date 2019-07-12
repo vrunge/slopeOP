@@ -4,18 +4,18 @@
 \alias{plot.slopeOP}
 \title{plot.slopeOP}
 \usage{
-\method{plot}{slopeOP}(res, data, chpt = NULL, states = NULL, ...)
+\method{plot}{slopeOP}(x, ..., data, chpt = NULL, states = NULL)
 }
 \arguments{
-\item{res}{a slopeOP class object}
+\item{x}{a slopeOP class object}
+
+\item{...}{Other parameters}
 
 \item{data}{the data from which we get res}
 
 \item{chpt}{vector of changepoints of the model}
 
 \item{states}{vector of states of the model}
-
-\item{...}{Other parameters}
 }
 \value{
 plot data and the inferred slopeOP result

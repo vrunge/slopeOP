@@ -41,7 +41,16 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
 
 // MIT License
 // Copyright (c) 2019 Marco Pascucci
-
+//' @title linearOP
+//' @description
+//' An optimal partitioning algorithm with a linear fit for each segment
+//' @name linearOP
+//' @param x a vector (see data)
+//' @param data a vector defining the data points (x[i], data[i])
+//' @param penalty the penalty for introducing a new segment
+//' @param cc a boolean to impose a continuity constraint
+//'
+//' @export
 // [[Rcpp::export]]
 List linearOP(std::vector<double> x, std::vector<double> data, double penalty, bool cc = false)
 {

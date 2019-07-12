@@ -200,7 +200,7 @@
                 "column" : 13,
                 "file" : "C:/slopeOP/src/Omega.cpp",
                 "kind" : 7,
-                "line" : 157,
+                "line" : 158,
                 "name" : "algoChannel(std::vector<double> &)",
                 "parent_name" : "Omega",
                 "usr" : "c:@C@Omega@F@algoChannel#&$@N@std@C@vector>#d#$@N@std@C@allocator>#d#"
@@ -209,7 +209,7 @@
                 "column" : 13,
                 "file" : "C:/slopeOP/src/Omega.cpp",
                 "kind" : 7,
-                "line" : 287,
+                "line" : 295,
                 "name" : "algoPruning(std::vector<double> &)",
                 "parent_name" : "Omega",
                 "usr" : "c:@C@Omega@F@algoPruning#&$@N@std@C@vector>#d#$@N@std@C@allocator>#d#"
@@ -227,7 +227,7 @@
                 "column" : 13,
                 "file" : "C:/slopeOP/src/Omega.cpp",
                 "kind" : 7,
-                "line" : 489,
+                "line" : 488,
                 "name" : "algoChannelUP(std::vector<double> &)",
                 "parent_name" : "Omega",
                 "usr" : "c:@C@Omega@F@algoChannelUP#&$@N@std@C@vector>#d#$@N@std@C@allocator>#d#"
@@ -236,7 +236,7 @@
                 "column" : 13,
                 "file" : "C:/slopeOP/src/Omega.cpp",
                 "kind" : 7,
-                "line" : 619,
+                "line" : 623,
                 "name" : "algoUPDOWM(std::vector<double> &)",
                 "parent_name" : "Omega",
                 "usr" : "c:@C@Omega@F@algoUPDOWM#&$@N@std@C@vector>#d#$@N@std@C@allocator>#d#"
@@ -245,7 +245,7 @@
                 "column" : 13,
                 "file" : "C:/slopeOP/src/Omega.cpp",
                 "kind" : 7,
-                "line" : 728,
+                "line" : 732,
                 "name" : "algoSMOOTHING(std::vector<double> &, double)",
                 "parent_name" : "Omega",
                 "usr" : "c:@C@Omega@F@algoSMOOTHING#&$@N@std@C@vector>#d#$@N@std@C@allocator>#d#d#"
@@ -254,14 +254,14 @@
                 "column" : 13,
                 "file" : "C:/slopeOP/src/Omega.cpp",
                 "kind" : 7,
-                "line" : 841,
-                "name" : "algoPruning2(std::vector<double> &)",
+                "line" : 847,
+                "name" : "algoPruningMax(std::vector<double> &)",
                 "parent_name" : "Omega",
-                "usr" : "c:@C@Omega@F@algoPruning2#&$@N@std@C@vector>#d#$@N@std@C@allocator>#d#"
+                "usr" : "c:@C@Omega@F@algoPruningMax#&$@N@std@C@vector>#d#$@N@std@C@allocator>#d#"
             }
         ],
         "file" : "C:/slopeOP/src/Omega.cpp",
-        "file_last_write" : 1562831224
+        "file_last_write" : 1562930058
     },
     {
         "definitions" : [
@@ -276,7 +276,7 @@
             }
         ],
         "file" : "C:/slopeOP/src/Omega.h",
-        "file_last_write" : 1562831215
+        "file_last_write" : 1562930058
     },
     {
         "definitions" : [
@@ -524,13 +524,13 @@
                 "column" : 6,
                 "file" : "C:/slopeOP/src/slopeOP.cpp",
                 "kind" : 6,
-                "line" : 46,
+                "line" : 55,
                 "name" : "linearOP(std::vector<double>, std::vector<double>, double, bool)",
                 "parent_name" : "",
                 "usr" : "c:@F@linearOP#$@N@std@C@vector>#d#$@N@std@C@allocator>#d#S0_#d#b#"
             }
         ],
         "file" : "C:/slopeOP/src/slopeOP.cpp",
-        "file_last_write" : 1562835053
+        "file_last_write" : 1562934329
     }
 ]

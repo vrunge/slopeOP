@@ -5,6 +5,16 @@ slopeOPtransfer <- function(data, states, penalty, constraint = "null", minAngle
     .Call('_slopeOP_slopeOPtransfer', PACKAGE = 'slopeOP', data, states, penalty, constraint, minAngle, type)
 }
 
+#' @title linearOP
+#' @description
+#' An optimal partitioning algorithm with a linear fit for each segment
+#' @name linearOP
+#' @param x a vector (see data)
+#' @param data a vector defining the data points (x[i], data[i])
+#' @param penalty the penalty for introducing a new segment
+#' @param cc a boolean to impose a continuity constraint
+#'
+#' @export
 linearOP <- function(x, data, penalty, cc = FALSE) {
     .Call('_slopeOP_linearOP', PACKAGE = 'slopeOP', x, data, penalty, cc)
 }
