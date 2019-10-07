@@ -27,8 +27,9 @@ class Omega
     void algoPruningMax(std::vector< double >& data);
     void backtracking(unsigned int n);
 
-    void algoChannelUP(std::vector< double >& data);
-    void algoUPDOWM(std::vector< double >& data);
+    ///////////////
+    void algoISOTONIC(std::vector< double >& data);
+    void algoUNIMODAL(std::vector< double >& data);
     void algoSMOOTHING(std::vector< double >& data, double minAngle);
 
   private:
@@ -39,8 +40,6 @@ class Omega
     double** Q;
     unsigned int** lastIndState;
     unsigned int** lastChpt;
-
-
 
     std::vector< int > changepoints; ///vector of changepoints build by fpop (first index of each segment). size c
     std::vector< double > parameters; ///vector of means build by fpop. size c

@@ -10,17 +10,17 @@ slopeOP(data = c(0), states = c(0), penalty = 0, constraint = "null",
 \arguments{
 \item{data}{vector of data to segment}
 
-\item{states}{vector of states = set of accessible starting/ending values for segments in increasing order}
+\item{states}{vector of states = set of accessible starting/ending values for segments in increasing order.}
 
 \item{penalty}{the penalty value (a positive number)}
 
-\item{constraint}{string defining a constraint : "null", "up", "updown" or "smoothing"}
+\item{constraint}{string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"}
 
 \item{minAngle}{a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"}
 
 \item{type}{string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property or "pruning" = pelt-type property}
 
-\item{testMode}{a boolean, if true the function also returns the percent of elements to scan (= ratio number scanned elements vs. scanned elements if no pruning)}
+\item{testMode}{a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)}
 }
 \value{
 a list of three elements  = (changepoints, state parameters, global cost)
@@ -31,5 +31,5 @@ a list of three elements  = (changepoints, state parameters, global cost)
 }
 \description{
 Optimal partitioning algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values).
-The algorithm takes into account a continuity constraint between successive segments and infers a continuous piecewise linear signal
+The algorithm takes into account a continuity constraint between successive segments and infers a continuous piecewise linear signal.
 }

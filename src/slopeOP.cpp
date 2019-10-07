@@ -22,8 +22,8 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
   if(type == "pruningMax" && constraint == "null"){omega.algoPruningMax(data);}
 
   //DIFFERENT CONSTRAINTS
-  if(constraint == "up"){omega.algoChannelUP(data);}
-  if(constraint == "updown"){omega.algoUPDOWM(data);}
+  if(constraint == "isotonic"){omega.algoISOTONIC(data);}
+  if(constraint == "unimodal"){omega.algoUNIMODAL(data);}
   if(constraint == "smoothing"){omega.algoSMOOTHING(data, minAngle);}
 
   omega.backtracking(data.size());

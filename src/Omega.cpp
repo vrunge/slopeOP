@@ -478,14 +478,13 @@ void Omega::backtracking(unsigned int n)
 
 
 
-//####### algoChannelUP #######////####### algoChannelUP #######////####### algoChannelUP #######//
-//####### algoChannelUP #######////####### algoChannelUP #######////####### algoChannelUP #######//
-//####### algoChannelUP #######////####### algoChannelUP #######////####### algoChannelUP #######//
-//####### algoChannelUP #######////####### algoChannelUP #######////####### algoChannelUP #######//
-//####### algoChannelUP #######////####### algoChannelUP #######////####### algoChannelUP #######//
+//####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
+//####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
+//####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
+//####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
+//####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
 
-
-void Omega::algoChannelUP(std::vector< double >& data)
+void Omega::algoISOTONIC(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
@@ -614,13 +613,13 @@ void Omega::algoChannelUP(std::vector< double >& data)
 
 
 
-//####### algoUPDOWN #######////####### algoUPDOWN #######////####### algoUPDOWN #######//
-//####### algoUPDOWN #######////####### algoUPDOWN #######////####### algoUPDOWN #######//
-//####### algoUPDOWN #######////####### algoUPDOWN #######////####### algoUPDOWN #######//
-//####### algoUPDOWN #######////####### algoUPDOWN #######////####### algoUPDOWN #######//
-//####### algoUPDOWN #######////####### algoUPDOWN #######////####### algoUPDOWN #######//
+//####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
+//####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
+//####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
+//####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
+//####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
 
-void Omega::algoUPDOWM(std::vector< double >& data)
+void Omega::algoUNIMODAL(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;

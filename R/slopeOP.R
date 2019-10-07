@@ -1,14 +1,14 @@
 
 #' slopeOP
 #' @description Optimal partitioning algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values).
-#' The algorithm takes into account a continuity constraint between successive segments and infers a continuous piecewise linear signal
+#' The algorithm takes into account a continuity constraint between successive segments and infers a continuous piecewise linear signal.
 #' @param data vector of data to segment
-#' @param states vector of states = set of accessible starting/ending values for segments in increasing order
+#' @param states vector of states = set of accessible starting/ending values for segments in increasing order.
 #' @param penalty the penalty value (a positive number)
-#' @param constraint string defining a constraint : "null", "up", "updown" or "smoothing"
+#' @param constraint string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"
 #' @param minAngle a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"
 #' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property or "pruning" = pelt-type property
-#' @param testMode a boolean, if true the function also returns the percent of elements to scan (= ratio number scanned elements vs. scanned elements if no pruning)
+#' @param testMode a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)
 #' @return a list of three elements  = (changepoints, state parameters, global cost)
 #' 'changepoints' is the vector of changepoints (we give the extremal values of all segments from left to right)
 #' 'states' is the vector of successive states. states[i] is the value we infered at position changepoints[i]
@@ -27,8 +27,8 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null"
   if(!is.double(minAngle)){stop('minAngle is not a double.')}
   if(minAngle < 0 || minAngle > 180){stop('minAngle must lie between 0 and 180')}
 
-  if(constraint != "null" && constraint != "up" && constraint != "updown" && constraint != "smoothing")
-    {stop('Arugment "constraint" not appropriate. Choose among "null", "up", "down" and "smoothing"')}
+  if(constraint != "null" && constraint != "isotonic" && constraint != "unimodal" && constraint != "smoothing")
+    {stop('Arugment "constraint" not appropriate. Choose among "null", "isotonic", "unimodal" and "smoothing"')}
   if(type != "null" && type != "channel" && type != "pruning" && type != "pruning2")
     {stop('Arugment "type" not appropriate. Choose among "null", "channel" and "pruning"')}
 

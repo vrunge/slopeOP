@@ -9,7 +9,7 @@ linearOP(x, data, penalty, cc = FALSE)
 \arguments{
 \item{x}{a vector (see data)}
 
-\item{data}{a vector defining the data point (x[i], data[i])}
+\item{data}{a vector defining the data points (x[i], data[i])}
 
 \item{penalty}{the penalty for introducing a new segment}
 
