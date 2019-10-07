@@ -216,10 +216,12 @@ void Omega::algoChannel(std::vector< double >& data)
     /// FILL u1 and u2 vectors
     ///
     theStart = 0;
-    while(theStart < (p - 1) && Q[theStart][T - 1] > Q[theStart + 1][T - 1]){theStart = theStart + 1;}
+    while(theStart < (p - 1) && Q[theStart][T - 1] > Q[theStart + 1][T - 1])
+      {theStart = theStart + 1;}
     u1[T-1] = theStart;
     theEnd = p - 1;
-    while(theEnd > 0 && Q[theEnd][T - 1] > Q[theEnd - 1][T - 1]){theEnd = theEnd - 1;}
+    while(theEnd > 0 && Q[theEnd][T - 1] > Q[theEnd - 1][T - 1])
+      {theEnd = theEnd - 1;}
     u2[T-1] = theEnd;
 
 
@@ -239,10 +241,15 @@ void Omega::algoChannel(std::vector< double >& data)
         /////
         ///// FIND the minimum of the cost in start state
         /////
-        if(t < T-1){
-        theV = cost.vhat(states[v], t, T, S1[t], S1[T], SP[t], SP[T]);
-        indexTheV = cost.closestState(theV, states, p);
-        }else{indexTheV = u1[T-1];}
+        if(t < (T-1))
+        {
+          theV = cost.vhat(states[v], t, T, S1[t], S1[T], SP[t], SP[T]);
+          indexTheV = cost.closestState(theV, states, p);
+        }
+        else
+        {
+          indexTheV = u1[T-1];
+        }
 
         ///
         /// explore values between min(u1[t],indexTheV) and max(u2[t],indexTheV)
@@ -321,7 +328,6 @@ void Omega::algoPruning(std::vector< double >& data)
   std::list< unsigned int>* u_pos = new std::list< unsigned int>[p];
   std::list<unsigned int>::iterator t_it;
   std::list<unsigned int>::iterator u_it;
-
 
   Costs cost;
   ///
@@ -475,8 +481,6 @@ void Omega::backtracking(unsigned int n)
 
 }
 
-
-
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
@@ -531,9 +535,7 @@ void Omega::algoISOTONIC(std::vector< double >& data)
   unsigned int theEnd;
   double theV = 0;
   unsigned int indexTheV = 0;
-
   unsigned int nbPosition = 0;
-
   unsigned int zero = 0;
   ///
   /// states u to v -> time position t to T
@@ -545,10 +547,12 @@ void Omega::algoISOTONIC(std::vector< double >& data)
     /// FILL u1 and u2 vectors
     ///
     theStart = 0;
-    while(theStart < (p - 1) && Q[theStart][T - 1] > Q[theStart + 1][T - 1]){theStart = theStart + 1;}
+    while(theStart < (p - 1) && Q[theStart][T - 1] > Q[theStart + 1][T - 1])
+      {theStart = theStart + 1;}
     u1[T-1] = theStart;
     theEnd = p - 1;
-    while(theEnd > 0 && Q[theEnd][T - 1] > Q[theEnd - 1][T - 1]){theEnd = theEnd - 1;}
+    while(theEnd > 0 && Q[theEnd][T - 1] > Q[theEnd - 1][T - 1])
+      {theEnd = theEnd - 1;}
     u2[T-1] = theEnd;
 
 
@@ -566,10 +570,15 @@ void Omega::algoISOTONIC(std::vector< double >& data)
         /////
         ///// FIND the minimum of the cost in start state
         /////
-        if(t < T-1){
+        if(t < T-1)
+        {
           theV = cost.vhat(states[v], t, T, S1[t], S1[T], SP[t], SP[T]);
           indexTheV = cost.closestState(theV, states, p);
-        }else{indexTheV = u1[T-1];}
+        }
+        else
+        {
+          indexTheV = u1[T-1];
+        }
 
         ///
         /// explore values between std::min(std::min(u1[t],indexTheV), v); u < std::min(std::max(u2[t],indexTheV), v) + 1
@@ -820,22 +829,6 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //####### algoPruningMax #######////####### algoPruningMax #######////####### algoPruningMax #######//
 //####### algoPruningMax #######////####### algoPruningMax #######////####### algoPruningMax #######//
 //####### algoPruningMax #######////####### algoPruningMax #######////####### algoPruningMax #######//
@@ -881,7 +874,6 @@ void Omega::algoPruningMax(std::vector< double >& data)
     }
   }
 
-
   Costs cost;
   ///
   /// FILL FIRST COLUMN in Q
@@ -899,15 +891,7 @@ void Omega::algoPruningMax(std::vector< double >& data)
   double temp_Q = -1;
   unsigned int temp_chpt = 0;
   unsigned int temp_indState = 0;
-  ///variables for pruning
-  //double delta;
-  //double DELTA;
-  //double K;
 
-  //unsigned int Tp1;
-  //unsigned int nm1 = n-1;
-
-  //int nbnb = 0;
   ///
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
@@ -928,7 +912,6 @@ void Omega::algoPruningMax(std::vector< double >& data)
   {
     for(unsigned int v = 0; v < p; v++)
     {
-
       /////
       ///// Add last column to explore
       /////
@@ -968,30 +951,9 @@ void Omega::algoPruningMax(std::vector< double >& data)
       lastIndState[v][T] = temp_indState;
       lastChpt[v][T] = temp_chpt;
 
-
-      ////////////////////////
-      ///// PRUNING STEP /////
-      ////////////////////////
-      //u_it = u_pos[v].begin();
-      //t_it = t_pos[v].begin();
-      //while (t_it != t_pos[v].end())
-      //{
-      //  Tp1 = T+1;
-      //  DELTA = states[*u_it] - states[v];
-      //  if(DELTA >= 0){delta = 2*MAX_Y[T] - states[v];}else{delta = 2*MIN_Y[T] - states[v];}
-      //  delta = delta/((T-*t_it)*(T-*t_it-1));
-      //  K = SP[T] - SP[*t_it] -  (*t_it + 1) * (S1[T] - S1[*t_it]);
-        //std::cout << "delta " << delta << " DELTA " << DELTA << " K " << K << std::endl;
-
-        //    if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
-        //    {nbnb = nbnb +1;u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
-
-        //  ++u_it; ++t_it;
-        //}
     }
   }
 
-  //std::cout << "nbnb " << nbnb << std::endl;
 
   delete [] S1decay;
   S1decay = NULL;

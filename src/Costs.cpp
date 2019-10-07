@@ -1,9 +1,8 @@
 // MIT License
 // Copyright (c) 2019 Vincent Runge
 
-#include "Costs.h"
 #include<iostream>
-
+#include "Costs.h"
 #include "math.h"
 
 //####### constructor #######////####### constructor #######////####### constructor #######//
@@ -58,8 +57,8 @@ bool Costs::angleTest(unsigned int& t1, unsigned int& t2, unsigned int& t3, doub
   double angle2 = atan2(v3 - v2, 1.0*(t3 - t2));
 
   double theta = fabs(angle1 - angle2) *  180.0 / M_PI; // in degree
-  if(theta <= (180-minAngle)){response = true;}
-  //std::cout << " angle1 " << angle1 *  180.0 / M_PI  << " angle2 " << angle2*  180.0 / M_PI << " t1 " << t1 << " v1 " << v1 << " t2 " << t2 << " v2 " << v2 << " t3 " << t3 << " v3 " << v3 << std::endl;
+  if(theta <= (180 - minAngle)){response = true;}
+  std::cout << " angle1 " << angle1 *  180.0 / M_PI  << " angle2 " << angle2*  180.0 / M_PI << " t1 " << t1 << " v1 " << v1 << " t2 " << t2 << " v2 " << v2 << " t3 " << t3 << " v3 " << v3 << std::endl;
 
   return(response);
 }
