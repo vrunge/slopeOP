@@ -2,11 +2,10 @@
 // Copyright (c) 2019 Vincent Runge
 
 #include "Omega.h"
+
 #include "Costs.h"
 #include "ListPoint.h"
 #include "Point.h"
-
-#include "math.h"
 
 #include <algorithm> // std::reverse // std::min // std::max
 #include<iostream>

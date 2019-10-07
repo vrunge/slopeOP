@@ -8,7 +8,7 @@
 #include<vector>
 
 #include "Rcpp.h"
-
+#include "math.h"
 
 class Omega
 {

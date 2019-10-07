@@ -138,7 +138,8 @@ PeltResult<Tx,Ty> pelt(vector<Tx> &x, vector<Ty> &y, double beta) {
     vector<unsigned int> cp_raw(n, 0);
     double coeff_temp,inter_temp; // for result output
 
-    double coeff,inter,this_cost,q_temp,cp_temp;
+    double coeff,inter,this_cost,q_temp;
+    double cp_temp = 0;
     vector<double> q_new;
     // cp_raw[0] = 0;
 
