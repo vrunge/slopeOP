@@ -58,7 +58,6 @@ bool Costs::angleTest(unsigned int& t1, unsigned int& t2, unsigned int& t3, doub
 
   double theta = fabs(angle1 - angle2) *  180.0 / M_PI; // in degree
   if(theta <= (180 - minAngle)){response = true;}
-  std::cout << " angle1 " << angle1 *  180.0 / M_PI  << " angle2 " << angle2*  180.0 / M_PI << " t1 " << t1 << " v1 " << v1 << " t2 " << t2 << " v2 " << v2 << " t3 " << t3 << " v3 " << v3 << std::endl;
 
   return(response);
 }
