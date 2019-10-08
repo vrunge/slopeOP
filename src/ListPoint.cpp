@@ -72,8 +72,8 @@ bool ListPoint::move()
 
 void ListPoint::show()
 {
-  std::cout << "State " << getState() << "  Time " << getTime() << std::endl;
-   while(move() == true){std::cout << "State " << getState() << "  Time " << getTime() << std::endl;}
+  //std::cout << "State " << getState() << "  Time " << getTime() << std::endl;
+  // while(move() == true){std::cout << "State " << getState() << "  Time " << getTime() << std::endl;}
 }
 
 

@@ -407,22 +407,33 @@ void Omega::algoPruning(std::vector< double >& data)
       lastIndState[v][T] = temp_indState;
       lastChpt[v][T] = temp_chpt;
 
-      /////
-      ///// PRUNING STEP
-      /////
+      ////////////////////////
+      ///// PRUNING STEP /////
+      ////////////////////////
       u_it = u_pos[v].begin();
       t_it = t_pos[v].begin();
+
       while(t_it != t_pos[v].end())
       {
         Tp1 = T+1;
         DELTA = states[*u_it] - states[v];
-        if(DELTA >= 0){delta = MAX_Y[T] - states[v];}else{delta = MIN_Y[T] - states[v];}
+        if(DELTA >= 0)
+        {
+          delta = MAX_Y[T] - states[v];
+        }
+        else
+        {
+          delta = MIN_Y[T] - states[v];
+        }
         K = SP[T] - SP[*t_it] -  (*t_it + 1) * (S1[T] - S1[*t_it]);
 
         if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
-          {u_it = u_pos[v].erase(u_it); t_it = t_pos[v].erase(t_it);}else{++u_it; ++t_it;}
+        {
+          u_it = u_pos[v].erase(u_it);
+          t_it = t_pos[v].erase(t_it);
+        }
+        else{++u_it; ++t_it;}
       }
-
     }
   }
 
@@ -633,7 +644,6 @@ void Omega::backtracking(unsigned int n)
   ///reverse the vector
   std::reverse(changepoints.begin(), changepoints.end());
   std::reverse(parameters.begin(), parameters.end());
-
 }
 
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
@@ -641,6 +651,7 @@ void Omega::backtracking(unsigned int n)
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
+//channel pruning
 
 void Omega::algoISOTONIC(std::vector< double >& data)
 {
@@ -675,6 +686,7 @@ void Omega::algoISOTONIC(std::vector< double >& data)
   ///
   /// ALGO
   ///
+  double temp_cost = 0;
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
@@ -706,6 +718,7 @@ void Omega::algoISOTONIC(std::vector< double >& data)
     while(theStart < (p - 1) && Q[theStart][T - 1] > Q[theStart + 1][T - 1])
       {theStart = theStart + 1;}
     u1[T-1] = theStart;
+
     theEnd = p - 1;
     while(theEnd > 0 && Q[theEnd][T - 1] > Q[theEnd - 1][T - 1])
       {theEnd = theEnd - 1;}
@@ -742,9 +755,10 @@ void Omega::algoISOTONIC(std::vector< double >& data)
         for(unsigned int u = std::min(std::min(u1[t],indexTheV), v); u < std::min(std::max(u2[t],indexTheV), v) + 1; u++) /////explore column of states
         {
           nbPosition = nbPosition + 1;
-          if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
+          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+          if(temp_Q > temp_cost)
           {
-            temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+            temp_Q = temp_cost;
             temp_indState = u;
             temp_chpt = t;
           }
@@ -782,6 +796,7 @@ void Omega::algoISOTONIC(std::vector< double >& data)
 //####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
 //####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
 //####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
+// NO PRUNING
 
 void Omega::algoUNIMODAL(std::vector< double >& data)
 {
@@ -819,6 +834,7 @@ void Omega::algoUNIMODAL(std::vector< double >& data)
   ///
   /// ALGO
   ///
+  double temp_cost = 0;
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
@@ -846,9 +862,10 @@ void Omega::algoUNIMODAL(std::vector< double >& data)
         {
           if(!(u < v && SLOPE[u][t] == -1))
           {
-            if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
+            temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+            if(temp_Q > temp_cost)
             {
-              temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+              temp_Q = temp_cost;
               temp_indState = u;
               temp_chpt = t;
             }
@@ -891,6 +908,7 @@ void Omega::algoUNIMODAL(std::vector< double >& data)
 //####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
 //####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
 //####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
+// NO PRUNING
 
 void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
 {
@@ -924,6 +942,7 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
   ///
   /// ALGO
   ///
+  double temp_cost = 0;
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
@@ -952,15 +971,15 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
           //std::cout << "-- " << lastChpt[u][t] << " -- ";
           if(cost.angleTest(lastChpt[u][t], t, T, states[lastIndState[u][t]], states[u], states[v], minAngle))
           {
-            if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
+            temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+            if(temp_Q > temp_cost)
             {
-              temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+              temp_Q = temp_cost;
               temp_indState = u;
               temp_chpt = t;
             }
           }
         }
-
 
       }
       /////
@@ -969,7 +988,6 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
       Q[v][T] = temp_Q;
       lastIndState[v][T] = temp_indState;
       lastChpt[v][T] = temp_chpt;
-
     }
   }
 
@@ -982,4 +1000,3 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
   delete [] SP;
   SP = NULL;
 }
-

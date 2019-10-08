@@ -75,7 +75,10 @@ bool Costs::pruningTest(unsigned int& tau, unsigned int& t, unsigned int& testT,
   double res = (delta - (DELTA/3.0))*(testT+1) - (v + delta)*(t+2) + (v + (DELTA/3.0))*(tau+1) + ((2*K)+ (DELTA/6.0))/(t-tau);
   if(DELTA > 0 && res <= 0){response = true;}
   if(DELTA < 0 && res >= 0){response = true;}
-  if(DELTA == 0){response = false;} /// to be done
+  if(DELTA == 0)
+  {
+    response = true; //we only need the PELT-type inequality to prune
+  }
   return(response);
 }
 
