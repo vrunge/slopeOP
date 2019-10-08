@@ -98,6 +98,7 @@ void Omega::algo(std::vector< double >& data)
   ///
   /// ALGO
   ///
+  double temp_cost = 0;
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
@@ -122,9 +123,10 @@ void Omega::algo(std::vector< double >& data)
       {
         for(unsigned int u = 0; u < p; u++) /////explore colum of states
         {
-          if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
+          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+          if(temp_Q > temp_cost)
           {
-            temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+            temp_Q = temp_cost;
             temp_indState = u;
             temp_chpt = t;
           }
