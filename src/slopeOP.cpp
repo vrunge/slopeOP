@@ -15,7 +15,7 @@ using namespace std;
 List slopeOPtransfer(std::vector<double> data, std::vector<double> states, double penalty, std::string constraint = "null", double minAngle = 0, std::string type = "channel")
 {
   Omega omega = Omega(states, penalty, data.size());
-  //DIFFERENT PRUNING
+  //DIFFERENT PRUNING + NO CONSTRAINT
   if(type == "null" && constraint == "null"){omega.algo(data);}
   if(type == "channel" && constraint == "null"){omega.algoChannel(data);}
   if(type == "pruning" && constraint == "null"){omega.algoPruning(data);}

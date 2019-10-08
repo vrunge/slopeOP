@@ -10,10 +10,12 @@
 #' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property or "pruning" = pelt-type property
 #' @param testMode a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)
 #' @return a list of three elements  = (changepoints, state parameters, global cost)
-#' 'changepoints' is the vector of changepoints (we give the extremal values of all segments from left to right)
-#' 'states' is the vector of successive states. states[i] is the value we infered at position changepoints[i]
-#' 'globalCost' is a number equal to the global cost of the penalized changepoint problem
-#' 'pruning' is the reduction of work for the algo vs. no pruned algo
+#' \itemize{
+#'   \item \strong{changepoints} is the vector of changepoints (we give the extremal values of all segments from left to right)
+#'   \item \strong{states} is the vector of successive states. states[i] is the value we infered at position changepoints[i]
+#'   \item \strong{globalCost} is a number equal to the global cost of the penalized change-in-slope problem
+#'   \item \strong{pruning} is the percent of positions to consider in matrix Q  (returned only if testMode = TRUE)
+#' }
 slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
 {
   ############
@@ -21,7 +23,9 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null"
   ############
   if(!is.numeric(data)){stop('data values are not all numeric')}
   if(!is.numeric(states)){stop('states are not all numeric')}
-  if(is.unsorted(states)){stop('states should be an increasing vector')}
+  if(is.unsorted(states)){stop('states should in increasing order')}
+  if(length(unique(states)) < length(states)){stop('states is not a strictly increasing sequence')}
+
   if(!is.double(penalty)){stop('penalty is not a double.')}
   if(penalty < 0){stop('penalty must be nonnegative')}
   if(!is.double(minAngle)){stop('minAngle is not a double.')}
@@ -38,6 +42,7 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null"
   res <- slopeOPtransfer(data, states, penalty, constraint, minAngle, type)
 
   ###Response class slopeOP###
+  ### ATTENTION : we here remove one penalty to globalCost
   if(testMode == FALSE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - penalty)}
   if(testMode == TRUE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - penalty, pruning = res$pruningPower)}
 
@@ -45,8 +50,6 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null"
 
   return(response)
 }
-
-
 
 
 #' slopeData
@@ -105,8 +108,4 @@ plot.slopeOP <- function(x, ..., data, chpt = NULL, states = NULL)
     }
   }
 }
-
-
-
-
 

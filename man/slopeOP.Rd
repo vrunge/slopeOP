@@ -24,10 +24,12 @@ slopeOP(data = c(0), states = c(0), penalty = 0, constraint = "null",
 }
 \value{
 a list of three elements  = (changepoints, state parameters, global cost)
-'changepoints' is the vector of changepoints (we give the extremal values of all segments from left to right)
-'states' is the vector of successive states. states[i] is the value we infered at position changepoints[i]
-'globalCost' is a number equal to the global cost of the penalized changepoint problem
-'pruning' is the reduction of work for the algo vs. no pruned algo
+\itemize{
+  \item \strong{changepoints} is the vector of changepoints (we give the extremal values of all segments from left to right)
+  \item \strong{states} is the vector of successive states. states[i] is the value we infered at position changepoints[i]
+  \item \strong{globalCost} is a number equal to the global cost of the penalized change-in-slope problem
+  \item \strong{pruning} is the percent of positions to consider in matrix Q  (returned only if testMode = TRUE)
+}
 }
 \description{
 Optimal partitioning algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values).

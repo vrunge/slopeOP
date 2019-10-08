@@ -70,7 +70,7 @@ void Omega::algo(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
-
+  unsigned int zero = 0;
   ///
   /// PREPROCESSING
   ///
@@ -79,7 +79,7 @@ void Omega::algo(std::vector< double >& data)
   double* SP = new double[n];
   S1[0] = data[0];
   S2[0] = data[0] * data[0];
-  SP[0] = data[0] ;
+  SP[0] = data[0];
   for(unsigned int i = 1; i < n; i++){S1[i] = S1[i-1] + data[i];}
   for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
   for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
@@ -101,7 +101,6 @@ void Omega::algo(std::vector< double >& data)
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
-  unsigned int zero = 0;
 
   ///
   /// states u to v -> time position t to T
@@ -114,6 +113,7 @@ void Omega::algo(std::vector< double >& data)
       /////
       ///// EXPLORE MATRIX size p*T
       /////
+      // INITIALIZATION of temp_Q
       temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S1[0], S1[T], S2[0], S2[T], SP[0], SP[T]) + penalty;
       temp_indState = 0;
       temp_chpt = 0;
@@ -138,7 +138,7 @@ void Omega::algo(std::vector< double >& data)
       lastChpt[v][T] = temp_chpt;
     }
   }
-  pruning = 1;
+  pruning = 1; ///We went through all the elements in matrix Q
 
   delete [] S1;
   S1 = NULL;
