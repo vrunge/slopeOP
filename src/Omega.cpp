@@ -160,6 +160,7 @@ void Omega::algoChannel(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
+  unsigned int zero = 0;
 
   ///
   /// PREPROCESSING
@@ -188,6 +189,7 @@ void Omega::algoChannel(std::vector< double >& data)
   ///
   /// ALGO
   ///
+  double temp_cost = 0;
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
@@ -207,7 +209,6 @@ void Omega::algoChannel(std::vector< double >& data)
 
   unsigned int nbPosition = 0;
 
-  unsigned int zero = 0;
   ///
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
@@ -215,12 +216,13 @@ void Omega::algoChannel(std::vector< double >& data)
   for(unsigned int T = 1; T < n; T++)
   {
     ///
-    /// FILL u1 and u2 vectors
+    /// FILL u1 and u2 vectors in position T-1
     ///
     theStart = 0;
     while(theStart < (p - 1) && Q[theStart][T - 1] > Q[theStart + 1][T - 1])
       {theStart = theStart + 1;}
     u1[T-1] = theStart;
+
     theEnd = p - 1;
     while(theEnd > 0 && Q[theEnd][T - 1] > Q[theEnd - 1][T - 1])
       {theEnd = theEnd - 1;}
@@ -237,7 +239,6 @@ void Omega::algoChannel(std::vector< double >& data)
 
       temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S1[0], S1[T], S2[0], S2[T], SP[0], SP[T]) + penalty;
 
-
       for(unsigned int t = 0; t < T; t++)
       {
         /////
@@ -250,18 +251,19 @@ void Omega::algoChannel(std::vector< double >& data)
         }
         else
         {
-          indexTheV = u1[T-1];
+          indexTheV = u1[T-1]; // if t = T-1 cost.slopeCost does not depend on u
         }
 
         ///
         /// explore values between min(u1[t],indexTheV) and max(u2[t],indexTheV)
         ///
-        for(unsigned int u = std::min(u1[t],indexTheV); u < std::max(u2[t],indexTheV) + 1; u++) /////explore colum of states
+        for(unsigned int u = std::min(u1[t],indexTheV); u < std::max(u2[t],indexTheV) + 1; u++) /////explore column of states
         {
-          nbPosition = nbPosition + 1;
-          if(temp_Q > Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty)
+          nbPosition = nbPosition + 1; //we explore +1 position
+          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+          if(temp_Q > temp_cost)
           {
-            temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+            temp_Q = temp_cost;
             temp_indState = u;
             temp_chpt = t;
           }
