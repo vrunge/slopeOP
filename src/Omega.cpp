@@ -247,7 +247,7 @@ void Omega::algoChannel(std::vector< double >& data)
         if(t < (T-1))
         {
           theV = cost.vhat(states[v], t, T, S1[t], S1[T], SP[t], SP[T]);
-          indexTheV = cost.closestState(theV, states, p);
+          indexTheV = cost.closestStateIndex(theV, states, p);
         }
         else
         {
@@ -729,7 +729,7 @@ void Omega::algoISOTONIC(std::vector< double >& data)
         if(t < T-1)
         {
           theV = cost.vhat(states[v], t, T, S1[t], S1[T], SP[t], SP[T]);
-          indexTheV = cost.closestState(theV, states, p);
+          indexTheV = cost.closestStateIndex(theV, states, p);
         }
         else
         {
