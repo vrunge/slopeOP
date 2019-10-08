@@ -33,7 +33,7 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null"
 
   if(constraint != "null" && constraint != "isotonic" && constraint != "unimodal" && constraint != "smoothing")
     {stop('Arugment "constraint" not appropriate. Choose among "null", "isotonic", "unimodal" and "smoothing"')}
-  if(type != "null" && type != "channel" && type != "pruning" && type != "pruning2")
+  if(type != "null" && type != "channel" && type != "pruning" && type != "pruningMyList")
     {stop('Arugment "type" not appropriate. Choose among "null", "channel" and "pruning"')}
 
   if(!is.logical(testMode)){stop('testMode must be a boolean')}
