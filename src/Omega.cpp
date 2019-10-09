@@ -529,13 +529,12 @@ void Omega::algoPruningMyList(std::vector< double >& data)
   ListPoint* myList = new ListPoint[p];
   for(unsigned int q = 0; q < p; q++)
   {
-    myList[q] = ListPoint(); ///danger. Add elements
+    myList[q] = ListPoint(n*p); ///danger. Add elements
   }
 
-  bool test = true;
   unsigned int t;
   unsigned int u;
-
+  unsigned int Len;
 
   for(unsigned int T = 1; T < n; T++)
   {
@@ -546,25 +545,32 @@ void Omega::algoPruningMyList(std::vector< double >& data)
       /////
       for(unsigned int w = 0; w < p; w++)
       {
-        myList[v].addPoint(new Point(w, T-1));
+        myList[v].addPoint(w, T-1);
       }
+
+      std::cout << "POSITION " << T << " " << v << std::endl;
 
       /// FIRST ELEMENT
       myList[v].initializeCurrentPosition();
       u = myList[v].getState();
       t = myList[v].getTime();
 
+      std::cout << "CONTENU" << u << " " << t << std::endl;
+
+      Len = myList -> getLength();
+      nbPosition = nbPosition + Len;
+      ///1st element
       temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
       temp_indState = u;
       temp_chpt = t;
-      test = myList[v].move();
-      nbPosition = nbPosition + 1;
+      myList[v].move();
 
-      while(test == true)
+
+      for(unsigned int z = 1; z < Len; z++)
       {
-        nbPosition = nbPosition + 1;
         u = myList[v].getState();
         t = myList[v].getTime();
+        std::cout << "CONTENU" << u << " " << t << std::endl;
         temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
         if(temp_Q > temp_cost)
         {
@@ -572,8 +578,7 @@ void Omega::algoPruningMyList(std::vector< double >& data)
           temp_indState = u;
           temp_chpt = t;
         }
-        test = myList[v].move();
-
+        myList[v].move();
       }
 
       /////
