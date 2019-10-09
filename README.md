@@ -14,29 +14,44 @@
 
 > [Options for constraining inference](#options)
 
+> [plot function](#plot)
+
 <a id="intro"></a>
 
 ## Introduction
 
-The package `slopeOP` is designed to segment univariate data <img src="/tex/b704a970e46e8418f3ef56718438b122.svg?invert_in_darkmode&sanitize=true" align=middle width=126.38913869999998pt height=24.65753399999998pt/> by a continuous piecewise linear signal with restriction on starting/ending values for the segments. The changepoint vector <img src="/tex/ed535ca37308856c5f0c6d85b4d4c676.svg?invert_in_darkmode&sanitize=true" align=middle width=209.11492305pt height=27.91243950000002pt/> defines the <img src="/tex/33359de825e43daa97171e27f6558ae9.svg?invert_in_darkmode&sanitize=true" align=middle width=37.38576269999999pt height=22.831056599999986pt/> segments <img src="/tex/97a268c17395aace06ce389334ba5322.svg?invert_in_darkmode&sanitize=true" align=middle width=115.02097364999997pt height=24.65753399999998pt/>, <img src="/tex/59680c09e0e2d723d0bcf2005047b028.svg?invert_in_darkmode&sanitize=true" align=middle width=73.18587374999998pt height=22.831056599999986pt/> with fixed bounds <img src="/tex/370a29c873e3d269a6111aa219085d0b.svg?invert_in_darkmode&sanitize=true" align=middle width=44.697406049999984pt height=21.18721440000001pt/> and  <img src="/tex/afdb85da7c3e7b7c3d226050994dbf5f.svg?invert_in_darkmode&sanitize=true" align=middle width=63.70246739999999pt height=14.15524440000002pt/>. We use the set <img src="/tex/36dd5900c84c0ddd4a48f4858bbd6e8f.svg?invert_in_darkmode&sanitize=true" align=middle width=264.26770754999995pt height=27.91243950000002pt/> to define the minimal global cost given by
+The package `slopeOP` is designed to segment univariate data <img src="/tex/b704a970e46e8418f3ef56718438b122.svg?invert_in_darkmode&sanitize=true" align=middle width=126.38913869999998pt height=24.65753399999998pt/> by a continuous piecewise linear signal with restrictions on starting/ending values for the inferred segments. These values are contained into the finite set of states <img src="/tex/cef39aeb23a61b09d838693a0897fe03.svg?invert_in_darkmode&sanitize=true" align=middle width=11.187179849999989pt height=22.465723500000017pt/>. 
 
-<p align="center"><img src="/tex/a1dbd44a6b2fbeb770fcf69f85a4a3df.svg?invert_in_darkmode&sanitize=true" align=middle width=277.1488236pt height=49.315569599999996pt/></p>
 
-where <img src="/tex/99751e94989c68f9be0f6aa442bc80d5.svg?invert_in_darkmode&sanitize=true" align=middle width=40.302373649999986pt height=22.831056599999986pt/> is a penalty parameter and <img src="/tex/a44ff4154fc3bc708e9e752a14051324.svg?invert_in_darkmode&sanitize=true" align=middle width=49.762892849999986pt height=24.65753399999998pt/> is the minimal cost over the segment <img src="/tex/add1478513cabbadcd5004323f01b74c.svg?invert_in_darkmode&sanitize=true" align=middle width=62.71697189999998pt height=24.65753399999998pt/>. The penalty <img src="/tex/8217ed3c32a785f0b5aad4055f432ad8.svg?invert_in_darkmode&sanitize=true" align=middle width=10.16555099999999pt height=22.831056599999986pt/> is understood as an additional cost when introducing a new segment. 
+When we write <img src="/tex/dca84180777f523a6d1cb11ceff47536.svg?invert_in_darkmode&sanitize=true" align=middle width=124.85777534999997pt height=14.15524440000002pt/>, the variable <img src="/tex/6f9bad7347b91ceebebd3ad7e6f6f2d1.svg?invert_in_darkmode&sanitize=true" align=middle width=7.7054801999999905pt height=14.15524440000002pt/> goes through all the values of <img src="/tex/cef39aeb23a61b09d838693a0897fe03.svg?invert_in_darkmode&sanitize=true" align=middle width=11.187179849999989pt height=22.465723500000017pt/> from the smallest one to the biggest one. For computational efficiency we recommend to have <img src="/tex/13f705a91487b0bb06669ee7c6c3552f.svg?invert_in_darkmode&sanitize=true" align=middle width=105.80650409999998pt height=22.831056599999986pt/> but this is not mandatory. 
 
-The cost for data <img src="/tex/7d54d6946c15cd803b31e7da5077c813.svg?invert_in_darkmode&sanitize=true" align=middle width=40.78280084999999pt height=14.15524440000002pt/> with linear interpolation from value <img src="/tex/44bc9d542a92714cac84e01cbbb7fd61.svg?invert_in_darkmode&sanitize=true" align=middle width=8.68915409999999pt height=14.15524440000002pt/> to value <img src="/tex/4bdc8d9bcfb35e1c9bfb51fc69687dfc.svg?invert_in_darkmode&sanitize=true" align=middle width=7.054796099999991pt height=22.831056599999986pt/> is given by
+The cost for data <img src="/tex/7d54d6946c15cd803b31e7da5077c813.svg?invert_in_darkmode&sanitize=true" align=middle width=40.78280084999999pt height=14.15524440000002pt/>, <img src="/tex/a7e59809c70c5654d0732669ce4d3cf6.svg?invert_in_darkmode&sanitize=true" align=middle width=36.90056204999999pt height=20.221802699999984pt/>, with linear interpolation from value <img src="/tex/286f7d4815c0996530bda7973b1ec5ea.svg?invert_in_darkmode&sanitize=true" align=middle width=14.25802619999999pt height=14.15524440000002pt/> to value <img src="/tex/97c7f491f7ac1623c0a86b1fb656029b.svg?invert_in_darkmode&sanitize=true" align=middle width=14.25802619999999pt height=14.15524440000002pt/> is given by
 
-<p align="center"><img src="/tex/77e662a6ebeab23830009ce77fbd9557.svg?invert_in_darkmode&sanitize=true" align=middle width=358.5926619pt height=48.39056475pt/></p>
+<p align="center"><img src="/tex/32da28b15640aa1c521680c305ded2fc.svg?invert_in_darkmode&sanitize=true" align=middle width=401.57801639999997pt height=48.39056475pt/></p>
 
-which can be computed in constant time with the formula 
+The value <img src="/tex/286f7d4815c0996530bda7973b1ec5ea.svg?invert_in_darkmode&sanitize=true" align=middle width=14.25802619999999pt height=14.15524440000002pt/> is "unseen" as the cost <img src="/tex/6598c6a71c20e965dba8e739fd65d865.svg?invert_in_darkmode&sanitize=true" align=middle width=70.78262729999999pt height=26.76175259999998pt/> obtained at index <img src="/tex/0fe1677705e987cac4f589ed600aa6b3.svg?invert_in_darkmode&sanitize=true" align=middle width=9.046852649999991pt height=14.15524440000002pt/> is not present in the summation.
 
-<p align="center"><img src="/tex/da574314e6b90740e74ddfb986bd58cb.svg?invert_in_darkmode&sanitize=true" align=middle width=484.25056514999994pt height=39.887022449999996pt/></p>
+Data are generated by the model 
 
-<p align="center"><img src="/tex/3625658a3a08ace419cc04fe7315f856.svg?invert_in_darkmode&sanitize=true" align=middle width=351.10582155pt height=34.3600389pt/></p>
+<p align="center"><img src="/tex/8525275768014f9e64d0244f61ab600f.svg?invert_in_darkmode&sanitize=true" align=middle width=481.47380489999995pt height=35.82121785pt/></p>
+
+with <img src="/tex/9e2fef61c286c438282ce2bf9513dd8d.svg?invert_in_darkmode&sanitize=true" align=middle width=239.6036841pt height=21.18721440000001pt/>, <img src="/tex/e5e607c35cb2b5fa02be9a25cbb7733b.svg?invert_in_darkmode&sanitize=true" align=middle width=107.10602924999999pt height=22.465723500000017pt/> and <img src="/tex/5118258da41c2cdc7d0fd96f2955fe02.svg?invert_in_darkmode&sanitize=true" align=middle width=95.95543319999999pt height=26.76175259999998pt/> identically and independently distributed (iid). The optimization problem is then the following:
+
+<p align="center"><img src="/tex/c3f1419da1436d3dcaf4bb12df979464.svg?invert_in_darkmode&sanitize=true" align=middle width=453.2107701pt height=72.48949455pt/></p>
+
+where the states defined inside the cost function yield the continuity constraint between successive segments.
+
+<img src="/tex/99751e94989c68f9be0f6aa442bc80d5.svg?invert_in_darkmode&sanitize=true" align=middle width=40.302373649999986pt height=22.831056599999986pt/> is a penalty parameter, understood as an additional cost when introducing a new segment. 
+
+Notice that the cost can be computed in constant time with the formula 
+
+<p align="center"><img src="/tex/65dc4200c058ac688623e4791c2e8939.svg?invert_in_darkmode&sanitize=true" align=middle width=536.11095285pt height=34.3600389pt/></p>
+
+<p align="center"><img src="/tex/a1d9b5c990cdc52fb8027b2688f7cd9c.svg?invert_in_darkmode&sanitize=true" align=middle width=312.55418204999995pt height=39.887022449999996pt/></p>
 
 where
 
-<p align="center"><img src="/tex/1aab79a04b5886855193911c1cff1343.svg?invert_in_darkmode&sanitize=true" align=middle width=512.84137905pt height=47.02068525pt/></p>
+<p align="center"><img src="/tex/2b92786806bccea954f56077a6b80ab1.svg?invert_in_darkmode&sanitize=true" align=middle width=512.84137905pt height=47.02068525pt/></p>
 
 To address the continuity constraint, we introduce the function <img src="/tex/ae890e198f4a771aa52230b69322c12f.svg?invert_in_darkmode&sanitize=true" align=middle width=74.25482954999998pt height=24.65753399999998pt/> which is the optimal penalized cost up to position <img src="/tex/4f4f4e395762a3af4575de74c019ebb5.svg?invert_in_darkmode&sanitize=true" align=middle width=5.936097749999991pt height=20.221802699999984pt/> with a last infered value equal to <img src="/tex/6c4adbc36120d62b98deef2a20d5d303.svg?invert_in_darkmode&sanitize=true" align=middle width=8.55786029999999pt height=14.15524440000002pt/> (at position t). The idea is then to update a set
 
@@ -166,6 +181,9 @@ slopeOP(data,70:80,5, constraint = "smoothing", minAngle = 170)
 ## [1] "slopeOP"
 ```
 
+<a id="plot"></a>
+
+## Plot function
 
 
 [Back to Top](#top)
