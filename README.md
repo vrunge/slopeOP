@@ -53,7 +53,7 @@ where
 
 <p align="center"><img src="/tex/2b92786806bccea954f56077a6b80ab1.svg?invert_in_darkmode&sanitize=true" align=middle width=512.84137905pt height=47.02068525pt/></p>
 
-To address the continuity constraint, we introduce the function <img src="/tex/ae890e198f4a771aa52230b69322c12f.svg?invert_in_darkmode&sanitize=true" align=middle width=74.25482954999998pt height=24.65753399999998pt/> which is the optimal penalized cost up to position <img src="/tex/4f4f4e395762a3af4575de74c019ebb5.svg?invert_in_darkmode&sanitize=true" align=middle width=5.936097749999991pt height=20.221802699999984pt/> with a last infered value equal to <img src="/tex/6c4adbc36120d62b98deef2a20d5d303.svg?invert_in_darkmode&sanitize=true" align=middle width=8.55786029999999pt height=14.15524440000002pt/> (at position t). The idea is then to update a set
+To address the continuity constraint by a dynamic programming algorithm, we introduce the function <img src="/tex/ae890e198f4a771aa52230b69322c12f.svg?invert_in_darkmode&sanitize=true" align=middle width=74.25482954999998pt height=24.65753399999998pt/> which is the optimal penalized cost up to position <img src="/tex/4f4f4e395762a3af4575de74c019ebb5.svg?invert_in_darkmode&sanitize=true" align=middle width=5.936097749999991pt height=20.221802699999984pt/> with a last infered value equal to <img src="/tex/6c4adbc36120d62b98deef2a20d5d303.svg?invert_in_darkmode&sanitize=true" align=middle width=8.55786029999999pt height=14.15524440000002pt/> (at position t). The idea is then to update a set
 
 <p align="center"><img src="/tex/64b17ac0eaa9a23ba8f6e8beeef8b6b3.svg?invert_in_darkmode&sanitize=true" align=middle width=239.36380874999998pt height=16.438356pt/></p>
 
@@ -63,9 +63,9 @@ The new update with continuity constraint takes the form
 
 <p align="center"><img src="/tex/ab4ef0926386dff2055b015b92895c58.svg?invert_in_darkmode&sanitize=true" align=middle width=368.09542769999996pt height=31.6657044pt/></p>
 
-
 where the presence of the same value <img src="/tex/6dbb78540bd76da3f1625782d42d6d16.svg?invert_in_darkmode&sanitize=true" align=middle width=9.41027339999999pt height=14.15524440000002pt/> in <img src="/tex/e05578c58a4f9e4f1301d4cf24e3234c.svg?invert_in_darkmode&sanitize=true" align=middle width=20.387619449999992pt height=22.465723500000017pt/> and the cost realizes the continuity constraint. At initial step we simply have <img src="/tex/cf8c7572e6ac52e95e69475a2b4281e3.svg?invert_in_darkmode&sanitize=true" align=middle width=86.58177495pt height=24.65753399999998pt/>. 
 
+The slopeOP function computes <img src="/tex/ad868526abfbda30f9d06be714067289.svg?invert_in_darkmode&sanitize=true" align=middle width=40.12638794999999pt height=24.65753399999998pt/> for all <img src="/tex/6063a43b8980ba25f2b24f138501cc93.svg?invert_in_darkmode&sanitize=true" align=middle width=39.83615954999999pt height=22.465723500000017pt/> and <img src="/tex/28166798932f09dc74160bd665b9663e.svg?invert_in_darkmode&sanitize=true" align=middle width=74.25025244999999pt height=21.18721440000001pt/>. The argminimum state into the set <img src="/tex/44314730b45a8f895f72c002bb5251d5.svg?invert_in_darkmode&sanitize=true" align=middle width=21.550742399999987pt height=22.465723500000017pt/> gives the last value of the last inferred segment. A backtracking procedure eventually returns the optimal changepoint vector with all its associated state values.
 
 <a id="sf"></a>
 
@@ -114,12 +114,12 @@ In `slopeOP` function, the parameter `type` is `channel` by default. With type e
 ## Options for constraining inference
 
 
-Parameter `constraint` can be set to `up` which corresponds to a restriction to nondecreasing vector parameter.
+Parameter `constraint` can be set to `isotonic` which corresponds to a restriction to nondecreasing vector parameter.
 
 
 ```r
 data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,77,73,80), 1)
-slopeOP(data, 71:80, 5, constraint = "up")
+slopeOP(data, 71:80, 5, constraint = "isotonic")
 ```
 
 ```
@@ -136,12 +136,12 @@ slopeOP(data, 71:80, 5, constraint = "up")
 ## [1] "slopeOP"
 ```
 
-With `constraint` equal to `updown` the infered vector is unimodal (with a maximum).
+With `constraint` equal to `unimodal` the infered signal is increasing and then decreasing.
 
 
 ```r
 data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,78,73,75), 1)
-slopeOP(data, 71:80, 5, constraint = "updown")
+slopeOP(data, 71:80, 5, constraint = "unimodal")
 ```
 
 ```
