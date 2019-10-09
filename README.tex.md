@@ -62,7 +62,7 @@ where
 $$S^1_t = \sum_{i=1}^t y_i\quad , \quad S^2_t = \sum_{i=1}^t y_i^2\quad \hbox{and} \quad S^+_t = \sum_{i=1}^t iy_i\quad \hbox{for all} \,\, t \in \{1,...,n\}\,.
 $$
 
-To address the continuity constraint, we introduce the function $v \mapsto Q_t(v)$ which is the optimal penalized cost up to position $t$ with a last infered value equal to $v$ (at position t). The idea is then to update a set
+To address the continuity constraint by a dynamic programming algorithm, we introduce the function $v \mapsto Q_t(v)$ which is the optimal penalized cost up to position $t$ with a last infered value equal to $v$ (at position t). The idea is then to update a set
 
 $$
 \mathcal{Q}_t = \{Q_t(v), v= v_{min},...,v_{max}\}\,,
@@ -76,9 +76,9 @@ $$
 Q_t(v) = \min_{0 \le \tau < t}\left( \min_{u}\{Q_{\tau}(u) + \mathcal{C}(y_{\tau+1:t},u,v) + \beta\}\right)\,,
 $$
 
-
 where the presence of the same value $u$ in $Q_{\tau}$ and the cost realizes the continuity constraint. At initial step we simply have $Q_0(v) = -\beta$. 
 
+The slopeOP function computes $Q_t(v)$ for all $v \in \mathcal{S}$ and $t = 1,...,n$. The argminimum state into the set $\mathcal{Q}_n$ gives the last value of the last inferred segment. A backtracking procedure eventually returns the optimal changepoint vector with all its associated state values.
 
 <a id="sf"></a>
 
