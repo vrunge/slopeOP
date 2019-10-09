@@ -127,12 +127,12 @@ In `slopeOP` function, the parameter `type` is `channel` by default. With type e
 ## Options for constraining inference
 
 
-Parameter `constraint` can be set to `up` which corresponds to a restriction to nondecreasing vector parameter.
+Parameter `constraint` can be set to `isotonic` which corresponds to a restriction to nondecreasing vector parameter.
 
 
 ```r
 data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,77,73,80), 1)
-slopeOP(data, 71:80, 5, constraint = "up")
+slopeOP(data, 71:80, 5, constraint = "isotonic")
 ```
 
 ```
@@ -149,12 +149,12 @@ slopeOP(data, 71:80, 5, constraint = "up")
 ## [1] "slopeOP"
 ```
 
-With `constraint` equal to `updown` the infered vector is unimodal (with a maximum).
+With `constraint` equal to `unimodal` the infered signal is increasing and then decreasing.
 
 
 ```r
 data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,78,73,75), 1)
-slopeOP(data, 71:80, 5, constraint = "updown")
+slopeOP(data, 71:80, 5, constraint = "unimodal")
 ```
 
 ```
