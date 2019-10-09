@@ -120,7 +120,7 @@ slopeOP(data, c(0,1,2,3), 10)
 ## [1] "slopeOP"
 ```
 
-In `slopeOP` function, the parameter `type` is `channel` by default. With type equal to `channel` we use the monotonicity property in optimal cost matrix to reduce time complexity. If it is equal to `pruning` we prune some positions using a theorem taking into account unseen data.
+In `slopeOP` function, the parameter `type` is `channel` by default. With type equal to `channel` we use the monotonicity property in optimal cost matrix to reduce time complexity. If it is equal to `pruning` we prune some positions using a theorem taking into account unseen data. The pruing option is similar to PELT pruning but less effective.
 
 <a id="options"></a>
 
@@ -197,6 +197,17 @@ slopeOP(data,70:80,5, constraint = "smoothing", minAngle = 170)
 <a id="plot"></a>
 
 ## Plot function
+
+A simple plot function can be used to show raw data with the inferred segments on the same plot. Option `data =` should be always used.
+
+
+```r
+data <- slopeData(c(1,11,21),c(70,80,70),2)
+slope <- slopeOP(data,70:80,10, constraint = "null", type = "channel")
+plot(slope, data = data)
+```
+
+![](Rplot.png)
 
 
 [Back to Top](#top)
