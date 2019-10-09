@@ -20,7 +20,7 @@
 
 ## Introduction
 
-The package `slopeOP` is designed to segment univariate data $y_{1:n} = \{y_1,...,y_n\}$ by a continuous piecewise linear signal with restrictions on starting/ending values for the inferred segments. These values are contained into the finite set of states $\mathcal{S}$. 
+The package `slopeOP` is designed to segment univariate data $y_{1:n} = \{y_1,...,y_n\}$ by a continuous piecewise linear signal with restrictions on starting/ending values for the inferred segments. These values are restricted by the finite set of states $\mathcal{S}$. 
 
 
 When we write $s= s_{min},...,s_{max}$, the variable $s$ goes through all the values of $\mathcal{S}$ from the smallest one to the biggest one. For computational efficiency we recommend to have $\# \mathcal{S} = m << n$ but this is not mandatory. 
@@ -62,23 +62,23 @@ where
 $$S^1_t = \sum_{i=1}^t y_i\quad , \quad S^2_t = \sum_{i=1}^t y_i^2\quad \hbox{and} \quad S^+_t = \sum_{i=1}^t iy_i\quad \hbox{for all} \,\, t \in \{1,...,n\}\,.
 $$
 
-To address the continuity constraint by a dynamic programming algorithm, we introduce the function $v \mapsto Q_t(v)$ which is the optimal penalized cost up to position $t$ with a last infered value equal to $v$ (at position t). The idea is then to update a set
+To address the continuity constraint by a dynamic programming algorithm, we introduce the function $s \mapsto Q_t(s)$ which is the optimal penalized cost up to position $t$ with a last infered value equal to $s$ (at position t). The idea is then to update a set
 
 $$
-\mathcal{Q}_t = \{Q_t(v), v= v_{min},...,v_{max}\}\,,
+\mathcal{Q}_t = \{Q_t(s), s= s_{min},...,s_{max}\}\,,
 $$
 
-at any time step $t \in \{1,...,n\}$. $v_{min}$ and $v_{max}$ are the bounds of the interval of possible ending values for the considered data to segment. They can be determined in a preprocessing step.
+at any time step $t \in \{1,...,n\}$. $s_{min}$ and $s_{max}$ are the bounds of the interval of possible ending values for the considered data to segment. They can be determined in a preprocessing step.
 
 The new update with continuity constraint takes the form
 
 $$
-Q_t(v) = \min_{0 \le \tau < t}\left( \min_{u}\{Q_{\tau}(u) + \mathcal{C}(y_{\tau+1:t},u,v) + \beta\}\right)\,,
+Q_t(v) = \min_{0 \le \tau < t}\left( \min_{s_{min} \le u \le s_{max}}\{Q_{\tau}(u) + \mathcal{C}(y_{\tau+1:t},u,v) + \beta\}\right)\,,
 $$
 
 where the presence of the same value $u$ in $Q_{\tau}$ and the cost realizes the continuity constraint. At initial step we simply have $Q_0(v) = -\beta$. 
 
-The slopeOP function computes $Q_t(v)$ for all $v \in \mathcal{S}$ and $t = 1,...,n$. The argminimum state into the set $\mathcal{Q}_n$ gives the last value of the last inferred segment. A backtracking procedure eventually returns the optimal changepoint vector with all its associated state values.
+The slopeOP function computes $Q_t(s)$ for all $s \in \mathcal{S}$ and $t = 1,...,n$. The argminimum state into the set $\mathcal{Q}_n$ gives the last value of the last inferred segment. A backtracking procedure eventually returns the optimal changepoint vector with all its associated state values.
 
 <a id="sf"></a>
 
