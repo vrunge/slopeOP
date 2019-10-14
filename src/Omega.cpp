@@ -1045,7 +1045,6 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
       lastChpt[v][T] = temp_chpt;
     }
   }
-
   pruning = 1;
 
   delete [] S1;
