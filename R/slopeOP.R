@@ -97,14 +97,14 @@ plot.slopeOP <- function(x, ..., data, chpt = NULL, states = NULL)
   plot(1:length(data), data, pch = '+')
   for(i in 1:(p-1))
   {
-    segments(xbis[i], y[i], xbis[i+1], y[i+1], col= 2, lty = 1, lwd = 5)
+    segments(xbis[i], y[i], xbis[i+1], y[i+1], col= 2, lty = 1, lwd = 3)
   }
   if(length(chpt) > 0 && length(chpt) == length(states))
   {
     q <- length(chpt)
     for(i in 1:(q-1))
     {
-      segments(chpt[i], states[i], chpt[i+1], states[i+1], col= 4, lty = 1, lwd = 5)
+      segments(chpt[i], states[i], chpt[i+1], states[i+1], col= 4, lty = 1, lwd = 3)
     }
   }
 }

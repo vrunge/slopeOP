@@ -12,26 +12,24 @@ class ListPoint
 {
 public:
   ListPoint();
-  ListPoint(unsigned int size);
+  ListPoint(unsigned int maxSize);
   ~ListPoint();
 
   unsigned int getState();
   unsigned int getTime();
 
-  void move();
-  void addPoint(unsigned int a, unsigned int b);
-  void deleteNxtPointAndMove();
+  void addPoint(unsigned int s, unsigned int t);
+  bool move();
+  void deletePoint();
   void initializeCurrentPosition();
-  unsigned int getLength();
 
 private:
-  Point * head;
-  Point * currentPosition;
-  Point * lastPosition;
-  Point * tail;
-  unsigned int lengthList;
-  unsigned int resizeConst;
-  std::vector<Point *> headVec;
+  Point* arrayPoint;
+  Point* currentPosition;
+  unsigned int nbAdd;
+
+  unsigned int listLength;
+
 };
 
 #endif // LISTPOINT_H

@@ -383,6 +383,7 @@ void Omega::algoPruning(std::vector< double >& data)
       temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty;
       temp_indState = *u_it;
       temp_chpt = *t_it;
+      nbPosition = nbPosition + 1;
 
       u_it = u_pos[v].begin();
       t_it = t_pos[v].begin();
@@ -467,6 +468,9 @@ void Omega::algoPruningMyList(std::vector< double >& data)
   unsigned int n = data.size();
   unsigned int p = nbStates;
 
+  unsigned int Tp1;
+  unsigned int nm1 = n-1;
+
   ///
   /// PREPROCESSING
   ///
@@ -519,6 +523,10 @@ void Omega::algoPruningMyList(std::vector< double >& data)
   double temp_Q = -1;
   unsigned int temp_chpt = 0;
   unsigned int temp_indState = 0;
+  ///variables for pruning
+  double delta;
+  double DELTA;
+  double K;
 
   int nbPosition = 0;
   ///
@@ -526,15 +534,14 @@ void Omega::algoPruningMyList(std::vector< double >& data)
   /// explore in (u,t) for fixed (v,T)
   ///
 
-  ListPoint* myList = new ListPoint[p];
+  ListPoint** myLists = new ListPoint*[p];
   for(unsigned int q = 0; q < p; q++)
   {
-    myList[q] = ListPoint(n*p); ///danger. Add elements
+    myLists[q] = new ListPoint(n*p);
   }
 
   unsigned int t;
   unsigned int u;
-  unsigned int Len;
 
   for(unsigned int T = 1; T < n; T++)
   {
@@ -545,32 +552,26 @@ void Omega::algoPruningMyList(std::vector< double >& data)
       /////
       for(unsigned int w = 0; w < p; w++)
       {
-        myList[v].addPoint(w, T-1);
+        myLists[v] -> addPoint(w, T-1);
       }
 
-      std::cout << "POSITION " << T << " " << v << std::endl;
-
       /// FIRST ELEMENT
-      myList[v].initializeCurrentPosition();
-      u = myList[v].getState();
-      t = myList[v].getTime();
+      myLists[v] -> initializeCurrentPosition();
+      u = myLists[v] -> getState();
+      t = myLists[v] -> getTime();
 
-      std::cout << "CONTENU" << u << " " << t << std::endl;
-
-      Len = myList -> getLength();
-      nbPosition = nbPosition + Len;
       ///1st element
       temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
       temp_indState = u;
       temp_chpt = t;
-      myList[v].move();
+      nbPosition = nbPosition + 1;
 
-
-      for(unsigned int z = 1; z < Len; z++)
+      while(myLists[v] -> move() == true)
       {
-        u = myList[v].getState();
-        t = myList[v].getTime();
-        std::cout << "CONTENU" << u << " " << t << std::endl;
+        nbPosition = nbPosition + 1;
+        u = myLists[v] -> getState();
+        t = myLists[v] -> getTime();
+
         temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
         if(temp_Q > temp_cost)
         {
@@ -578,7 +579,6 @@ void Omega::algoPruningMyList(std::vector< double >& data)
           temp_indState = u;
           temp_chpt = t;
         }
-        myList[v].move();
       }
 
       /////
@@ -587,6 +587,28 @@ void Omega::algoPruningMyList(std::vector< double >& data)
       Q[v][T] = temp_Q;
       lastIndState[v][T] = temp_indState;
       lastChpt[v][T] = temp_chpt;
+
+      ////////////////////////
+      ///// PRUNING STEP /////
+      ////////////////////////
+      myLists[v] -> initializeCurrentPosition();
+      do
+      {
+        u = myLists[v] -> getState();
+        t = myLists[v] -> getTime();
+        Tp1 = T+1;
+
+        DELTA = states[u] - states[v];
+        if(DELTA >= 0){delta = MAX_Y[T] - states[v];}
+          else{delta = MIN_Y[T] - states[v];}
+
+        K = SP[T] - SP[t] -  (t + 1) * (S1[T] - S1[t]);
+
+        if((Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) > temp_Q) && cost.pruningTest(t, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(t, T, nm1, delta, DELTA, K, states[v]))
+        {
+          myLists[v] -> deletePoint();
+        }
+      }while(myLists[v] -> move() == true);
 
     }
   }
@@ -605,8 +627,8 @@ void Omega::algoPruningMyList(std::vector< double >& data)
   MAX_Y = NULL;
   delete [] MIN_Y;
   MIN_Y = NULL;
-  delete [] myList;
-  myList = NULL;
+  delete [] myLists;
+  myLists = NULL;
 }
 
 

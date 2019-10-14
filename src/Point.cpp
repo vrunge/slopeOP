@@ -9,5 +9,9 @@
 //####### constructor #######////####### constructor #######////####### constructor #######//
 //####### constructor #######////####### constructor #######////####### constructor #######//
 
+
+Point::Point() :  nxt(NULL){}
+
 Point::Point(unsigned int s, unsigned int t) : state(s), time(t), nxt(NULL){}
+
 

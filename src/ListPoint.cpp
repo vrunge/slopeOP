@@ -1,5 +1,5 @@
 // MIT License
-// Copyright (c) 2019 Arnaud Liehrmann
+// Copyright (c) 2019 Vincent Runge
 
 #include "ListPoint.h"
 #include "math.h"
@@ -12,21 +12,21 @@ using namespace std;
 
 ListPoint::ListPoint(){}
 
-ListPoint::ListPoint(unsigned int size)
+ListPoint::ListPoint(unsigned int maxSize)
 {
-  resizeConst = size;
-  lengthList = 0;
-  head = (Point *) calloc(size+1, sizeof(Point));
-  for(unsigned int i = 0; i < size; i++)
-  {
-    head[i].nxt = head+i+1;
-  }
+  listLength = maxSize;
+  nbAdd = 0;
 
-  head[size].nxt = NULL;
-  tail = head + size;
-  lastPosition = head -> nxt;
-  currentPosition = head;
-  headVec.push_back(head);
+  arrayPoint = new Point[maxSize + 1]; ///with a first unused Point element
+  currentPosition = arrayPoint;
+
+  ///We lin all points
+  for(unsigned int i = 0; i < maxSize; i++)
+  {
+    arrayPoint[i].time = 0;
+    arrayPoint[i].state = 1000000;
+    arrayPoint[i].nxt = &arrayPoint[i+1];
+  }
 }
 
 //####### destructor #######////####### destructor #######////####### destructor #######//
@@ -35,83 +35,58 @@ ListPoint::ListPoint(unsigned int size)
 
 ListPoint::~ListPoint()
 {
-  for (unsigned int i = 0; i< headVec.size(); i++)
-  {
-    free(headVec[i]);
-  }
+  delete(arrayPoint);
+  arrayPoint = NULL;
+  currentPosition = NULL;
 }
 
 //####### accessor #######////####### accessor #######////####### accessor #######//
 //####### accessor #######////####### accessor #######////####### accessor #######//
 
 unsigned int ListPoint::getState()
-  {return(currentPosition -> state);}
-
+  {return(currentPosition -> nxt -> state);}
 
 unsigned int ListPoint::getTime()
-  {return(currentPosition -> time);}
+  {return(currentPosition -> nxt -> time);}
 
 
-
-//####### move #######////####### move #######////####### move #######//
-//####### move #######////####### move #######////####### move #######//
-
-
-void ListPoint::move()
-{
-  currentPosition = currentPosition->nxt;
-}
 
 //####### addPoint #######////####### addPoint #######////####### addPoint #######//
 //####### addPoint #######////####### addPoint #######////####### addPoint #######//
 
 void ListPoint::addPoint(unsigned int s, unsigned int t)
 {
-  lastPosition->state = s;
-  lastPosition->time = t;
-  if (lastPosition->nxt == NULL){
-    Point * newHead = (Point *) calloc(resizeConst, sizeof(Point));
-    for (unsigned int i =0; i<resizeConst-1; i++)
-    {
-      newHead[i].nxt = newHead+i+1;
-    }
-    newHead[resizeConst-1].nxt = NULL;
-    tail = newHead + resizeConst -1;
-    lastPosition -> nxt = newHead;
-    headVec.push_back(newHead);
-  }
-  lastPosition = lastPosition->nxt;
-  lengthList++;
+  arrayPoint[nbAdd + 1].state = s;
+  arrayPoint[nbAdd + 1].time = t;
+  nbAdd = nbAdd + 1;
 }
 
+//####### move #######////####### move #######////####### move #######//
+//####### move #######////####### move #######////####### move #######//
 
-//####### deleteNxtPointAndMove #######////####### deleteNxtPointAndMove #######////####### deleteNxtPointAndMove #######//
-//####### deleteNxtPointAndMove #######////####### deleteNxtPointAndMove #######////####### deleteNxtPointAndMove #######//
-
-
-void ListPoint::deleteNxtPointAndMove()
+bool ListPoint::move()
 {
-  tail -> nxt = currentPosition -> nxt;
-  currentPosition -> nxt = currentPosition->nxt->nxt;
-  tail->nxt->nxt = NULL;
-  tail = tail->nxt;
-  lengthList--;
+  if(currentPosition -> nxt -> nxt -> state != 1000000)
+  {
+    currentPosition = currentPosition -> nxt;
+    return(true);
+  }
+  return(false);
 }
 
+
+//####### deletePoint #######////####### deletePoint #######////####### deletePoint #######//
+//####### deletePoint #######////####### deletePoint #######////####### deletePoint #######//
+
+void ListPoint::deletePoint()
+{
+  currentPosition -> nxt = currentPosition -> nxt -> nxt;
+}
 
 //####### initializeCurrentPosition #######////####### initializeCurrentPosition #######////####### initializeCurrentPosition #######//
 //####### initializeCurrentPosition #######////####### initializeCurrentPosition #######////####### initializeCurrentPosition #######//
 
 void ListPoint::initializeCurrentPosition()
 {
-  currentPosition = head;
-}
-
-
-//####### getLength #######////####### getLength #######////####### getLength #######//
-//####### getLength #######////####### getLength #######////####### getLength #######//
-
-unsigned int ListPoint::getLength()
-{
-  return lengthList;
+  currentPosition = arrayPoint;
 }
