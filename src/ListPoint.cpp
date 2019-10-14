@@ -61,19 +61,25 @@ void ListPoint::addPoint(unsigned int s, unsigned int t)
   nbAdd = nbAdd + 1;
 }
 
-//####### move #######////####### move #######////####### move #######//
-//####### move #######////####### move #######////####### move #######//
+//####### CanMove #######////####### CanMove #######////####### CanMove #######//
+//####### CanMove #######////####### CanMove #######////####### CanMove #######//
 
-bool ListPoint::move()
+bool ListPoint::canMove()
 {
   if(currentPosition -> nxt -> nxt -> state != 1000000)
   {
-    currentPosition = currentPosition -> nxt;
     return(true);
   }
   return(false);
 }
 
+//####### move #######////####### move #######////####### move #######//
+//####### move #######////####### move #######////####### move #######//
+
+void ListPoint::move()
+{
+  currentPosition = currentPosition -> nxt;
+}
 
 //####### deletePoint #######////####### deletePoint #######////####### deletePoint #######//
 //####### deletePoint #######////####### deletePoint #######////####### deletePoint #######//

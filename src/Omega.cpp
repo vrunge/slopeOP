@@ -322,12 +322,28 @@ void Omega::algoPruning(std::vector< double >& data)
   for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
   for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
 
-  double* MAX_Y = new double[n];
-  double* MIN_Y = new double[n];
-  MAX_Y[n-1] = 1.0*data[n-2];
-  MIN_Y[n-1] = 1.0*data[n-2];
-  for(int i = n-2; i > -1; i--){MAX_Y[i] = std::max(1.0*data[i], MAX_Y[i+1]);}
-  for(int i = n-2; i > -1; i--){MIN_Y[i] = std::min(1.0*data[i], MIN_Y[i+1]);}
+  double* S1decay = new double[n];
+  S1decay[0] = 0;
+  for(unsigned int i = 1; i < n; i++){S1decay[i] = S1decay[i-1] + data[i-1];} //cumsum from 0, y_1,...
+
+  double* MAX_Y = new double[n]; //new type of max
+  double* MIN_Y = new double[n]; //new type of min
+
+  for(unsigned int i = 0; i < n; i++)
+  {
+    MAX_Y[i] = 1.0*data[i];
+    MIN_Y[i] = 1.0*data[i];
+  }
+
+  for(unsigned int i = 0; i < n-1; i++)
+  {
+    for(unsigned int j = i + 1; j < n-1; j++)
+    {
+      MAX_Y[i] = std::max(S1decay[j+1] - S1decay[i], MAX_Y[i]);
+      MIN_Y[i] = std::min(S1decay[j+1] - S1decay[i], MIN_Y[i]);
+    }
+  }
+
 
 
   std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
@@ -357,8 +373,8 @@ void Omega::algoPruning(std::vector< double >& data)
   double delta;
   double DELTA;
   double K;
-
   int nbPosition = 0;
+
   ///
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
@@ -383,11 +399,10 @@ void Omega::algoPruning(std::vector< double >& data)
       temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty;
       temp_indState = *u_it;
       temp_chpt = *t_it;
-      nbPosition = nbPosition + 1;
 
       u_it = u_pos[v].begin();
       t_it = t_pos[v].begin();
-      while (t_it != t_pos[v].end())
+      while(t_it != t_pos[v].end())
       {
         nbPosition = nbPosition + 1;
         temp_cost = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) + penalty;
@@ -413,20 +428,14 @@ void Omega::algoPruning(std::vector< double >& data)
       ////////////////////////
       u_it = u_pos[v].begin();
       t_it = t_pos[v].begin();
-
       while(t_it != t_pos[v].end())
       {
-        Tp1 = T+1;
+        Tp1 = T + 1;
         DELTA = states[*u_it] - states[v];
-        if(DELTA >= 0)
-        {
-          delta = MAX_Y[T] - states[v];
-        }
-        else
-        {
-          delta = MIN_Y[T] - states[v];
-        }
-        K = SP[T] - SP[*t_it] -  (*t_it + 1) * (S1[T] - S1[*t_it]);
+        if(DELTA >= 0){delta = MAX_Y[T] - states[v];}
+          else{delta = MIN_Y[T] - states[v];}
+
+        K = SP[T] - SP[*t_it] -  1.0*(*t_it + 1) * (S1[T] - S1[*t_it]);
 
         if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S1[*t_it], S1[T], S2[*t_it], S2[T], SP[*t_it], SP[T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
         {
@@ -435,11 +444,14 @@ void Omega::algoPruning(std::vector< double >& data)
         }
         else{++u_it; ++t_it;}
       }
+
     }
   }
 
   pruning = 2.0*nbPosition/(1.0*p*p*n*(n-1)); //nbPosition seen / nbPosition total
 
+  delete [] S1decay;
+  S1decay = NULL;
   delete [] S1;
   S1 = NULL;
   delete [] S2;
@@ -527,8 +539,8 @@ void Omega::algoPruningMyList(std::vector< double >& data)
   double delta;
   double DELTA;
   double K;
-
   int nbPosition = 0;
+
   ///
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
@@ -552,7 +564,7 @@ void Omega::algoPruningMyList(std::vector< double >& data)
       /////
       for(unsigned int w = 0; w < p; w++)
       {
-        myLists[v] -> addPoint(w, T-1);
+        myLists[v] -> addPoint(w,T-1);
       }
 
       /// FIRST ELEMENT
@@ -566,8 +578,9 @@ void Omega::algoPruningMyList(std::vector< double >& data)
       temp_chpt = t;
       nbPosition = nbPosition + 1;
 
-      while(myLists[v] -> move() == true)
+      while(myLists[v] -> canMove() == true)
       {
+        myLists[v] -> move();
         nbPosition = nbPosition + 1;
         u = myLists[v] -> getState();
         t = myLists[v] -> getTime();
@@ -592,11 +605,11 @@ void Omega::algoPruningMyList(std::vector< double >& data)
       ///// PRUNING STEP /////
       ////////////////////////
       myLists[v] -> initializeCurrentPosition();
-      do
+      while(myLists[v] -> canMove() == true)
       {
         u = myLists[v] -> getState();
         t = myLists[v] -> getTime();
-        Tp1 = T+1;
+        Tp1 = T + 1;
 
         DELTA = states[u] - states[v];
         if(DELTA >= 0){delta = MAX_Y[T] - states[v];}
@@ -607,9 +620,24 @@ void Omega::algoPruningMyList(std::vector< double >& data)
         if((Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) > temp_Q) && cost.pruningTest(t, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(t, T, nm1, delta, DELTA, K, states[v]))
         {
           myLists[v] -> deletePoint();
-        }
-      }while(myLists[v] -> move() == true);
+        }else{myLists[v] -> move();}
+      }
 
+        ///LAST ELEMENT IN LIST
+        u = myLists[v] -> getState();
+        t = myLists[v] -> getTime();
+        Tp1 = T + 1;
+
+        DELTA = states[u] - states[v];
+        if(DELTA >= 0){delta = MAX_Y[T] - states[v];}
+        else{delta = MIN_Y[T] - states[v];}
+
+        K = SP[T] - SP[t] -  (t + 1) * (S1[T] - S1[t]);
+
+        if((Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) > temp_Q) && cost.pruningTest(t, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(t, T, nm1, delta, DELTA, K, states[v]))
+        {
+          myLists[v] -> deletePoint();
+        }
     }
   }
 

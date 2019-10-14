@@ -19,7 +19,8 @@ public:
   unsigned int getTime();
 
   void addPoint(unsigned int s, unsigned int t);
-  bool move();
+  bool canMove();
+  void move();
   void deletePoint();
   void initializeCurrentPosition();
 
