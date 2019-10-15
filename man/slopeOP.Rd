@@ -18,16 +18,18 @@ slopeOP(data = c(0), states = c(0), penalty = 0, constraint = "null",
 
 \item{minAngle}{a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"}
 
-\item{type}{string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property or "pruning" = pelt-type property}
+\item{type}{string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property or "pruningMyList" = pelt-like property with a hand-made list structure}
 
 \item{testMode}{a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)}
 }
 \value{
-a list of three elements  = (changepoints, state parameters, global cost)
-'changepoints' is the vector of changepoints (we give the extremal values of all segments from left to right)
-'states' is the vector of successive states. states[i] is the value we infered at position changepoints[i]
-'globalCost' is a number equal to the global cost of the penalized changepoint problem
-'pruning' is the reduction of work for the algo vs. no pruned algo
+a list of 3 elements  = (changepoints, states, globalCost). (Pruning is optional)
+\describe{
+\item{\code{changepoints}}{is the vector of changepoints (we return the extremal values of all segments from left to right)}
+\item{\code{states}}{is the vector of successive states. states[i] is the value we inferred at position changepoints[i]}
+\item{\code{globalCost}}{is a number equal to the global cost of the penalized change-in-slope problem}
+\item{\emph{pruning}}{is the percent of positions to consider in matrix Q  (returned only if testMode = TRUE)}
+}
 }
 \description{
 Optimal partitioning algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values).

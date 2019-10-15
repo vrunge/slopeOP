@@ -10,33 +10,64 @@
 
 Costs::Costs(){}
 
+
+//####### slopeCost #######////####### slopeCost #######////####### slopeCost #######//
+//####### slopeCost #######////####### slopeCost #######////####### slopeCost #######//
+
 double Costs::slopeCost(double& u, double& v, unsigned int& t, unsigned int& T, double& S1t, double& S1T, double& S2t, double& S2T, double& SPt, double& SPT)
 {
+  ///REMARK : t -> t+1 and T -> T+1 to get indexation starting from 1
   double res = S2T-S2t + (v*v-u*u)/2.0 + (T-t)*(u*u + u*v + v*v)/3.0 + (v-u)*(v-u)/(6.0*(T-t)) - (2.0/(T-t))*(((T+1)*u-(t+1)*v)*(S1T-S1t) + (v-u)*(SPT-SPt));
   return(res);
 }
 
 
+//####### vhat #######////####### vhat #######////####### vhat #######//
+//####### vhat #######////####### vhat #######////####### vhat #######//
+
 double Costs::vhat(double& v, unsigned int& t, unsigned int& T, double& S1t, double& S1T, double& SPt, double& SPT)
 {
+  ///REMARK : t -> t+1 and T -> T+1 to get indexation starting from 1
   double res = (6.0/((T-t-1)*(2.0*(T-t)-1)))*((T+1)*(S1T-S1t) - (SPT-SPt)) - v*(T-t+1)/(2.0*(T-t)-1);
   return(res);
 }
 
 
-unsigned int Costs::closestState(double& v, double* states, unsigned int p)
+//####### closestStateIndex #######////####### closestStateIndex #######////####### closestStateIndex #######//
+//####### closestStateIndex #######////####### closestStateIndex #######////####### closestStateIndex #######//
+
+unsigned int Costs::closestStateIndex(double& v, double* states, unsigned int p)
 {
-  unsigned int index = p;
-  if(v <= states[0]){index = 0;}else{if(v >= states[p-1]){index = p-1;}}
-  if(index == p)
+  if(v <= states[0]){return(0);}
+  if(v >= states[p - 1]){return(p - 1);}
+
+  // binary search
+  unsigned int i = 0, j = p, mid = 0;
+  while(i < j)
   {
-    index = 0;
-    while(v > states[index]){index = index + 1;}
-    if(states[index] + states[index-1] > 2*v){index = index - 1;}
+    mid = (i + j)/2;
+    if(states[mid] == v){return(mid);}
+
+    if(v < states[mid])
+    {
+      if(mid > 0 && v > states[mid - 1])
+        {if(states[mid - 1] + states[mid] > 2*v){return(mid - 1);}else{return(mid);}}
+      j = mid;
+    }
+    else
+    {
+      if (mid < (p - 1) && v < states[mid + 1])
+        {if(states[mid] + states[mid + 1] > 2*v){return(mid);}else{return(mid + 1);}}
+      i = mid + 1;
+    }
   }
-  return(index);
+
+  return(mid);
 }
 
+
+//####### pruningTest #######////####### pruningTest #######////####### pruningTest #######//
+//####### pruningTest #######////####### pruningTest #######////####### pruningTest #######//
 
 bool Costs::pruningTest(unsigned int& tau, unsigned int& t, unsigned int& testT, double& delta, double& DELTA, double& K, double& v)
 {
@@ -44,10 +75,16 @@ bool Costs::pruningTest(unsigned int& tau, unsigned int& t, unsigned int& testT,
   double res = (delta - (DELTA/3.0))*(testT+1) - (v + delta)*(t+2) + (v + (DELTA/3.0))*(tau+1) + ((2*K)+ (DELTA/6.0))/(t-tau);
   if(DELTA > 0 && res <= 0){response = true;}
   if(DELTA < 0 && res >= 0){response = true;}
-  if(DELTA == 0){response = false;} /// to be done
+  if(DELTA == 0)
+  {
+    response = true; //we only need the PELT-type inequality to prune
+  }
   return(response);
 }
 
+
+//####### angleTest #######////####### angleTest #######////####### angleTest #######//
+//####### angleTest #######////####### angleTest #######////####### angleTest #######//
 
 bool Costs::angleTest(unsigned int& t1, unsigned int& t2, unsigned int& t3, double& v1, double& v2, double& v3, double& minAngle)
 {
@@ -61,4 +98,3 @@ bool Costs::angleTest(unsigned int& t1, unsigned int& t2, unsigned int& t3, doub
 
   return(response);
 }
-

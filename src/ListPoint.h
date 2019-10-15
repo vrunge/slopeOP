@@ -5,25 +5,32 @@
 #define LISTPOINT_H
 
 #include "Point.h"
+#include <vector>
 #include <math.h>
 
-class ListPoint ///DANGER: THERE IS "NO" EMPTY LIST. ALWAYS ADD SOME ELEMENTS
+class ListPoint
 {
 public:
-  ListPoint(); //create an empty list
+  ListPoint();
+  ListPoint(unsigned int maxSize);
+  ~ListPoint();
+
   unsigned int getState();
   unsigned int getTime();
 
-  void initializeCurrentPosition(); //currentPosition = firstPoint
-  void addPoint(Point* P); //at the beginning after (0,0)
-  void deleteNxtPoint();
-  bool move(); //DANGER we can move only in a non-empty list
-
-  void show();
+  void addPoint(unsigned int s, unsigned int t);
+  bool canMove();
+  void move();
+  void deletePoint();
+  void initializeCurrentPosition();
 
 private:
-  Point* firstPoint;
+  Point* arrayPoint;
   Point* currentPosition;
+  unsigned int nbAdd;
+
+  unsigned int listLength;
+
 };
 
 #endif // LISTPOINT_H

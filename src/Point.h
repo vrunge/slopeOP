@@ -9,6 +9,7 @@
 class Point
 {
   public:
+    Point();
     Point(unsigned int s, unsigned int t);
     unsigned int state;
     unsigned int time;

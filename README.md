@@ -14,43 +14,57 @@
 
 > [Options for constraining inference](#options)
 
+> [plot function](#plot)
+
 <a id="intro"></a>
 
 ## Introduction
 
-The package `slopeOP` is designed to segment univariate data <img src="/tex/b704a970e46e8418f3ef56718438b122.svg?invert_in_darkmode&sanitize=true" align=middle width=126.38913869999998pt height=24.65753399999998pt/> by a continuous piecewise linear signal with restriction on starting/ending values for the segments. The changepoint vector <img src="/tex/ed535ca37308856c5f0c6d85b4d4c676.svg?invert_in_darkmode&sanitize=true" align=middle width=209.11492305pt height=27.91243950000002pt/> defines the <img src="/tex/33359de825e43daa97171e27f6558ae9.svg?invert_in_darkmode&sanitize=true" align=middle width=37.38576269999999pt height=22.831056599999986pt/> segments <img src="/tex/97a268c17395aace06ce389334ba5322.svg?invert_in_darkmode&sanitize=true" align=middle width=115.02097364999997pt height=24.65753399999998pt/>, <img src="/tex/59680c09e0e2d723d0bcf2005047b028.svg?invert_in_darkmode&sanitize=true" align=middle width=73.18587374999998pt height=22.831056599999986pt/> with fixed bounds <img src="/tex/370a29c873e3d269a6111aa219085d0b.svg?invert_in_darkmode&sanitize=true" align=middle width=44.697406049999984pt height=21.18721440000001pt/> and  <img src="/tex/afdb85da7c3e7b7c3d226050994dbf5f.svg?invert_in_darkmode&sanitize=true" align=middle width=63.70246739999999pt height=14.15524440000002pt/>. We use the set <img src="/tex/36dd5900c84c0ddd4a48f4858bbd6e8f.svg?invert_in_darkmode&sanitize=true" align=middle width=264.26770754999995pt height=27.91243950000002pt/> to define the minimal global cost given by
+The package `slopeOP` is designed to segment univariate data <img src="/tex/b704a970e46e8418f3ef56718438b122.svg?invert_in_darkmode&sanitize=true" align=middle width=126.38913869999998pt height=24.65753399999998pt/> by a continuous piecewise linear signal with restrictions on starting/ending values for the inferred segments. The finite set of states <img src="/tex/cef39aeb23a61b09d838693a0897fe03.svg?invert_in_darkmode&sanitize=true" align=middle width=11.187179849999989pt height=22.465723500000017pt/> contains these values. 
 
-<p align="center"><img src="/tex/a1dbd44a6b2fbeb770fcf69f85a4a3df.svg?invert_in_darkmode&sanitize=true" align=middle width=277.1488236pt height=49.315569599999996pt/></p>
+When we write <img src="/tex/dca84180777f523a6d1cb11ceff47536.svg?invert_in_darkmode&sanitize=true" align=middle width=124.85777534999997pt height=14.15524440000002pt/>, the variable <img src="/tex/6f9bad7347b91ceebebd3ad7e6f6f2d1.svg?invert_in_darkmode&sanitize=true" align=middle width=7.7054801999999905pt height=14.15524440000002pt/> goes through all the values of <img src="/tex/cef39aeb23a61b09d838693a0897fe03.svg?invert_in_darkmode&sanitize=true" align=middle width=11.187179849999989pt height=22.465723500000017pt/> from the smallest one to the biggest one. For computational efficiency we recommend to have <img src="/tex/13f705a91487b0bb06669ee7c6c3552f.svg?invert_in_darkmode&sanitize=true" align=middle width=105.80650409999998pt height=22.831056599999986pt/> but this is not mandatory. 
 
-where <img src="/tex/99751e94989c68f9be0f6aa442bc80d5.svg?invert_in_darkmode&sanitize=true" align=middle width=40.302373649999986pt height=22.831056599999986pt/> is a penalty parameter and <img src="/tex/a44ff4154fc3bc708e9e752a14051324.svg?invert_in_darkmode&sanitize=true" align=middle width=49.762892849999986pt height=24.65753399999998pt/> is the minimal cost over the segment <img src="/tex/add1478513cabbadcd5004323f01b74c.svg?invert_in_darkmode&sanitize=true" align=middle width=62.71697189999998pt height=24.65753399999998pt/>. The penalty <img src="/tex/8217ed3c32a785f0b5aad4055f432ad8.svg?invert_in_darkmode&sanitize=true" align=middle width=10.16555099999999pt height=22.831056599999986pt/> is understood as an additional cost when introducing a new segment. 
+The cost for data <img src="/tex/7d54d6946c15cd803b31e7da5077c813.svg?invert_in_darkmode&sanitize=true" align=middle width=40.78280084999999pt height=14.15524440000002pt/>, <img src="/tex/a7e59809c70c5654d0732669ce4d3cf6.svg?invert_in_darkmode&sanitize=true" align=middle width=36.90056204999999pt height=20.221802699999984pt/>, with linear interpolation from value <img src="/tex/286f7d4815c0996530bda7973b1ec5ea.svg?invert_in_darkmode&sanitize=true" align=middle width=14.25802619999999pt height=14.15524440000002pt/> to value <img src="/tex/97c7f491f7ac1623c0a86b1fb656029b.svg?invert_in_darkmode&sanitize=true" align=middle width=14.25802619999999pt height=14.15524440000002pt/> is given by
 
-The cost for data <img src="/tex/7d54d6946c15cd803b31e7da5077c813.svg?invert_in_darkmode&sanitize=true" align=middle width=40.78280084999999pt height=14.15524440000002pt/> with linear interpolation from value <img src="/tex/44bc9d542a92714cac84e01cbbb7fd61.svg?invert_in_darkmode&sanitize=true" align=middle width=8.68915409999999pt height=14.15524440000002pt/> to value <img src="/tex/4bdc8d9bcfb35e1c9bfb51fc69687dfc.svg?invert_in_darkmode&sanitize=true" align=middle width=7.054796099999991pt height=22.831056599999986pt/> is given by
+<p align="center"><img src="/tex/32da28b15640aa1c521680c305ded2fc.svg?invert_in_darkmode&sanitize=true" align=middle width=401.57801639999997pt height=48.39056475pt/></p>
 
-<p align="center"><img src="/tex/77e662a6ebeab23830009ce77fbd9557.svg?invert_in_darkmode&sanitize=true" align=middle width=358.5926619pt height=48.39056475pt/></p>
+The value <img src="/tex/286f7d4815c0996530bda7973b1ec5ea.svg?invert_in_darkmode&sanitize=true" align=middle width=14.25802619999999pt height=14.15524440000002pt/> is "unseen" as the cost <img src="/tex/6598c6a71c20e965dba8e739fd65d865.svg?invert_in_darkmode&sanitize=true" align=middle width=70.78262729999999pt height=26.76175259999998pt/> obtained at index <img src="/tex/0fe1677705e987cac4f589ed600aa6b3.svg?invert_in_darkmode&sanitize=true" align=middle width=9.046852649999991pt height=14.15524440000002pt/> is not present in the summation.
 
-which can be computed in constant time with the formula 
+Data are generated by the model 
 
-<p align="center"><img src="/tex/da574314e6b90740e74ddfb986bd58cb.svg?invert_in_darkmode&sanitize=true" align=middle width=484.25056514999994pt height=39.887022449999996pt/></p>
+<p align="center"><img src="/tex/8525275768014f9e64d0244f61ab600f.svg?invert_in_darkmode&sanitize=true" align=middle width=481.47380489999995pt height=35.82121785pt/></p>
 
-<p align="center"><img src="/tex/3625658a3a08ace419cc04fe7315f856.svg?invert_in_darkmode&sanitize=true" align=middle width=351.10582155pt height=34.3600389pt/></p>
+with <img src="/tex/9e2fef61c286c438282ce2bf9513dd8d.svg?invert_in_darkmode&sanitize=true" align=middle width=239.6036841pt height=21.18721440000001pt/>, <img src="/tex/e5e607c35cb2b5fa02be9a25cbb7733b.svg?invert_in_darkmode&sanitize=true" align=middle width=107.10602924999999pt height=22.465723500000017pt/> and <img src="/tex/5118258da41c2cdc7d0fd96f2955fe02.svg?invert_in_darkmode&sanitize=true" align=middle width=95.95543319999999pt height=26.76175259999998pt/> identically and independently distributed (iid). The vector <img src="/tex/aaf8528aaf165a68b1715ed210c179b4.svg?invert_in_darkmode&sanitize=true" align=middle width=118.53886274999999pt height=24.65753399999998pt/> is called a changepoint vector. The optimization problem is then the following:
+
+<p align="center"><img src="/tex/c3f1419da1436d3dcaf4bb12df979464.svg?invert_in_darkmode&sanitize=true" align=middle width=453.2107701pt height=72.48949455pt/></p>
+
+where the states defined inside the cost function yield the continuity constraint between successive segments.
+
+<img src="/tex/99751e94989c68f9be0f6aa442bc80d5.svg?invert_in_darkmode&sanitize=true" align=middle width=40.302373649999986pt height=22.831056599999986pt/> is a penalty parameter, understood as an additional cost when introducing a new segment. 
+
+Notice that the cost can be computed in constant time with the formula 
+
+<p align="center"><img src="/tex/65dc4200c058ac688623e4791c2e8939.svg?invert_in_darkmode&sanitize=true" align=middle width=536.11095285pt height=34.3600389pt/></p>
+
+<p align="center"><img src="/tex/a1d9b5c990cdc52fb8027b2688f7cd9c.svg?invert_in_darkmode&sanitize=true" align=middle width=312.55418204999995pt height=39.887022449999996pt/></p>
 
 where
 
-<p align="center"><img src="/tex/1aab79a04b5886855193911c1cff1343.svg?invert_in_darkmode&sanitize=true" align=middle width=512.84137905pt height=47.02068525pt/></p>
+<p align="center"><img src="/tex/2b92786806bccea954f56077a6b80ab1.svg?invert_in_darkmode&sanitize=true" align=middle width=512.84137905pt height=47.02068525pt/></p>
 
-To address the continuity constraint, we introduce the function <img src="/tex/ae890e198f4a771aa52230b69322c12f.svg?invert_in_darkmode&sanitize=true" align=middle width=74.25482954999998pt height=24.65753399999998pt/> which is the optimal penalized cost up to position <img src="/tex/4f4f4e395762a3af4575de74c019ebb5.svg?invert_in_darkmode&sanitize=true" align=middle width=5.936097749999991pt height=20.221802699999984pt/> with a last infered value equal to <img src="/tex/6c4adbc36120d62b98deef2a20d5d303.svg?invert_in_darkmode&sanitize=true" align=middle width=8.55786029999999pt height=14.15524440000002pt/> (at position t). The idea is then to update a set
+To address the continuity constraint by a dynamic programming algorithm, we introduce the function <img src="/tex/2f0bbd76007598852957bb89252ea7cb.svg?invert_in_darkmode&sanitize=true" align=middle width=72.55010564999998pt height=24.65753399999998pt/> which is the optimal penalized cost up to position <img src="/tex/4f4f4e395762a3af4575de74c019ebb5.svg?invert_in_darkmode&sanitize=true" align=middle width=5.936097749999991pt height=20.221802699999984pt/> with a last infered value equal to <img src="/tex/6f9bad7347b91ceebebd3ad7e6f6f2d1.svg?invert_in_darkmode&sanitize=true" align=middle width=7.7054801999999905pt height=14.15524440000002pt/> (at position t). The idea is then to update a set
 
-<p align="center"><img src="/tex/64b17ac0eaa9a23ba8f6e8beeef8b6b3.svg?invert_in_darkmode&sanitize=true" align=middle width=239.36380874999998pt height=16.438356pt/></p>
+<p align="center"><img src="/tex/6f0b14e5caf963602d6ad84a46571ed2.svg?invert_in_darkmode&sanitize=true" align=middle width=237.13390965pt height=16.438356pt/></p>
 
-at any time step <img src="/tex/985dbad85d61b07e704840368824ee09.svg?invert_in_darkmode&sanitize=true" align=middle width=88.86217889999998pt height=24.65753399999998pt/>. <img src="/tex/6005746712b75a74769ef4baa4d8fae3.svg?invert_in_darkmode&sanitize=true" align=middle width=32.40983954999999pt height=14.15524440000002pt/> and <img src="/tex/c1a3766b77f3cfa5e53205c84f3a7b1b.svg?invert_in_darkmode&sanitize=true" align=middle width=34.21767194999999pt height=14.15524440000002pt/> are the bounds of the interval of possible ending values for the considered data to segment. They can be determined in a preprocessing step.
+at any time step <img src="/tex/985dbad85d61b07e704840368824ee09.svg?invert_in_darkmode&sanitize=true" align=middle width=88.86217889999998pt height=24.65753399999998pt/>. <img src="/tex/95e4b0db7bae72fed7d46a11d7f120e1.svg?invert_in_darkmode&sanitize=true" align=middle width=32.14725194999999pt height=14.15524440000002pt/> and <img src="/tex/17a6319f14ff4191293702fe0b373c37.svg?invert_in_darkmode&sanitize=true" align=middle width=33.95508434999999pt height=14.15524440000002pt/> are the bounds of the interval of possible ending values for the considered data to segment. They can be determined in a preprocessing step.
 
 The new update with continuity constraint takes the form
 
-<p align="center"><img src="/tex/ab4ef0926386dff2055b015b92895c58.svg?invert_in_darkmode&sanitize=true" align=middle width=368.09542769999996pt height=31.6657044pt/></p>
-
+<p align="center"><img src="/tex/a699538b2ec9cb612fe187e38f41a204.svg?invert_in_darkmode&sanitize=true" align=middle width=432.32085104999993pt height=39.452455349999994pt/></p>
 
 where the presence of the same value <img src="/tex/6dbb78540bd76da3f1625782d42d6d16.svg?invert_in_darkmode&sanitize=true" align=middle width=9.41027339999999pt height=14.15524440000002pt/> in <img src="/tex/e05578c58a4f9e4f1301d4cf24e3234c.svg?invert_in_darkmode&sanitize=true" align=middle width=20.387619449999992pt height=22.465723500000017pt/> and the cost realizes the continuity constraint. At initial step we simply have <img src="/tex/cf8c7572e6ac52e95e69475a2b4281e3.svg?invert_in_darkmode&sanitize=true" align=middle width=86.58177495pt height=24.65753399999998pt/>. 
 
+The slopeOP function computes <img src="/tex/8dfc04a9fbcadb584faf331368654540.svg?invert_in_darkmode&sanitize=true" align=middle width=39.274025999999985pt height=24.65753399999998pt/> for all <img src="/tex/d4982b4fcd5203e3c32cdf5c3ba3211f.svg?invert_in_darkmode&sanitize=true" align=middle width=38.98379759999999pt height=22.465723500000017pt/> and <img src="/tex/28166798932f09dc74160bd665b9663e.svg?invert_in_darkmode&sanitize=true" align=middle width=74.25025244999999pt height=21.18721440000001pt/>. The argminimum state into the set <img src="/tex/44314730b45a8f895f72c002bb5251d5.svg?invert_in_darkmode&sanitize=true" align=middle width=21.550742399999987pt height=22.465723500000017pt/> gives the last value of the last inferred segment. A backtracking procedure eventually returns the optimal changepoint vector with all its associated state values.
 
 <a id="sf"></a>
 
@@ -64,14 +78,13 @@ We install the package from Github:
 library(slopeOP)
 ```
 
-We simulate data with the function `slopeData` given the indices for extremal values and in second vector these values to reach for corresponding indices. The last parameter is the standard deviation of a normal standard noise.
-
+We simulate data with the function `slopeData` with arguments `index` (a changepoint vector), `states` its associated state values and the `noise` level which is the standard deviation of a normal standard noise (iid).
 
 ```r
-data <- slopeData(c(1,100,200,300,500), c(0,1,0,3,2), 1)
+data <- slopeData(index = c(1,100,200,300,500), states = c(0,1,0,3,2), noise = 1)
 ```
 
-The changepoint detection is done by using the function `slopeOP`
+The changepoint detection is achieved by using the function `slopeOP`
 
 
 ```r
@@ -92,19 +105,19 @@ slopeOP(data, c(0,1,2,3), 10)
 ## [1] "slopeOP"
 ```
 
-In `slopeOP` function, the parameter `type` is `channel` by default. With type equal to `channel` we use the monotonicity property in optimal cost matrix to reduce time complexity. If it is equal to `pruning` we prune some positions using a theorem taking into account unseen data.
+In `slopeOP` function, the parameter `type` is `channel` by default. With type equal to `channel` we use the monotonicity property in optimal cost matrix to reduce time complexity. If it is equal to `pruning` we prune some positions using a theorem taking into account unseen data. The pruning option is similar to PELT pruning but less effective than channel in this case.
 
 <a id="options"></a>
 
 ## Options for constraining inference
 
 
-Parameter `constraint` can be set to `up` which corresponds to a restriction to nondecreasing vector parameter.
+Parameter `constraint` can be set to `isotonic` which corresponds to a restriction to nondecreasing state vectors.
 
 
 ```r
 data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,77,73,80), 1)
-slopeOP(data, 71:80, 5, constraint = "up")
+slopeOP(data, 71:80, 5, constraint = "isotonic")
 ```
 
 ```
@@ -121,12 +134,12 @@ slopeOP(data, 71:80, 5, constraint = "up")
 ## [1] "slopeOP"
 ```
 
-With `constraint` equal to `updown` the infered vector is unimodal (with a maximum).
+With `constraint` equal to `unimodal` the infered signal is increasing and then decreasing.
 
 
 ```r
 data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,78,73,75), 1)
-slopeOP(data, 71:80, 5, constraint = "updown")
+slopeOP(data, 71:80, 5, constraint = "unimodal")
 ```
 
 ```
@@ -166,6 +179,20 @@ slopeOP(data,70:80,5, constraint = "smoothing", minAngle = 170)
 ## [1] "slopeOP"
 ```
 
+<a id="plot"></a>
+
+## Plot function
+
+A simple plot function can be used to show raw data with the inferred segments on the same graph. Option `data =` should be always present in the call of the plot function.
+
+
+```r
+data <- slopeData(c(1,11,21),c(70,80,70),2)
+slope <- slopeOP(data,70:80,10, constraint = "null", type = "channel")
+plot(slope, data = data)
+```
+
+![](Rplot.png)
 
 
 [Back to Top](#top)
