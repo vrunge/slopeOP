@@ -328,23 +328,20 @@ void Omega::algoPruning(std::vector< double >& data)
 
   double* MAX_Y = new double[n]; //new type of max
   double* MIN_Y = new double[n]; //new type of min
-
   for(unsigned int i = 0; i < n; i++)
   {
-    MAX_Y[i] = 1.0*data[i];
-    MIN_Y[i] = 1.0*data[i];
+    MIN_Y[i] = 2.0*data[i];
+    MAX_Y[i] = 2.0*data[i];
   }
 
   for(unsigned int i = 0; i < n-1; i++)
   {
     for(unsigned int j = i + 1; j < n-1; j++)
     {
-      MAX_Y[i] = std::max(S1decay[j+1] - S1decay[i], MAX_Y[i]);
-      MIN_Y[i] = std::min(S1decay[j+1] - S1decay[i], MIN_Y[i]);
+      MIN_Y[i] = std::min(2.0*(S1decay[j+1] - S1decay[i]), MIN_Y[i]);
+      MAX_Y[i] = std::max(2.0*(S1decay[j+1] - S1decay[i]), MAX_Y[i]);
     }
   }
-
-
 
   std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
   std::list< unsigned int>* u_pos = new std::list< unsigned int>[p];
@@ -500,20 +497,20 @@ void Omega::algoPruningMyList(std::vector< double >& data)
   S1decay[0] = 0;
   for(unsigned int i = 1; i < n; i++){S1decay[i] = S1decay[i-1] + data[i-1];} //cumsum from 0, y_1,...
 
-  double* MAX_Y = new double[n]; //new type of max
   double* MIN_Y = new double[n]; //new type of min
+  double* MAX_Y = new double[n]; //new type of max
   for(unsigned int i = 0; i < n; i++)
   {
-    MAX_Y[i] = 1.0*data[i];
-    MIN_Y[i] = 1.0*data[i];
+    MIN_Y[i] = 2.0*data[i];
+    MAX_Y[i] = 2.0*data[i];
   }
 
   for(unsigned int i = 0; i < n-1; i++)
   {
     for(unsigned int j = i + 1; j < n-1; j++)
     {
-      MAX_Y[i] = std::max(S1decay[j+1] - S1decay[i], MAX_Y[i]);
-      MIN_Y[i] = std::min(S1decay[j+1] - S1decay[i], MIN_Y[i]);
+      MIN_Y[i] = std::min(2.0*(S1decay[j+1] - S1decay[i]), MIN_Y[i]);
+      MAX_Y[i] = std::max(2.0*(S1decay[j+1] - S1decay[i]), MAX_Y[i]);
     }
   }
 
