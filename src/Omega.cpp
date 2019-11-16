@@ -328,23 +328,20 @@ void Omega::algoPruning(std::vector< double >& data)
 
   double* MAX_Y = new double[n]; //new type of max
   double* MIN_Y = new double[n]; //new type of min
-
   for(unsigned int i = 0; i < n; i++)
   {
-    MAX_Y[i] = 1.0*data[i];
-    MIN_Y[i] = 1.0*data[i];
+    MIN_Y[i] = 2.0*data[i];
+    MAX_Y[i] = 2.0*data[i];
   }
 
   for(unsigned int i = 0; i < n-1; i++)
   {
     for(unsigned int j = i + 1; j < n-1; j++)
     {
-      MAX_Y[i] = std::max(S1decay[j+1] - S1decay[i], MAX_Y[i]);
-      MIN_Y[i] = std::min(S1decay[j+1] - S1decay[i], MIN_Y[i]);
+      MIN_Y[i] = std::min(2.0*(S1decay[j+1] - S1decay[i]), MIN_Y[i]);
+      MAX_Y[i] = std::max(2.0*(S1decay[j+1] - S1decay[i]), MAX_Y[i]);
     }
   }
-
-
 
   std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
   std::list< unsigned int>* u_pos = new std::list< unsigned int>[p];
@@ -500,20 +497,20 @@ void Omega::algoPruningMyList(std::vector< double >& data)
   S1decay[0] = 0;
   for(unsigned int i = 1; i < n; i++){S1decay[i] = S1decay[i-1] + data[i-1];} //cumsum from 0, y_1,...
 
-  double* MAX_Y = new double[n]; //new type of max
   double* MIN_Y = new double[n]; //new type of min
+  double* MAX_Y = new double[n]; //new type of max
   for(unsigned int i = 0; i < n; i++)
   {
-    MAX_Y[i] = 1.0*data[i];
-    MIN_Y[i] = 1.0*data[i];
+    MIN_Y[i] = 2.0*data[i];
+    MAX_Y[i] = 2.0*data[i];
   }
 
   for(unsigned int i = 0; i < n-1; i++)
   {
     for(unsigned int j = i + 1; j < n-1; j++)
     {
-      MAX_Y[i] = std::max(S1decay[j+1] - S1decay[i], MAX_Y[i]);
-      MIN_Y[i] = std::min(S1decay[j+1] - S1decay[i], MIN_Y[i]);
+      MIN_Y[i] = std::min(2.0*(S1decay[j+1] - S1decay[i]), MIN_Y[i]);
+      MAX_Y[i] = std::max(2.0*(S1decay[j+1] - S1decay[i]), MAX_Y[i]);
     }
   }
 
@@ -659,6 +656,154 @@ void Omega::algoPruningMyList(std::vector< double >& data)
   myLists = NULL;
 }
 
+//####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
+//####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
+//####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
+//####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
+//####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
+
+void Omega::algoPruningPELT(std::vector< double >& data)
+{
+  unsigned int n = data.size();
+  unsigned int p = nbStates;
+
+  ///
+  /// PREPROCESSING
+  ///
+  double* S1 = new double[n];
+  double* S2 = new double[n];
+  double* SP = new double[n];
+  S1[0] = data[0];
+  S2[0] = data[0] * data[0];
+  SP[0] = data[0];
+  for(unsigned int i = 1; i < n; i++){S1[i] = S1[i-1] + data[i];}
+  for(unsigned int i = 1; i < n; i++){S2[i] = S2[i-1] + (data[i] * data[i]);}
+  for(unsigned int i = 1; i < n; i++){SP[i] = SP[i-1] + (i+1) * data[i];}
+
+  double* S1decay = new double[n];
+  S1decay[0] = 0;
+  for(unsigned int i = 1; i < n; i++){S1decay[i] = S1decay[i-1] + data[i-1];} //cumsum from 0, y_1,...
+
+  Costs cost;
+  ///
+  /// FILL FIRST COLUMN in Q
+  ///
+  for(unsigned int i = 0; i < p; i++)
+  {
+    Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
+    lastChpt[i][0] = 0;
+    lastIndState[i][0] = 0;
+  }
+
+  ///
+  /// ALGO
+  ///
+  double temp_cost = 0;
+  double temp_Q = -1;
+  unsigned int temp_chpt = 0;
+  unsigned int temp_indState = 0;
+  ///variables for pruning
+  int nbPosition = 0;
+
+  ///
+  /// states u to v -> time position t to T
+  /// explore in (u,t) for fixed (v,T)
+  ///
+
+  ListPoint** myLists = new ListPoint*[p];
+  for(unsigned int q = 0; q < p; q++)
+  {
+    myLists[q] = new ListPoint(n*p);
+  }
+
+  unsigned int t;
+  unsigned int u;
+
+  for(unsigned int T = 1; T < n; T++)
+  {
+    for(unsigned int v = 0; v < p; v++)
+    {
+      /////
+      ///// Add last column to explore
+      /////
+      for(unsigned int w = 0; w < p; w++)
+      {
+        myLists[v] -> addPoint(w,T-1);
+      }
+
+      /// FIRST ELEMENT
+      myLists[v] -> initializeCurrentPosition();
+      u = myLists[v] -> getState();
+      t = myLists[v] -> getTime();
+
+      ///1st element
+      temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+      temp_indState = u;
+      temp_chpt = t;
+      nbPosition = nbPosition + 1;
+
+      while(myLists[v] -> canMove() == true)
+      {
+        myLists[v] -> move();
+        nbPosition = nbPosition + 1;
+        u = myLists[v] -> getState();
+        t = myLists[v] -> getTime();
+
+        temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) + penalty;
+        if(temp_Q > temp_cost)
+        {
+          temp_Q = temp_cost;
+          temp_indState = u;
+          temp_chpt = t;
+        }
+      }
+
+      /////
+      ///// Write response
+      /////
+      Q[v][T] = temp_Q;
+      lastIndState[v][T] = temp_indState;
+      lastChpt[v][T] = temp_chpt;
+
+      ////////////////////////
+      ///// PRUNING STEP /////
+      ////////////////////////
+      myLists[v] -> initializeCurrentPosition();
+      while(myLists[v] -> canMove() == true)
+      {
+        u = myLists[v] -> getState();
+        t = myLists[v] -> getTime();
+
+        if(Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) > temp_Q)
+        {
+          myLists[v] -> deletePoint();
+        }else{myLists[v] -> move();}
+      }
+
+      ///LAST ELEMENT IN LIST
+      u = myLists[v] -> getState();
+      t = myLists[v] -> getTime();
+
+      if(Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S1[t], S1[T], S2[t], S2[T], SP[t], SP[T]) > temp_Q)
+      {
+        myLists[v] -> deletePoint();
+      }
+    }
+  }
+
+  pruning = 2.0*nbPosition/(1.0*p*p*n*(n-1)); //nbPosition seen / nbPosition total
+
+  delete [] S1decay;
+  S1decay = NULL;
+  delete [] S1;
+  S1 = NULL;
+  delete [] S2;
+  S2 = NULL;
+  delete [] SP;
+  SP = NULL;
+  delete [] myLists;
+  myLists = NULL;
+}
 
 //####### backtracking #######////####### backtracking #######////####### backtracking #######//
 //####### backtracking #######////####### backtracking #######////####### backtracking #######//
