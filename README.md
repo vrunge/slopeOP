@@ -16,8 +16,6 @@
 
 > [plot function](#plot)
 
-> [Python bindings](#python)
-
 <a id="intro"></a>
 
 ## Introduction
@@ -197,32 +195,5 @@ plot(slope, data = data)
 ![](Rplot.png)
 
 
-<a id="plot"></a>
-
-## Python Bindings
-
-Instruction to generate slopeOP python module. The following commands have to be run in the base directory of the slopeOP repo.
-
-- Update git submodules
-
-```{sh}
-git submodule init
-git submodule update
-```
-
-- Build and install the module. You have 2 options:
-    1. `pip install -e .` to generate a python importable `".so"` module in this folder
-    2. `pip install` to install the module in the python environment.
-
-- run python and import the module with `import slopeOP`.
-
-The `SlopeOP` python module has 2 functions:
-
-- `op2D(x, y, penalty)` for pice-wise linear OP
-  
-- `slopeOP(data, states, penality, constraint="null", minAngle=0, type="channel")` for SlopeOP
-
-### troubleshooting
-In case of error during build, try to delete the `build` folder (if any) and try to build again.
-
 [Back to Top](#top)
+
