@@ -5,9 +5,13 @@
 #define OMEGA_H
 
 #include <math.h>
-#include<vector>
+#include <vector>
+#include <list>
 
+#ifndef BUILDING_PYTHON_MODULE
 #include "Rcpp.h"
+#endif//BUILDING_PYTHON_MODULE
+
 #include "math.h"
 
 class Omega

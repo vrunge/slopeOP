@@ -35,7 +35,7 @@ Omega *slopeOP(std::vector<double> data, std::vector<double> states, double pena
     }
     if (type == "pruningMax" && constraint == "null")
     {
-        omega->algoPruningMax(data);
+        omega->algoPruningMyList(data);
     }
 
     //DIFFERENT CONSTRAINTS
@@ -74,7 +74,7 @@ PYBIND11_MODULE(segmentation_algos, m)
         .def("GetGlobalCost", &Omega::GetGlobalCost)
         .def("GetPruning", &Omega::GetPruning);
 
-    m.doc() = "ppython interface to segmentaition algorithms"; // optional module docstring
+    m.doc() = "python interface to segmentaition algorithms"; // optional module docstring
     m.def("op2", &op2D, "op2 algorithm", py::arg("x"), py::arg("y"), py::arg("penality"));
     m.def("op2cc", &op2Dcc, "op2 algorithm with continuity contstraint", py::arg("x"), py::arg("y"), py::arg("penality"));
     m.def("slopeOP", &slopeOP, "slopeOP algorithm", py::arg("data"), py::arg("states"), py::arg("penality"),
