@@ -69,10 +69,10 @@ unsigned int Costs::closestStateIndex(double& v, double* states, unsigned int p)
 //####### pruningTest #######////####### pruningTest #######////####### pruningTest #######//
 //####### pruningTest #######////####### pruningTest #######////####### pruningTest #######//
 
-bool Costs::pruningTest(unsigned int& tau, unsigned int& t, unsigned int& testT, double& delta, double& DELTA, double& K, double& v)
+bool Costs::pruningTest(unsigned int& tau, unsigned int& t, unsigned int& testT, double& delta, double& DELTA, double& K, double& s)
 {
   bool response = false;
-  double res = (delta - (DELTA/3.0))*(testT+1) - (v + delta)*(t+2) + (v + (DELTA/3.0))*(tau+1) + ((2*K)+ (DELTA/6.0))/(t-tau);
+  double res = (delta - (DELTA/3.0))*(testT+1) - (s + delta)*(t+2) + (s + (DELTA/3.0))*(tau+1) + ((2*K)+ (DELTA/6.0))/(t-tau);
   if(DELTA > 0 && res <= 0){response = true;}
   if(DELTA < 0 && res >= 0){response = true;}
   if(DELTA == 0)
