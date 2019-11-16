@@ -1,19 +1,14 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include "peltcc_template.h"
+#include "op2d.h"
 #include "Omega.h"
 #include <string>
 
 namespace py = pybind11;
 
-PeltResult<float, float> op2D(vector<float> &x, vector<float> &y, float beta)
+PeltResult<float, float> op2D_float(vector<float> &x, vector<float> &y, float beta)
 {
-    return pelt(x, y, beta);
-}
-
-PeltResult<float, float> op2Dcc(vector<float> &x, vector<float> &y, float beta)
-{
-    return peltcc(x, y, beta);
+    return op2D(x, y, beta);
 }
 
 Omega *slopeOP(std::vector<double> data, std::vector<double> states, double penalty,
@@ -57,7 +52,7 @@ Omega *slopeOP(std::vector<double> data, std::vector<double> states, double pena
     return omega;
 }
 
-PYBIND11_MODULE(segmentation_algos, m)
+PYBIND11_MODULE(slopeOP, m)
 {
     py::class_<PeltResult<float, float>>(m, "PeltResult")
         .def(py::init([](vector<unsigned int> cp, vector<float> x, vector<float> y, double cost) {
@@ -75,8 +70,7 @@ PYBIND11_MODULE(segmentation_algos, m)
         .def("GetPruning", &Omega::GetPruning);
 
     m.doc() = "python interface to segmentaition algorithms"; // optional module docstring
-    m.def("op2", &op2D, "op2 algorithm", py::arg("x"), py::arg("y"), py::arg("penality"));
-    m.def("op2cc", &op2Dcc, "op2 algorithm with continuity contstraint", py::arg("x"), py::arg("y"), py::arg("penality"));
+    m.def("op2D", &op2D_float, "OP algorithm 2D (piece-wise linear fit)", py::arg("x"), py::arg("y"), py::arg("penality"));
     m.def("slopeOP", &slopeOP, "slopeOP algorithm", py::arg("data"), py::arg("states"), py::arg("penality"),
-          py::arg("constraint") = "null", py::arg("angle"), py::arg("type") = "channel");
+          py::arg("constraint") = "null", py::arg("minAngle") = 0, py::arg("type") = "channel");
 }

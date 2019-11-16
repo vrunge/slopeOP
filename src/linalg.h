@@ -36,55 +36,6 @@ template <class T> void range(vector<T> &v) {
   }
 }
 
-// template<typename T1, typename T2>
-// double dot(vector<T1> &a, vector<T2> &b, size_t start, size_t end) {
-//     if(a.size() != b.size()){
-//         throw std::invalid_argument( "a and b must have the same dimension"
-//         );
-//     }
-//     if(start < 0 || end > a.size() ){
-//         throw std::invalid_argument( "invalid start/end range" );
-//     }
-//     double sum = 0;
-//     for (size_t i=start; i< end; i++) {
-//         sum = sum + a[i]*b[i];
-//     }
-//     return sum;
-// }
-// template<typename T1, typename T2>
-// double dot(vector<T1> &a, vector<T2> &b) {
-//     return dot(a, b, 0, a.size());
-// }
-//  //specialization to return int
-// int dot(vector<int> &a, vector<int> &b, size_t start, size_t end);
-// int dot(vector<int> &a, vector<int> &b);
-
-// template<class T>
-// T accumulate(vector<T> &v, size_t start, size_t end) {
-//     if(start < 0 || end > v.size() ){
-//         throw std::invalid_argument( "invalid start/end range" );
-//     }
-//     T sum = 0;
-//     for (typename vector<T>::size_type i=start; i<end; i++) {
-//         sum = sum + v[i];
-//     }
-//     return sum;
-// }
-// template<class T>
-// T accumulate(vector<T> &v) {
-//     return accumulate(v, 0, v.size());
-// }
-
-template <typename T1, typename T2>
-void lin_reg_no_const(vector<T1> &x, vector<T2> &y, double *coeff, size_t start,
-                      size_t end) {
-  *coeff =
-      1.0 /
-      (inner_product(x.begin() + start, x.begin() + end, x.begin() + start,
-                     0.0)) *
-      inner_product(x.begin() + start, x.begin() + end, y.begin() + start, 0.0);
-}
-
 template <typename T1, typename T2>
 void lin_reg(vector<T1> &x, vector<T2> &y, double *coeff, double *intercept,
              size_t start, size_t end) {
@@ -118,10 +69,6 @@ void lin_reg(vector<T1> &x, vector<T2> &y, double *coeff, double *intercept,
 template <typename T1, typename T2>
 void lin_reg(vector<T1> &x, vector<T2> &y, double *coeff, double *intercept) {
   return lin_reg(x, y, coeff, intercept, 0, x.size());
-}
-template <typename T1, typename T2>
-void lin_reg_no_const(vector<T1> &x, vector<T2> &y, double *coeff) {
-  return lin_reg_no_const(x, y, coeff, 0, x.size());
 }
 
 template <typename T>

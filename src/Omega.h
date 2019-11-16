@@ -8,9 +8,9 @@
 #include <vector>
 #include <list>
 
-#ifndef BUILDING_PYTHON_MODULE
+#ifndef DISABLE_RCPP
 #include "Rcpp.h"
-#endif//BUILDING_PYTHON_MODULE
+#endif//DISABLE_RCPP
 
 #include "math.h"
 
