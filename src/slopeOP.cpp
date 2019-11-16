@@ -7,7 +7,7 @@
 
 #include<math.h>
 #include"Omega.h"
-#include"peltcc_template.h" //Marco Pascucci code
+#include"op2d.h" //Marco Pascucci code
 using namespace Rcpp;
 using namespace std;
 
@@ -59,12 +59,7 @@ List linearOP(std::vector<double> x, std::vector<double> data, double penalty, b
     stop("x and y must have the same length.");
   }
 
-  PeltResult<double,double> pr;
-  if(cc == false){
-    pr = pelt(x,data,penalty);
-  } else {
-    pr = peltcc(x,data,penalty);
-  }
+  PeltResult<double,double> pr = op2D(x,data,penalty);
 
   for(unsigned int i = 0; i < pr.cp.size(); i++){
     pr.cp[i] = pr.cp[i] + 1;
