@@ -1,3 +1,7 @@
+// Copyright (c) 2019 Marco Pascucci
+
+#ifdef BUILD_PYTHON_MODULE
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include "op2d.h"
@@ -74,3 +78,4 @@ PYBIND11_MODULE(slopeOP, m)
     m.def("slopeOP", &slopeOP, "slopeOP algorithm", py::arg("data"), py::arg("states"), py::arg("penality"),
           py::arg("constraint") = "null", py::arg("minAngle") = 0, py::arg("type") = "channel");
 }
+#endif

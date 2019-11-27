@@ -1,3 +1,4 @@
+#ifdef BUILD_PYTHON_MODULE
 #include "Omega.h"
 #include <vector>
 #include <iostream>
@@ -20,3 +21,4 @@ int main() {
     }
     cout << endl;
 }
+#endif //BUILD_PYTHON_MODULE
