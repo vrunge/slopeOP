@@ -31,10 +31,10 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
   if(!is.double(minAngle)){stop('minAngle is not a double.')}
   if(minAngle < 0 || minAngle > 180){stop('minAngle must lie between 0 and 180')}
 
-  if(constraint != "null" && constraint != "isotonic" && constraint != "unimodal" && constraint != "smoothing")
-    {stop('Arugment "constraint" not appropriate. Choose among "null", "isotonic", "unimodal" and "smoothing"')}
-  if(type != "null" && type != "channel" && type != "pruning" && type != "pruningMyList" && type != "pruningPELT")
-    {stop('Arugment "type" not appropriate. Choose among "null", "channel" and "pruning"')}
+  allowed.constraints <- c("null", "isotonic", "unimodal", "smoothing")
+  if(!constraint %in% allowed.constraints){stop('constraint must be one of: ', paste(allowed.constraints, collapse=", "))}
+  allowed.types <- c("null", "channel", "pruning", "pruningMyList", "pruningPELT")
+  if(!type %in% allowed.types){stop('type must be one of: ', paste(allowed.types, collapse=", "))}
 
   if(!is.logical(testMode)){stop('testMode must be a boolean')}
 
@@ -66,15 +66,17 @@ slopeData <- function(index = c(0), states = c(0), noise = 0)
   ############
   if(!is.numeric(index)){stop('data values are not all numeric')}
   if(is.unsorted(index)){stop('index should be an increasing vector')}
+  if(length(unique(index)) < length(index)){stop('index is not a strictly increasing sequence')}
+
   if(!is.numeric(states)){stop('states are not all numeric')}
   if(length(index) != length(states)){stop('index and states vectors are of different size')}
   if(!is.double(noise)){stop('noise is not a double.')}
   if(noise < 0){stop('noise must be nonnegative')}
 
   steps <- diff(states)/diff(index)
-  response <- rep(steps,diff(index))
-  response <- c(states[1],cumsum(response)+ states[1])
-  response <- response + rnorm(length(response),0, noise)
+  response <- rep(steps, diff(index))
+  response <- c(states[1], cumsum(response) + states[1])
+  response <- response + rnorm(length(response), 0, noise)
 
   return(response)
 }
