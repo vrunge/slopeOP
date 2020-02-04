@@ -1,10 +1,10 @@
 
 #' slopeOP
-#' @description Optimal partitioning algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values).
+#' @description Optimal partitioning algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values called states).
 #' The algorithm takes into account a continuity constraint between successive segments and infers a continuous piecewise linear signal.
 #' @param data vector of data to segment
 #' @param states vector of states = set of accessible starting/ending values for segments in increasing order.
-#' @param penalty the penalty value (a positive number)
+#' @param penalty the penalty value (a non-negative number)
 #' @param constraint string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"
 #' @param minAngle a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"
 #' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property or "pruningMyList" = pelt-like property with a hand-made list structure
@@ -16,14 +16,14 @@
 #' \item{\code{globalCost}}{is a number equal to the global cost of the penalized change-in-slope problem}
 #' \item{\emph{pruning}}{is the percent of positions to consider in matrix Q  (returned only if testMode = TRUE)}
 #' }
-slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
+slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
 {
   ############
   ### STOP ###
   ############
   if(!is.numeric(data)){stop('data values are not all numeric')}
   if(!is.numeric(states)){stop('states are not all numeric')}
-  if(is.unsorted(states)){stop('states should in increasing order')}
+  if(is.unsorted(states)){stop('states must be in increasing order')}
   if(length(unique(states)) < length(states)){stop('states is not a strictly increasing sequence')}
 
   if(!is.double(penalty)){stop('penalty is not a double.')}
@@ -43,13 +43,14 @@ slopeOP <- function(data = c(0), states = c(0), penalty = 0, constraint = "null"
 
   ###Response class slopeOP###
   ### ATTENTION : we here remove one penalty to globalCost
-  if(testMode == FALSE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - penalty)}
-  if(testMode == TRUE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - penalty, pruning = res$pruningPower)}
+  if(testMode == FALSE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - (length(res$changepoints) - 1) * penalty)}
+  if(testMode == TRUE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - (length(res$changepoints) - 1) * penalty, pruning = res$pruningPower)}
 
   attr(response, "class") <- "slopeOP"
 
   return(response)
 }
+
 
 
 #' slopeData
