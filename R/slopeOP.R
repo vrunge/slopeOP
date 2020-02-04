@@ -13,9 +13,12 @@
 #' \describe{
 #' \item{\code{changepoints}}{is the vector of changepoints (we return the extremal values of all segments from left to right)}
 #' \item{\code{states}}{is the vector of successive states. states[i] is the value we inferred at position changepoints[i]}
-#' \item{\code{globalCost}}{is a number equal to the global cost of the penalized change-in-slope problem}
-#' \item{\emph{pruning}}{is the percent of positions to consider in matrix Q  (returned only if testMode = TRUE)}
+#' \item{\code{globalCost}}{is a number equal to the global cost of the non-penalized change-in-slope problem}
+#' \item{\emph{pruning}}{is the percent of positions to consider in cost matrix Q  (returned only if testMode = TRUE)}
 #' }
+#' @examples
+#' data <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
+#' slopeOP(data, 0:6, 10)
 slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
 {
   ############
