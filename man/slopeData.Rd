@@ -4,10 +4,10 @@
 \alias{slopeData}
 \title{slopeData}
 \usage{
-slopeData(index = c(0), states = c(0), noise = 0)
+slopeData(index, states, noise = 0)
 }
 \arguments{
-\item{index}{a vector of increasing changepoint indexes}
+\item{index}{a vector of increasing changepoint indices}
 
 \item{states}{vector of successive states}
 
@@ -18,4 +18,7 @@ a vector of simulated data
 }
 \description{
 Generate data with a given continuous piecewise linear model
+}
+\examples{
+myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
 }

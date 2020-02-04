@@ -9,17 +9,22 @@
 \arguments{
 \item{x}{a slopeOP class object}
 
-\item{...}{Other parameters}
+\item{...}{other parameters}
 
-\item{data}{the data from which we get res}
+\item{data}{the data from which we get the slopeOP object x}
 
 \item{chpt}{vector of changepoints of the model}
 
 \item{states}{vector of states of the model}
 }
 \value{
-plot data and the inferred slopeOP result
+plot data and the inferred slopeOP result (and the model if specified in 'chpt' and 'states' parameters)
 }
 \description{
-Plot the result of the slopeOP function with the data
+Plot the result of the slopeOP function and the data
+}
+\examples{
+myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 2)
+s <- slopeOP(data = myData, states = 0:6, penalty = 20)
+plot(s, data = myData, chpt = c(1,100,200,300), states = c(0,5,3,6))
 }

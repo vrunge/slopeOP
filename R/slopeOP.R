@@ -13,12 +13,12 @@
 #' \describe{
 #' \item{\code{changepoints}}{is the vector of changepoints (we return the extremal values of all segments from left to right)}
 #' \item{\code{states}}{is the vector of successive states. states[i] is the value we inferred at position changepoints[i]}
-#' \item{\code{globalCost}}{is a number equal to the global cost of the non-penalized change-in-slope problem}
+#' \item{\code{globalCost}}{is a number equal to the global cost of the non-penalized change-in-slope problem. That is the value of the fit to the data ignoring the penalties for adding changes}
 #' \item{\emph{pruning}}{is the percent of positions to consider in cost matrix Q  (returned only if testMode = TRUE)}
 #' }
 #' @examples
-#' data <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
-#' slopeOP(data, 0:6, 10)
+#' myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
+#' slopeOP(data = myData, states = 0:6, penalty = 10)
 slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
 {
   ############
@@ -55,14 +55,15 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 }
 
 
-
 #' slopeData
 #' @description Generate data with a given continuous piecewise linear model
-#' @param index a vector of increasing changepoint indexes
+#' @param index a vector of increasing changepoint indices
 #' @param states vector of successive states
 #' @param noise noise level = standard deviation of an additional normal noise
 #' @return a vector of simulated data
-slopeData <- function(index = c(0), states = c(0), noise = 0)
+#' @examples
+#' myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
+slopeData <- function(index, states, noise = 0)
 {
   ############
   ### STOP ###
@@ -86,13 +87,17 @@ slopeData <- function(index = c(0), states = c(0), noise = 0)
 
 
 #' plot.slopeOP
-#' @description Plot the result of the slopeOP function with the data
+#' @description Plot the result of the slopeOP function and the data
 #' @param x a slopeOP class object
-#' @param ... Other parameters
-#' @param data the data from which we get res
+#' @param ... other parameters
+#' @param data the data from which we get the slopeOP object x
 #' @param chpt vector of changepoints of the model
 #' @param states vector of states of the model
-#' @return plot data and the inferred slopeOP result
+#' @return plot data and the inferred slopeOP result (and the model if specified in 'chpt' and 'states' parameters)
+#' @examples
+#' myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 2)
+#' s <- slopeOP(data = myData, states = 0:6, penalty = 20)
+#' plot(s, data = myData, chpt = c(1,100,200,300), states = c(0,5,3,6))
 plot.slopeOP <- function(x, ..., data, chpt = NULL, states = NULL)
 {
   n <- 1:length(data)
@@ -100,11 +105,14 @@ plot.slopeOP <- function(x, ..., data, chpt = NULL, states = NULL)
   xbis <- x$changepoints
   y <- x$parameters
 
+  #plot the data
   plot(1:length(data), data, pch = '+')
+  #plot the inferred segments IN RED
   for(i in 1:(p-1))
   {
     segments(xbis[i], y[i], xbis[i+1], y[i+1], col= 2, lty = 1, lwd = 3)
   }
+  #plot the initial model IN BLUE for simulated data (see parameters in slopeData function)
   if(length(chpt) > 0 && length(chpt) == length(states))
   {
     q <- length(chpt)

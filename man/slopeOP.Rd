@@ -4,16 +4,15 @@
 \alias{slopeOP}
 \title{slopeOP}
 \usage{
-slopeOP(data = c(0), states = c(0), penalty = 0,
-  constraint = "null", minAngle = 0, type = "channel",
-  testMode = FALSE)
+slopeOP(data, states, penalty = 0, constraint = "null", minAngle = 0,
+  type = "channel", testMode = FALSE)
 }
 \arguments{
 \item{data}{vector of data to segment}
 
 \item{states}{vector of states = set of accessible starting/ending values for segments in increasing order.}
 
-\item{penalty}{the penalty value (a positive number)}
+\item{penalty}{the penalty value (a non-negative number)}
 
 \item{constraint}{string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"}
 
@@ -28,11 +27,15 @@ a list of 3 elements  = (changepoints, states, globalCost). (Pruning is optional
 \describe{
 \item{\code{changepoints}}{is the vector of changepoints (we return the extremal values of all segments from left to right)}
 \item{\code{states}}{is the vector of successive states. states[i] is the value we inferred at position changepoints[i]}
-\item{\code{globalCost}}{is a number equal to the global cost of the penalized change-in-slope problem}
-\item{\emph{pruning}}{is the percent of positions to consider in matrix Q  (returned only if testMode = TRUE)}
+\item{\code{globalCost}}{is a number equal to the global cost of the non-penalized change-in-slope problem. That is the value of the fit to the data ignoring the penalties for adding changes}
+\item{\emph{pruning}}{is the percent of positions to consider in cost matrix Q  (returned only if testMode = TRUE)}
 }
 }
 \description{
-Optimal partitioning algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values).
+Optimal partitioning algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values called states).
 The algorithm takes into account a continuity constraint between successive segments and infers a continuous piecewise linear signal.
+}
+\examples{
+myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
+slopeOP(data = myData, states = 0:6, penalty = 10)
 }
