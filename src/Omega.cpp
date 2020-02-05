@@ -60,6 +60,26 @@ double Omega::GetGlobalCost() const {return(globalCost);}
 double Omega::GetPruning() const {return(pruning);}
 
 
+//####### preprocessing #######////####### preprocessing #######////####### preprocessing #######//
+//####### preprocessing #######////####### preprocessing #######////####### preprocessing #######//
+double** Omega::preprocessing(std::vector< double >& data) const
+{
+  double** S12P = new double*[3]; ///matrix of vectors S1, S2 and SP
+  unsigned int n = data.size();
+
+  for(unsigned int i = 3; i < nbStates; i++){Q[i] = new double[n];}
+  S12P[0][0] = data[0];
+  S12P[1][0] = data[0] * data[0];
+  S12P[2][0] = data[0];
+  for(unsigned int i = 1; i < n; i++){S12P[0][i] = S12P[0][i-1] + data[i];}
+  for(unsigned int i = 1; i < n; i++){S12P[1][i] = S12P[1][i-1] + (data[i] * data[i]);}
+  for(unsigned int i = 1; i < n; i++){S12P[2][i] = S12P[2][i-1] + (i+1) * data[i];}
+  return(S12P);
+}
+
+
+// algo // algoChannel // algoPruning // algoPruningPELT // backtracking // algoISOTONIC // algoUNIMODAL // algoOUTLIER
+
 //####### algo #######////####### algo #######////####### algo #######//
 //####### algo #######////####### algo #######////####### algo #######//
 //####### algo #######////####### algo #######////####### algo #######//

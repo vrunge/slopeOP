@@ -25,6 +25,8 @@ class Omega
     double GetGlobalCost() const;
     double GetPruning() const;
 
+    double** preprocessing(std::vector< double >& data) const;
+
     void algo(std::vector< double >& data);
     void algoChannel(std::vector< double >& data);
     void algoPruning(std::vector< double >& data);
