@@ -1,10 +1,10 @@
 Package: slopeOP
 Type: Package
 Title: Optimal partitioning algorithm for change-in-slope problem with a finite number of states
-Version: 0.1.0
-Author: Vincent Runge
-Maintainer: T<vincent.runge@univ-evry.fr>
-Description: OP algorithm for change-in-slope problem with continuity constraint.
+Version: 0.1.1
+Authors@R: person("Vincent", "Runge", email = "vincent.runge@univ-evry.fr", role = c("aut", "cre"))
+Maintainer: Vincent Runge <vincent.runge@univ-evry.fr>
+Description: Optimal partitioning algorithm for change-in-slope problem with continuity constraint and a finite number of states.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
