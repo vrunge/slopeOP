@@ -17,7 +17,7 @@ if (BUILD_PYTHON_MODULE)
     set(PYBIND11_CPP_STANDARD -std=c++11)
     message(">>> Python module for SlopeOP will be built")
     add_subdirectory(pybind11)
-    pybind11_add_module(slopeOP src/omega.cpp  src/listPoint.cpp src/Point.cpp src/Costs.cpp src/pybind_def.cpp)
+    pybind11_add_module(slopeOP src/Omega.cpp  src/ListPoint.cpp src/Point.cpp src/Costs.cpp src/pybind_def.cpp)
 endif()
 
 if (BUILD_TESTS)
