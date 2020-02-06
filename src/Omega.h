@@ -45,6 +45,7 @@ class Omega
     unsigned int nbStates;
     double* states;
 
+    double** S12P; //vectors S1, S2 et SP
     double** Q;
     unsigned int** lastIndState;
     unsigned int** lastChpt;
