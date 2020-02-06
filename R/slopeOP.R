@@ -55,6 +55,65 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 }
 
 
+#' slopeSN
+#' @description Segment neighborhood algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values called states).
+#' The algorithm takes into account a continuity constraint between successive segments and infers a continuous piecewise linear signal with a given number of segments.
+#' @param data vector of data to segment
+#' @param states vector of states = set of accessible starting/ending values for segments in increasing order.
+#' @param nbSegment the number of segments to infer
+#' @param constraint string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"
+#' @param minAngle a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"
+#' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property or "pruningMyList" = pelt-like property with a hand-made list structure
+#' @param testMode a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)
+#' @return a list of 3 elements  = (changepoints, states, globalCost). (Pruning is optional)
+#' \describe{
+#' \item{\code{changepoints}}{is the vector of changepoints (we return the extremal values of all segments from left to right)}
+#' \item{\code{states}}{is the vector of successive states. states[i] is the value we inferred at position changepoints[i]}
+#' \item{\code{globalCost}}{is a number equal to the global cost of the non-penalized change-in-slope problem. That is the value of the fit to the data ignoring the penalties for adding changes}
+#' \item{\emph{pruning}}{is the percent of positions to consider in cost matrix Q  (returned only if testMode = TRUE)}
+#' }
+#' @examples
+#' myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
+#' slopeOP(data = myData, states = 0:6, penalty = 10)
+slopeSN <- function(data, states, nbSegment = 1, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
+{
+  ############
+  ### STOP ###
+  ############
+  if(!is.numeric(data)){stop('data values are not all numeric')}
+  if(!is.numeric(states)){stop('states are not all numeric')}
+  if(is.unsorted(states)){stop('states must be in increasing order')}
+  if(length(unique(states)) < length(states)){stop('states is not a strictly increasing sequence')}
+
+  #if(!is.double(penalty)){stop('penalty is not a double.')}
+  #if(penalty < 0){stop('penalty must be nonnegative')}
+
+  if(!is.double(minAngle)){stop('minAngle is not a double.')}
+  if(minAngle < 0 || minAngle > 180){stop('minAngle must lie between 0 and 180')}
+
+  allowed.constraints <- c("null", "isotonic", "unimodal", "smoothing")
+  if(!constraint %in% allowed.constraints){stop('constraint must be one of: ', paste(allowed.constraints, collapse=", "))}
+  allowed.types <- c("null", "channel", "pruning", "pruningMyList", "pruningPELT")
+  if(!type %in% allowed.types){stop('type must be one of: ', paste(allowed.types, collapse=", "))}
+
+  if(!is.logical(testMode)){stop('testMode must be a boolean')}
+
+  ###CALL Rcpp functions###
+  res <- slopeOPtransfer(data, states, penalty, constraint, minAngle, type)
+
+  ###Response class slopeOP###
+  #if(testMode == FALSE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - (length(res$changepoints) - 1) * penalty)}
+  #if(testMode == TRUE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - (length(res$changepoints) - 1) * penalty, pruning = res$pruningPower)}
+  response <- 1
+  attr(response, "class") <- "slopeOP"
+
+  return(response)
+}
+
+
+
+
+
 #' slopeData
 #' @description Generate data with a given continuous piecewise linear model
 #' @param index a vector of increasing changepoint indices
