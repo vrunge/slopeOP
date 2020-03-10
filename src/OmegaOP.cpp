@@ -28,7 +28,7 @@ OmegaOP::OmegaOP(std::vector< double >& values, double beta, unsigned int n)
   lastChpt = new unsigned int*[nbStates]; ///matrix of best last changepoints
   lastIndState = new unsigned int*[nbStates]; ///matrix of starting states for the best last segment
 
-  for(unsigned int i = 0; i < 3; i++){S12P[i] = new double[n];}
+  for(unsigned int i = 0; i < 3; i++){S12P[i] = new double[n+1];}
   for(unsigned int i = 0; i < nbStates; i++){Q[i] = new double[n];}
   for(unsigned int i = 0; i < nbStates; i++){lastChpt[i] = new unsigned int[n];}
   for(unsigned int i = 0; i < nbStates; i++){lastIndState[i] = new unsigned int[n];}
@@ -71,12 +71,12 @@ double OmegaOP::GetPruning() const {return(pruning);}
 double** OmegaOP::preprocessing(std::vector< double >& data) const
 {
   unsigned int n = data.size();
-  S12P[0][0] = data[0];
-  S12P[1][0] = data[0] * data[0];
-  S12P[2][0] = data[0];
-  for(unsigned int i = 1; i < n; i++){S12P[0][i] = S12P[0][i-1] + data[i];}
-  for(unsigned int i = 1; i < n; i++){S12P[1][i] = S12P[1][i-1] + (data[i] * data[i]);}
-  for(unsigned int i = 1; i < n; i++){S12P[2][i] = S12P[2][i-1] + (i+1) * data[i];}
+  S12P[0][0] = 0;
+  S12P[1][0] = 0;
+  S12P[2][0] = 0;
+  for(unsigned int i = 1; i < n+1; i++){S12P[0][i] = S12P[0][i-1] + data[i-1];}
+  for(unsigned int i = 1; i < n+1; i++){S12P[1][i] = S12P[1][i-1] + (data[i-1] * data[i-1]);}
+  for(unsigned int i = 1; i < n+1; i++){S12P[2][i] = S12P[2][i-1] + i * data[i-1];}
   return(S12P);
 }
 
@@ -129,7 +129,7 @@ void OmegaOP::algo(std::vector< double >& data)
       ///// EXPLORE MATRIX size p*T
       /////
       // INITIALIZATION of temp_Q
-      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S12P[0][0], S12P[0][T], S12P[1][0], S12P[1][T], S12P[2][0], S12P[2][T]) + penalty;
+      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S12P[0][0], S12P[0][T+1], S12P[1][0], S12P[1][T+1], S12P[2][0], S12P[2][T+1]) + penalty;
       temp_indState = 0;
       temp_chpt = 0;
 
@@ -137,7 +137,7 @@ void OmegaOP::algo(std::vector< double >& data)
       {
         for(unsigned int u = 0; u < p; u++) /////explore column of states
         {
-          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T+1], S12P[1][t], S12P[1][T+1], S12P[2][t], S12P[2][T+1]) + penalty;
           if(temp_Q > temp_cost)
           {
             temp_Q = temp_cost;
@@ -1013,46 +1013,39 @@ void OmegaOP::algoUNIMODAL(std::vector< double >& data)
 
 
 
-//####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
-//####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
-//####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
-//####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
-//####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
+//####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
+//####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
+//####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
+//####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
+//####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
 // NO PRUNING
 
 void OmegaOP::algoSMOOTHING(std::vector< double >& data, double minAngle)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
+  Costs cost;
 
   /// PREPROCESSING
   S12P = preprocessing(data);
 
-  Costs cost;
-  ///
-  /// FILL FIRST COLUMN in Q
-  ///
+  /// INITIALISATION : FILL FIRST COLUMN in Q
   for(unsigned int i = 0; i < p; i++)
   {
     Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
     lastChpt[i][0] = 0;
     lastIndState[i][0] = i;
   }
-
-  ///
-  /// ALGO
-  ///
   double temp_cost = 0;
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
 
   ///
+  /// ALGO
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
   ///
-  //std::cout << "minAngle " << minAngle << std::endl;
-
   for(unsigned int T = 1; T < n; T++)
   {
     for(unsigned int v = 0; v < p; v++)
@@ -1071,7 +1064,7 @@ void OmegaOP::algoSMOOTHING(std::vector< double >& data, double minAngle)
           //std::cout << "-- " << lastChpt[u][t] << " -- ";
           if(cost.angleTest(lastChpt[u][t], t, T, states[lastIndState[u][t]], states[u], states[v], minAngle))
           {
-            temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+            temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T+1], S12P[1][t], S12P[1][T+1], S12P[2][t], S12P[2][T+1]) + penalty;
             if(temp_Q > temp_cost)
             {
               temp_Q = temp_cost;
@@ -1087,7 +1080,7 @@ void OmegaOP::algoSMOOTHING(std::vector< double >& data, double minAngle)
       /////
       Q[v][T] = temp_Q;
       lastIndState[v][T] = temp_indState;
-      lastChpt[v][T] = temp_chpt;
+      lastChpt[v][T] = temp_chpt; std::cout << "!!!!!!!!!!!!! " << temp_chpt << std::endl;
     }
   }
   pruning = 1;

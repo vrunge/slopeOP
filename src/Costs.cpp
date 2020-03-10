@@ -17,7 +17,7 @@ Costs::Costs(){}
 double Costs::slopeCost(double& u, double& v, unsigned int& t, unsigned int& T, double& S1t, double& S1T, double& S2t, double& S2T, double& SPt, double& SPT)
 {
   ///REMARK : t -> t+1 and T -> T+1 to get indexation starting from 1
-  double res = S2T-S2t + (v*v-u*u)/2.0 + (T-t)*(u*u + u*v + v*v)/3.0 + (v-u)*(v-u)/(6.0*(T-t)) - (2.0/(T-t))*(((T+1)*u-(t+1)*v)*(S1T-S1t) + (v-u)*(SPT-SPt));
+  double res = S2T-S2t + (v*v-u*u)/2.0 + (T-t)*(u*u + u*v + v*v)/3.0 + (v-u)*(v-u)/(6.0*(T-t)) - (2.0/(T-t))*((T*u-t*v)*(S1T-S1t) + (v-u)*(SPT-SPt));
   return(res);
 }
 
@@ -89,12 +89,14 @@ bool Costs::pruningTest(unsigned int& tau, unsigned int& t, unsigned int& testT,
 bool Costs::angleTest(unsigned int& t1, unsigned int& t2, unsigned int& t3, double& v1, double& v2, double& v3, double& minAngle)
 {
   bool response = false;
+  double cosAngleRad = ((1.0*t1-1.0*t2)*(1.0*t3-1.0*t2) + (v1-v2)*(v3-v2))/(sqrt(((1.0*t1-1.0*t2)*(1.0*t1-1.0*t2) + (v1-v2)*(v1-v2))*((1.0*t3-1.0*t2)*(1.0*t3-1.0*t2) + (v3-v2)*(v3-v2))));
+  double theta = acos(cosAngleRad) *180.0 / M_PI; // in degree
+  if(theta >= minAngle){response = true;}
+  if((t1 == t2) && (v1 == v2)){response = true;}
+    std::cout << "t1 " << t1 << " t2 "<< t2 << " t3 "<< t3 << " v1 "<< v1 << " v2 " << v2 << " v3 "<< v3 << std::endl;
 
-  double angle1 = atan2(v2 - v1, 1.0*(t2 - t1));
-  double angle2 = atan2(v3 - v2, 1.0*(t3 - t2));
-
-  double theta = fabs(angle1 - angle2) *  180.0 / M_PI; // in degree
-  if(theta <= (180 - minAngle)){response = true;}
-
+  //std::cout << (1.0*t1-1.0*t2)*(1.0*t3-1.0*t2) + (v1-v2)*(v3-v2)  << std::endl;
+  //std::cout << ((1.0*t1-1.0*t2)*(1.0*t1-1.0*t2) + (v1-v2)*(v1-v2))*((1.0*t3-1.0*t2)*(1.0*t3-1.0*t2) + (v3-v2)*(v3-v2)) << std::endl;
+  std::cout << "cosAngleRad " << cosAngleRad << " theta " << theta << "  " << "response " << response << std::endl;
   return(response);
 }
