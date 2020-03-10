@@ -21,6 +21,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// slopeSNtransfer
+List slopeSNtransfer(std::vector<double> data, std::vector<double> states, int nbSegments, std::string constraint, double minAngle, std::string type);
+RcppExport SEXP _slopeOP_slopeSNtransfer(SEXP dataSEXP, SEXP statesSEXP, SEXP nbSegmentsSEXP, SEXP constraintSEXP, SEXP minAngleSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<double> >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type states(statesSEXP);
+    Rcpp::traits::input_parameter< int >::type nbSegments(nbSegmentsSEXP);
+    Rcpp::traits::input_parameter< std::string >::type constraint(constraintSEXP);
+    Rcpp::traits::input_parameter< double >::type minAngle(minAngleSEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(slopeSNtransfer(data, states, nbSegments, constraint, minAngle, type));
+    return rcpp_result_gen;
+END_RCPP
+}
 // linearOP
 List linearOP(std::vector<double> x, std::vector<double> data, double penalty, bool cc);
 RcppExport SEXP _slopeOP_linearOP(SEXP xSEXP, SEXP dataSEXP, SEXP penaltySEXP, SEXP ccSEXP) {
@@ -38,6 +54,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_slopeOP_slopeOPtransfer", (DL_FUNC) &_slopeOP_slopeOPtransfer, 6},
+    {"_slopeOP_slopeSNtransfer", (DL_FUNC) &_slopeOP_slopeSNtransfer, 6},
     {"_slopeOP_linearOP", (DL_FUNC) &_slopeOP_linearOP, 4},
     {NULL, NULL, 0}
 };

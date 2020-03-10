@@ -4,15 +4,15 @@
 \alias{slopeSN}
 \title{slopeSN}
 \usage{
-slopeSN(data, states, nbSegment = 1, constraint = "null",
+slopeSN(data, states, nbSegments = 1, constraint = "null",
   minAngle = 0, type = "channel", testMode = FALSE)
 }
 \arguments{
-\item{data}{vector of data to segment}
+\item{data}{vector of data to segment: a univariate time series}
 
 \item{states}{vector of states = set of accessible starting/ending values for segments in increasing order.}
 
-\item{nbSegment}{the number of segments to infer}
+\item{nbSegments}{the number of segments to infer}
 
 \item{constraint}{string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"}
 
@@ -37,5 +37,5 @@ The algorithm takes into account a continuity constraint between successive segm
 }
 \examples{
 myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
-slopeOP(data = myData, states = 0:6, penalty = 10)
+slopeSN(data = myData, states = 0:6, nbSegments = 2)
 }

@@ -5,6 +5,10 @@ slopeOPtransfer <- function(data, states, penalty, constraint = "null", minAngle
     .Call('_slopeOP_slopeOPtransfer', PACKAGE = 'slopeOP', data, states, penalty, constraint, minAngle, type)
 }
 
+slopeSNtransfer <- function(data, states, nbSegments, constraint = "null", minAngle = 0, type = "channel") {
+    .Call('_slopeOP_slopeSNtransfer', PACKAGE = 'slopeOP', data, states, nbSegments, constraint, minAngle, type)
+}
+
 #' @title linearOP
 #' @description
 #' An optimal partitioning algorithm with a linear fit for each segment

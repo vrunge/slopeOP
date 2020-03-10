@@ -1,7 +1,7 @@
 // MIT License
 // Copyright (c) 2019 Vincent Runge
 
-#include "Omega.h"
+#include "OmegaSN.h"
 
 #include "Costs.h"
 #include "ListPoint.h"
@@ -14,7 +14,7 @@
 //####### constructor #######////####### constructor #######////####### constructor #######//
 //####### constructor #######////####### constructor #######////####### constructor #######//
 
-Omega::Omega(std::vector< double >& values, double beta, unsigned int n)
+OmegaSN::OmegaSN(std::vector< double >& values, unsigned int nbSeg, unsigned int n)
 {
   nbStates = values.size();
   states = new double[nbStates];
@@ -33,12 +33,12 @@ Omega::Omega(std::vector< double >& values, double beta, unsigned int n)
   for(unsigned int i = 0; i < nbStates; i++){lastChpt[i] = new unsigned int[n];}
   for(unsigned int i = 0; i < nbStates; i++){lastIndState[i] = new unsigned int[n];}
 
-  penalty = beta;
+  nbSegments = nbSeg;
 }
 
 
 
-Omega::~Omega()
+OmegaSN::~OmegaSN()
 {
   delete(states);
   states = NULL;
@@ -59,16 +59,16 @@ Omega::~Omega()
 //####### accessors #######////####### accessors #######////####### accessors #######//
 //####### accessors #######////####### accessors #######////####### accessors #######//
 
-std::vector< int > Omega::GetChangepoints() const {return(changepoints);}
-std::vector< double > Omega::GetParameters() const {return(parameters);}
-double Omega::GetGlobalCost() const {return(globalCost);}
-double Omega::GetPruning() const {return(pruning);}
+std::vector< int > OmegaSN::GetChangepoints() const {return(changepoints);}
+std::vector< double > OmegaSN::GetParameters() const {return(parameters);}
+double OmegaSN::GetGlobalCost() const {return(globalCost);}
+double OmegaSN::GetPruning() const {return(pruning);}
 
 
 //####### preprocessing #######////####### preprocessing #######////####### preprocessing #######//
 //####### preprocessing #######////####### preprocessing #######////####### preprocessing #######//
 
-double** Omega::preprocessing(std::vector< double >& data) const
+double** OmegaSN::preprocessing(std::vector< double >& data) const
 {
   unsigned int n = data.size();
   S12P[0][0] = data[0];
@@ -89,7 +89,7 @@ double** Omega::preprocessing(std::vector< double >& data) const
 //####### algo #######////####### algo #######////####### algo #######//
 //####### algo #######////####### algo #######////####### algo #######//
 
-void Omega::algo(std::vector< double >& data)
+void OmegaSN::algo(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
@@ -129,7 +129,7 @@ void Omega::algo(std::vector< double >& data)
       ///// EXPLORE MATRIX size p*T
       /////
       // INITIALIZATION of temp_Q
-      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S12P[0][0], S12P[0][T], S12P[1][0], S12P[1][T], S12P[2][0], S12P[2][T]) + penalty;
+      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S12P[0][0], S12P[0][T], S12P[1][0], S12P[1][T], S12P[2][0], S12P[2][T]);
       temp_indState = 0;
       temp_chpt = 0;
 
@@ -137,7 +137,7 @@ void Omega::algo(std::vector< double >& data)
       {
         for(unsigned int u = 0; u < p; u++) /////explore column of states
         {
-          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
           if(temp_Q > temp_cost)
           {
             temp_Q = temp_cost;
@@ -163,7 +163,7 @@ void Omega::algo(std::vector< double >& data)
 //####### algoChannel #######////####### algoChannel #######////####### algoChannel #######//
 //####### algoChannel #######////####### algoChannel #######////####### algoChannel #######//
 
-void Omega::algoChannel(std::vector< double >& data)
+void OmegaSN::algoChannel(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
@@ -234,7 +234,7 @@ void Omega::algoChannel(std::vector< double >& data)
       temp_indState = 0;
       temp_chpt = 0;
 
-      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S12P[0][0], S12P[0][T], S12P[1][0], S12P[1][T], S12P[2][0], S12P[2][T]) + penalty;
+      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S12P[0][0], S12P[0][T], S12P[1][0], S12P[1][T], S12P[2][0], S12P[2][T]);
 
       for(unsigned int t = 0; t < T; t++)
       {
@@ -257,7 +257,7 @@ void Omega::algoChannel(std::vector< double >& data)
         for(unsigned int u = std::min(u1[t],indexTheV); u < std::max(u2[t],indexTheV) + 1; u++) /////explore column of states
         {
           nbPosition = nbPosition + 1; //we explore +1 position
-          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
           if(temp_Q > temp_cost)
           {
             temp_Q = temp_cost;
@@ -292,7 +292,7 @@ void Omega::algoChannel(std::vector< double >& data)
 //####### algoPruning #######////####### algoPruning #######////####### algoPruning #######//
 //####### algoPruning #######////####### algoPruning #######////####### algoPruning #######//
 
-void Omega::algoPruning(std::vector< double >& data)
+void OmegaSN::algoPruning(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
@@ -374,7 +374,7 @@ void Omega::algoPruning(std::vector< double >& data)
       u_it = u_pos[v].begin();
       t_it = t_pos[v].begin();
 
-      temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S12P[0][*t_it], S12P[0][T], S12P[1][*t_it], S12P[1][T], S12P[2][*t_it], S12P[2][T]) + penalty;
+      temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S12P[0][*t_it], S12P[0][T], S12P[1][*t_it], S12P[1][T], S12P[2][*t_it], S12P[2][T]);
       temp_indState = *u_it;
       temp_chpt = *t_it;
 
@@ -383,7 +383,7 @@ void Omega::algoPruning(std::vector< double >& data)
       while(t_it != t_pos[v].end())
       {
         nbPosition = nbPosition + 1;
-        temp_cost = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S12P[0][*t_it], S12P[0][T], S12P[1][*t_it], S12P[1][T], S12P[2][*t_it], S12P[2][T]) + penalty;
+        temp_cost = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S12P[0][*t_it], S12P[0][T], S12P[1][*t_it], S12P[1][T], S12P[2][*t_it], S12P[2][T]);
         if(temp_Q > temp_cost)
         {
           temp_Q = temp_cost;
@@ -447,7 +447,7 @@ void Omega::algoPruning(std::vector< double >& data)
 //####### algoPruningMyList #######////####### algoPruningMyList #######////####### algoPruningMyList #######//
 //####### algoPruningMyList #######////####### algoPruningMyList #######////####### algoPruningMyList #######//
 
-void Omega::algoPruningMyList(std::vector< double >& data)
+void OmegaSN::algoPruningMyList(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
@@ -535,7 +535,7 @@ void Omega::algoPruningMyList(std::vector< double >& data)
       t = myLists[v] -> getTime();
 
       ///1st element
-      temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+      temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
       temp_indState = u;
       temp_chpt = t;
       nbPosition = nbPosition + 1;
@@ -547,7 +547,7 @@ void Omega::algoPruningMyList(std::vector< double >& data)
         u = myLists[v] -> getState();
         t = myLists[v] -> getTime();
 
-        temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+        temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
         if(temp_Q > temp_cost)
         {
           temp_Q = temp_cost;
@@ -621,7 +621,7 @@ void Omega::algoPruningMyList(std::vector< double >& data)
 //####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
 //####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
 
-void Omega::algoPruningPELT(std::vector< double >& data)
+void OmegaSN::algoPruningPELT(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
@@ -686,7 +686,7 @@ void Omega::algoPruningPELT(std::vector< double >& data)
       t = myLists[v] -> getTime();
 
       ///1st element
-      temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+      temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
       temp_indState = u;
       temp_chpt = t;
       nbPosition = nbPosition + 1;
@@ -698,7 +698,7 @@ void Omega::algoPruningPELT(std::vector< double >& data)
         u = myLists[v] -> getState();
         t = myLists[v] -> getTime();
 
-        temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+        temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
         if(temp_Q > temp_cost)
         {
           temp_Q = temp_cost;
@@ -754,7 +754,7 @@ void Omega::algoPruningPELT(std::vector< double >& data)
 //####### backtracking #######////####### backtracking #######////####### backtracking #######//
 //####### backtracking #######////####### backtracking #######////####### backtracking #######//
 
-void Omega::backtracking(unsigned int n)
+void OmegaSN::backtracking(unsigned int n)
 {
   unsigned int p = nbStates;
   double temp_Q = Q[0][n-1];
@@ -769,7 +769,7 @@ void Omega::backtracking(unsigned int n)
     }
   }
 
-  globalCost = Q[temp_indState][n-1]; ///fill the globalCost Omega variable
+  globalCost = Q[temp_indState][n-1]; ///fill the globalCost OmegaSN variable
   unsigned int temp_chpt = n-1;
 
   while(temp_chpt > 0)
@@ -796,7 +796,7 @@ void Omega::backtracking(unsigned int n)
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
 //channel pruning
 
-void Omega::algoISOTONIC(std::vector< double >& data)
+void OmegaSN::algoISOTONIC(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
@@ -863,7 +863,7 @@ void Omega::algoISOTONIC(std::vector< double >& data)
       /////
       ///// EXPLORE MATRIX size p*T -> restricted on each column
       /////
-      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S12P[0][0], S12P[0][T], S12P[1][0], S12P[1][T], S12P[2][0], S12P[2][T]) + penalty;
+      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S12P[0][0], S12P[0][T], S12P[1][0], S12P[1][T], S12P[2][0], S12P[2][T]);
       temp_indState = 0;
       temp_chpt = 0;
 
@@ -888,7 +888,7 @@ void Omega::algoISOTONIC(std::vector< double >& data)
         for(unsigned int u = std::min(std::min(u1[t],indexTheV), v); u < std::min(std::max(u2[t],indexTheV), v) + 1; u++) /////explore column of states
         {
           nbPosition = nbPosition + 1;
-          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+          temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
           if(temp_Q > temp_cost)
           {
             temp_Q = temp_cost;
@@ -925,7 +925,7 @@ void Omega::algoISOTONIC(std::vector< double >& data)
 //####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
 // NO PRUNING
 
-void Omega::algoUNIMODAL(std::vector< double >& data)
+void OmegaSN::algoUNIMODAL(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
@@ -979,7 +979,7 @@ void Omega::algoUNIMODAL(std::vector< double >& data)
         {
           if(!(u < v && SLOPE[u][t] == -1))
           {
-            temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+            temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
             if(temp_Q > temp_cost)
             {
               temp_Q = temp_cost;
@@ -1020,7 +1020,7 @@ void Omega::algoUNIMODAL(std::vector< double >& data)
 //####### algoOUTLIER #######////####### algoOUTLIER #######////####### algoOUTLIER #######//
 // NO PRUNING
 
-void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
+void OmegaSN::algoSMOOTHING(std::vector< double >& data, double minAngle)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
@@ -1071,7 +1071,7 @@ void Omega::algoSMOOTHING(std::vector< double >& data, double minAngle)
           //std::cout << "-- " << lastChpt[u][t] << " -- ";
           if(cost.angleTest(lastChpt[u][t], t, T, states[lastIndState[u][t]], states[u], states[v], minAngle))
           {
-            temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+            temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
             if(temp_Q > temp_cost)
             {
               temp_Q = temp_cost;

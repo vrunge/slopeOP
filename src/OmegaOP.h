@@ -1,8 +1,8 @@
 // MIT License
 // Copyright (c) 2019 Vincent Runge
 
-#ifndef OMEGA_H
-#define OMEGA_H
+#ifndef OMEGAOP_H
+#define OMEGAOP_H
 
 #include <math.h>
 #include <vector>
@@ -14,11 +14,11 @@
 
 #include "math.h"
 
-class Omega
+class OmegaOP
 {
   public:
-    Omega(std::vector< double >& values, double beta, unsigned int n);
-    ~Omega();
+    OmegaOP(std::vector< double >& values, double beta, unsigned int n);
+    ~OmegaOP();
 
     std::vector< int > GetChangepoints() const;
     std::vector< double > GetParameters() const;
@@ -56,4 +56,4 @@ class Omega
     double pruning; /// between 0 and 1. 1 if no pruning.
 };
 
-#endif // OMEGA_H
+#endif // OMEGAOP_H

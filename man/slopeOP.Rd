@@ -8,11 +8,11 @@ slopeOP(data, states, penalty = 0, constraint = "null", minAngle = 0,
   type = "channel", testMode = FALSE)
 }
 \arguments{
-\item{data}{vector of data to segment}
+\item{data}{vector of data to segment: a univariate time series}
 
 \item{states}{vector of states = set of accessible starting/ending values for segments in increasing order.}
 
-\item{penalty}{the penalty value (a non-negative number)}
+\item{penalty}{the penalty value (a non-negative real number)}
 
 \item{constraint}{string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"}
 

@@ -1,10 +1,14 @@
 
+###############################################################
+#############       slopeOP and slopeSN       #################
+###############################################################
+
 #' slopeOP
 #' @description Optimal partitioning algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values called states).
 #' The algorithm takes into account a continuity constraint between successive segments and infers a continuous piecewise linear signal.
-#' @param data vector of data to segment
+#' @param data vector of data to segment: a univariate time series
 #' @param states vector of states = set of accessible starting/ending values for segments in increasing order.
-#' @param penalty the penalty value (a non-negative number)
+#' @param penalty the penalty value (a non-negative real number)
 #' @param constraint string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"
 #' @param minAngle a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"
 #' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property or "pruningMyList" = pelt-like property with a hand-made list structure
@@ -30,7 +34,7 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
   if(length(unique(states)) < length(states)){stop('states is not a strictly increasing sequence')}
 
   if(!is.double(penalty)){stop('penalty is not a double.')}
-  if(penalty < 0){stop('penalty must be nonnegative')}
+  if(penalty < 0){stop('penalty must be non-negative')}
   if(!is.double(minAngle)){stop('minAngle is not a double.')}
   if(minAngle < 0 || minAngle > 180){stop('minAngle must lie between 0 and 180')}
 
@@ -58,9 +62,9 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 #' slopeSN
 #' @description Segment neighborhood algorithm for change-in-slope problem with a finite number of states (beginning and ending values of each segment is restricted to a finite set of values called states).
 #' The algorithm takes into account a continuity constraint between successive segments and infers a continuous piecewise linear signal with a given number of segments.
-#' @param data vector of data to segment
+#' @param data vector of data to segment: a univariate time series
 #' @param states vector of states = set of accessible starting/ending values for segments in increasing order.
-#' @param nbSegment the number of segments to infer
+#' @param nbSegments the number of segments to infer
 #' @param constraint string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"
 #' @param minAngle a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"
 #' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property or "pruningMyList" = pelt-like property with a hand-made list structure
@@ -74,8 +78,8 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 #' }
 #' @examples
 #' myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
-#' slopeOP(data = myData, states = 0:6, penalty = 10)
-slopeSN <- function(data, states, nbSegment = 1, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
+#' slopeSN(data = myData, states = 0:6, nbSegments = 2)
+slopeSN <- function(data, states, nbSegments = 1, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
 {
   ############
   ### STOP ###
@@ -99,20 +103,22 @@ slopeSN <- function(data, states, nbSegment = 1, constraint = "null", minAngle =
   if(!is.logical(testMode)){stop('testMode must be a boolean')}
 
   ###CALL Rcpp functions###
-  res <- slopeOPtransfer(data, states, penalty, constraint, minAngle, type)
+  res <- slopeSNtransfer(data, states, nbSegments, constraint, minAngle, type)
 
   ###Response class slopeOP###
-  #if(testMode == FALSE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - (length(res$changepoints) - 1) * penalty)}
-  #if(testMode == TRUE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - (length(res$changepoints) - 1) * penalty, pruning = res$pruningPower)}
-  response <- 1
+  ### ATTENTION : we here remove one penalty to globalCost
+  if(testMode == FALSE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost )}
+  if(testMode == TRUE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost, pruning = res$pruningPower)}
+
   attr(response, "class") <- "slopeOP"
 
   return(response)
 }
 
 
-
-
+###############################################################
+#############     data generator and plot     #################
+###############################################################
 
 #' slopeData
 #' @description Generate data with a given continuous piecewise linear model
