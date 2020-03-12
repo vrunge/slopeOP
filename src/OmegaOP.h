@@ -17,7 +17,7 @@
 class OmegaOP
 {
   public:
-    OmegaOP(std::vector< double >& values, double beta, unsigned int n);
+    OmegaOP(std::vector< double >& values, double firstdata, double beta, unsigned int n);
     ~OmegaOP();
 
     std::vector< int > GetChangepoints() const;

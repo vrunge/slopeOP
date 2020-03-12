@@ -50,8 +50,8 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 
   ###Response class slopeOP###
   ### ATTENTION : we here remove one penalty to globalCost
-  if(testMode == FALSE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - (length(res$changepoints) - 1) * penalty)}
-  if(testMode == TRUE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost - (length(res$changepoints) - 1) * penalty, pruning = res$pruningPower)}
+  if(testMode == FALSE){response <- list(changepoints = res$changepoints, parameters = res$parameters, globalCost = res$globalCost - (length(res$changepoints) - 1) * penalty)}
+  if(testMode == TRUE){response <- list(changepoints = res$changepoints, parameters = res$parameters, globalCost = res$globalCost - (length(res$changepoints) - 1) * penalty, pruning = res$pruningPower)}
 
   attr(response, "class") <- "slopeOP"
 

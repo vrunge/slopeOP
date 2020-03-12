@@ -8,15 +8,15 @@
 #include<math.h>
 #include"OmegaOP.h"
 #include"OmegaSN.h"
-
 #include"op2d.h" //Marco Pascucci code
+
 using namespace Rcpp;
 using namespace std;
 
 // [[Rcpp::export]]
 List slopeOPtransfer(std::vector<double> data, std::vector<double> states, double penalty, std::string constraint = "null", double minAngle = 0, std::string type = "channel")
 {
-  OmegaOP omega = OmegaOP(states, penalty, data.size());
+  OmegaOP omega = OmegaOP(states, data[0], penalty, data.size());
   //DIFFERENT PRUNING + NO CONSTRAINT
   if(type == "null" && constraint == "null"){omega.algo(data);}
   if(type == "channel" && constraint == "null"){omega.algoChannel(data);}
