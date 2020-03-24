@@ -90,7 +90,7 @@ The changepoint detection is achieved by using the function `slopeOP`
 
 
 ```r
-slopeOP(data, c(0,1,2,3), 10)
+slopeOP(data, c(0,1,2,3), penalty = 10)
 ```
 
 ```
@@ -118,8 +118,8 @@ Parameter `constraint` can be set to `isotonic` which corresponds to a restricti
 
 
 ```r
-data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,77,73,80), 1)
-slopeOP(data, 71:80, 5, constraint = "isotonic")
+data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,77,73,80), noise = 1)
+slopeOP(data, states = 71:80, penalty = 5, constraint = "isotonic")
 ```
 
 ```
@@ -140,8 +140,8 @@ With `constraint` equal to `unimodal` the infered signal is increasing and then 
 
 
 ```r
-data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,78,73,75), 1)
-slopeOP(data, 71:80, 5, constraint = "unimodal")
+data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,78,73,75), noise = 1)
+slopeOP(data, states = 71:80, penalty = 5, constraint = "unimodal")
 ```
 
 ```
@@ -162,8 +162,8 @@ We also can limit the angles between successive segments with `constraint` equal
 
 
 ```r
-data <- slopeData(c(1,30,40,70,100,150,200),c(70,80,70,80,70,80,70),0.5)
-slopeOP(data,70:80,5, constraint = "smoothing", minAngle = 170)
+data <- slopeData(c(1,30,40,70,100,150,200),c(70,80,70,80,70,80,70), noise = 0.5)
+slopeOP(data, states = 70:80, penalty = 5, constraint = "smoothing", minAngle = 170)
 ```
 
 ```
@@ -189,8 +189,8 @@ A simple plot function can be used to show raw data with the inferred segments o
 
 
 ```r
-data <- slopeData(c(1,11,21),c(70,80,70),2)
-slope <- slopeOP(data,70:80,10, constraint = "null", type = "channel")
+data <- slopeData(c(1,11,21),c(70,80,70), noise = 2)
+slope <- slopeOP(data, states = 70:80, penalty = 10, constraint = "null", type = "channel")
 plot(slope, data = data)
 ```
 
@@ -211,7 +211,7 @@ git submodule update
 
 - Build and install the module. You have 2 options:
     1. `pip install -e .` to generate a python importable `".so"` module in this folder
-    2. `pip install .` to install the module in the python environment.
+    2. `pip install` to install the module in the python environment.
 
 - run python and import the module with `import slopeOP`.
 
