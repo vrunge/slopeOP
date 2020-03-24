@@ -60,13 +60,83 @@ unsigned int Costs::closestStateIndex(double& v, double* states, unsigned int p)
 }
 
 
+
+
+//####### fillCoeffsAG #######////####### fillCoeffsAG #######////####### fillCoeffsAG #######//
+//####### fillCoeffsAG #######////####### fillCoeffsAG #######////####### fillCoeffsAG #######//
+
+void Costs::fillCoeffsAG(double** coeffs, double* sumY, unsigned int n)
+{
+  ///fill coeffs[t] = CoeffsAG[t] for t = 1 to n-1 (0 and n un-necessary)
+  double* gtT = new double[n + 1];
+  for(unsigned int t = 1; t < (n - 1); t++) /// Fill coeffs[t] using gtT[t + 1]... gtT[n]
+  {
+    gtT[t + 1] = 0;
+    for(unsigned int T = t + 1; T < n; T++) //update gtT from gtT[t + 2] to gtT[n-1]
+    {
+      gtT[T + 1] = ((T-t)*gtT[T] + (sumY[T]-sumY[t]))/(T-t+1);
+    }
+    linReg(coeffs[t], gtT, t, n); //consider gtT only from t + 1 to n in this function
+    std::cout << t << " : " << coeffs[t][0] << " "<< coeffs[t][1] << " "<< coeffs[t][2] << " "<< coeffs[t][3] << std::endl;
+  }
+  coeffs[n - 1][0] = 0;
+  coeffs[n - 1][1] = 0;
+  coeffs[n - 1][2] = 0;
+  coeffs[n - 1][3] = 0;
+
+  coeffs[n][0] = 0;
+  coeffs[n][1] = 0;
+  coeffs[n][2] = 0;
+  coeffs[n][3] = 0;
+
+  delete [] gtT;
+  gtT = NULL;
+}
+
+
+//####### linReg #######////####### linReg #######////####### linReg #######//
+//####### linReg #######////####### linReg #######////####### linReg #######//
+
+void Costs::linReg(double* coeff, double *gtT, unsigned int t, unsigned int n)
+{
+  double sum_gtT = 0;
+  double sum_igtT = 0;
+  for(unsigned int i = t + 2; i < n + 1; i++) // 0 in t + 1
+  {
+    sum_gtT = sum_gtT + gtT[i];
+    sum_igtT = sum_igtT + i * gtT[i];
+  }
+  double prod3 = 1.0*(n-t)*(n-t-1)*(n-t+1);
+  double sum3 = 1.0*(n+t+1);
+
+  double slope = (-6*sum3/prod3)*sum_gtT + (12/prod3)*sum_igtT;
+  double intercept =((1/(1.0*(n-t))) + 3*sum3/prod3)*sum_gtT - (6*sum3/prod3)*sum_igtT;
+
+  double residuMax = 0;
+  double residuMin = 0;
+
+  for(unsigned int i = t + 1; i < n + 1; i++) // 0 in t + 1
+  {
+    if(gtT[i] - (slope*i + intercept) > residuMax){residuMax = gtT[i] - (slope*i + intercept);}
+    if(gtT[i] - (slope*i + intercept) < residuMin){residuMin = gtT[i] - (slope*i + intercept);}
+  }
+
+  ///matrix of coefficients: Ap, Am, Gp, Gm
+  coeff[0] = slope;
+  coeff[1] = slope;
+  coeff[2] = intercept + residuMin;
+  coeff[3] = intercept + residuMax;
+}
+
+
 //####### pruningTest #######////####### pruningTest #######////####### pruningTest #######//
 //####### pruningTest #######////####### pruningTest #######////####### pruningTest #######//
 
 bool Costs::pruningTest(double r, double s, unsigned int tau, unsigned int t, unsigned int n, double S, double Ap, double Am, double Gp, double Gm)
 {
   bool response = false;
-  if(r == s){response = true;}
+
+  if(r == s || t == n){response = true;}
   else if(s > r)
   {
     double state1 = (r+2*s)/6.0;
@@ -79,8 +149,10 @@ bool Costs::pruningTest(double r, double s, unsigned int tau, unsigned int t, un
     double state2 = (r+2*s)/6.0;
     double tempGm = tau*state2 - (s-r)/(12.0*(t-tau)) + S/(1.0*(t-tau)) + Gm;
     double AmC = Am - state2;
-    if((AmC*(t+1) + tempGm > 0) && (AmC*n + tempGm > 0)){response = true;}
+    if((AmC*(t+1) + tempGm < 0) && (AmC*n + tempGm < 0)){response = true;}
   }
+
+  //response = false; /// TO REMOVE
   return(response);
 }
 
@@ -100,3 +172,4 @@ bool Costs::angleTest(unsigned int& t1, unsigned int& t2, unsigned int& t3, doub
 
   return(response);
 }
+

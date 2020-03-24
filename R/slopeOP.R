@@ -11,7 +11,7 @@
 #' @param penalty the penalty value (a non-negative real number)
 #' @param constraint string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"
 #' @param minAngle a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"
-#' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property or "pruningMyList" = pelt-like property with a hand-made list structure
+#' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property
 #' @param testMode a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)
 #' @return a list of 3 elements  = (changepoints, states, globalCost). (Pruning is optional)
 #' \describe{
@@ -40,7 +40,7 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 
   allowed.constraints <- c("null", "isotonic", "unimodal", "smoothing")
   if(!constraint %in% allowed.constraints){stop('constraint must be one of: ', paste(allowed.constraints, collapse=", "))}
-  allowed.types <- c("null", "channel", "pruning", "pruningMyList", "pruningPELT")
+  allowed.types <- c("null", "channel", "pruning")
   if(!type %in% allowed.types){stop('type must be one of: ', paste(allowed.types, collapse=", "))}
 
   if(!is.logical(testMode)){stop('testMode must be a boolean')}
@@ -97,7 +97,7 @@ slopeSN <- function(data, states, nbSegments = 1, constraint = "null", minAngle 
 
   allowed.constraints <- c("null", "isotonic", "unimodal", "smoothing")
   if(!constraint %in% allowed.constraints){stop('constraint must be one of: ', paste(allowed.constraints, collapse=", "))}
-  allowed.types <- c("null", "channel", "pruning", "pruningMyList", "pruningPELT")
+  allowed.types <- c("null", "channel", "pruning")
   if(!type %in% allowed.types){stop('type must be one of: ', paste(allowed.types, collapse=", "))}
 
   if(!is.logical(testMode)){stop('testMode must be a boolean')}

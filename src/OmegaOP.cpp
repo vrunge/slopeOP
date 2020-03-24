@@ -2,10 +2,8 @@
 // Copyright (c) 2019 Vincent Runge
 
 #include "OmegaOP.h"
-
 #include "Costs.h"
-#include "ListPoint.h"
-#include "Point.h"
+
 
 #include <algorithm> // std::reverse // std::min // std::max
 #include<iostream>
@@ -261,16 +259,19 @@ void OmegaOP::algoPruning(std::vector< double >& data)
   /// PREPROCESSING
   S12P = preprocessing(data);
 
-  /// list for positions (t,u)
-  std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
+  /// list for positions (u,t)
   std::list< unsigned int>* u_pos = new std::list< unsigned int>[p];
-  std::list<unsigned int>::iterator t_it;
+  std::list< unsigned int>* t_pos = new std::list< unsigned int>[p];
   std::list<unsigned int>::iterator u_it;
+  std::list<unsigned int>::iterator t_it;
 
   //////////////////////////////////////////////////
   /// PRUNING INFORMATION
   ///
-  unsigned int* coeffs = new unsigned int[n + 1];
+  double S;
+  double** coeffsAG = new double*[n + 1]; ///matrix of coefficients: Ap, Am, Gp, Gm
+  for(unsigned int i = 0; i < (n + 1); i++){coeffsAG[i] = new double[4];}
+  cost.fillCoeffsAG(coeffsAG, S12P[0], n);
   unsigned int nbPosition = 0;
 
   ///
@@ -290,13 +291,10 @@ void OmegaOP::algoPruning(std::vector< double >& data)
         t_pos[v].push_back(T-1);
       }
 
-      /// FIRST ELEMENT
-      u_it = u_pos[v].begin();
-      t_it = t_pos[v].begin();
-
-      temp_Q = Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S12P[0][*t_it], S12P[0][T], S12P[1][*t_it], S12P[1][T], S12P[2][*t_it], S12P[2][T]) + penalty;
-      temp_indState = *u_it;
-      temp_chpt = *t_it;
+      ///// EXPLORE ""MATRIX"" size p*T (this is a list of positions (u,t))
+      temp_Q = INFINITY;
+      temp_indState = 0;
+      temp_chpt = 0;
 
       u_it = u_pos[v].begin();
       t_it = t_pos[v].begin();
@@ -321,24 +319,24 @@ void OmegaOP::algoPruning(std::vector< double >& data)
       lastIndState[v][T] = temp_indState;
       lastChpt[v][T] = temp_chpt;
 
-      ////////////////////////
-      ///// PRUNING STEP /////
-      ////////////////////////
+      /////
+      ///// PRUNING STEP
+      /////
       u_it = u_pos[v].begin();
       t_it = t_pos[v].begin();
       while(t_it != t_pos[v].end())
       {
-        Tp1 = T + 1;
-        DELTA = states[*u_it] - states[v];
-        if(DELTA >= 0){delta = MAX_Y[T] - states[v];}
-          else{delta = MIN_Y[T] - states[v];}
-
-        K = S12P[2][T] - S12P[2][*t_it] -  1.0*(*t_it + 1) * (S12P[0][T] - S12P[0][*t_it]);
-
-        if((Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S12P[0][*t_it], S12P[0][T], S12P[1][*t_it], S12P[1][T], S12P[2][*t_it], S12P[2][T]) > temp_Q) && cost.pruningTest(*t_it, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(*t_it, T, nm1, delta, DELTA, K, states[v]))
+        ///inequality test
+        if(Q[*u_it][*t_it] + cost.slopeCost(states[*u_it], states[v], *t_it, T, S12P[0][*t_it], S12P[0][T], S12P[1][*t_it], S12P[1][T], S12P[2][*t_it], S12P[2][T]) > Q[v][T])
         {
-          u_it = u_pos[v].erase(u_it);
-          t_it = t_pos[v].erase(t_it);
+          ///linear regression
+          S = S12P[2][T] - S12P[2][*t_it] - *t_it*(S12P[0][T] - S12P[0][*t_it]);
+          if(cost.pruningTest(states[*u_it], states[v], *t_it, T, n, S, coeffsAG[T][0], coeffsAG[T][1], coeffsAG[T][2], coeffsAG[T][3]))
+          {
+            u_it = u_pos[v].erase(u_it);
+            t_it = t_pos[v].erase(t_it);
+          }
+          else{++u_it; ++t_it;}
         }
         else{++u_it; ++t_it;}
       }
@@ -348,324 +346,15 @@ void OmegaOP::algoPruning(std::vector< double >& data)
 
   pruning = 2.0*nbPosition/(1.0*p*p*n*(n-1)); //nbPosition seen / nbPosition total
 
+  for(unsigned int i = 0; i < (n + 1); i++){delete(coeffsAG[i]);}
+  delete [] coeffsAG;
+  coeffsAG = NULL;
   delete [] t_pos;
   t_pos = NULL;
   delete [] u_pos;
   u_pos = NULL;
 }
 
-
-
-//####### algoPruningMyList #######////####### algoPruningMyList #######////####### algoPruningMyList #######//
-//####### algoPruningMyList #######////####### algoPruningMyList #######////####### algoPruningMyList #######//
-//####### algoPruningMyList #######////####### algoPruningMyList #######////####### algoPruningMyList #######//
-//####### algoPruningMyList #######////####### algoPruningMyList #######////####### algoPruningMyList #######//
-//####### algoPruningMyList #######////####### algoPruningMyList #######////####### algoPruningMyList #######//
-
-void OmegaOP::algoPruningMyList(std::vector< double >& data)
-{
-  unsigned int n = data.size();
-  unsigned int p = nbStates;
-
-  unsigned int Tp1;
-  unsigned int nm1 = n-1;
-
-  /// PREPROCESSING
-  S12P = preprocessing(data);
-
-  double* S1decay = new double[n];
-  S1decay[0] = 0;
-  for(unsigned int i = 1; i < n; i++){S1decay[i] = S1decay[i-1] + data[i-1];} //cumsum from 0, y_1,...
-
-  double* MIN_Y = new double[n]; //new type of min
-  double* MAX_Y = new double[n]; //new type of max
-  for(unsigned int i = 0; i < n; i++)
-  {
-    MIN_Y[i] = 2.0*data[i];
-    MAX_Y[i] = 2.0*data[i];
-  }
-
-  for(unsigned int i = 0; i < n-1; i++)
-  {
-    for(unsigned int j = i + 1; j < n-1; j++)
-    {
-      MIN_Y[i] = std::min(2.0*(S1decay[j+1] - S1decay[i]), MIN_Y[i]);
-      MAX_Y[i] = std::max(2.0*(S1decay[j+1] - S1decay[i]), MAX_Y[i]);
-    }
-  }
-
-  Costs cost;
-  ///
-  /// FILL FIRST COLUMN in Q
-  ///
-  for(unsigned int i = 0; i < p; i++)
-  {
-    Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
-    lastChpt[i][0] = 0;
-    lastIndState[i][0] = 0;
-  }
-
-  ///
-  /// ALGO
-  ///
-  double temp_cost = 0;
-  double temp_Q = -1;
-  unsigned int temp_chpt = 0;
-  unsigned int temp_indState = 0;
-  ///variables for pruning
-  double delta;
-  double DELTA;
-  double K;
-  int nbPosition = 0;
-
-  ///
-  /// states u to v -> time position t to T
-  /// explore in (u,t) for fixed (v,T)
-  ///
-
-  ListPoint** myLists = new ListPoint*[p];
-  for(unsigned int q = 0; q < p; q++)
-  {
-    myLists[q] = new ListPoint(n*p);
-  }
-
-  unsigned int t;
-  unsigned int u;
-
-  for(unsigned int T = 1; T < n; T++)
-  {
-    for(unsigned int v = 0; v < p; v++)
-    {
-      /////
-      ///// Add last column to explore
-      /////
-      for(unsigned int w = 0; w < p; w++)
-      {
-        myLists[v] -> addPoint(w,T-1);
-      }
-
-      /// FIRST ELEMENT
-      myLists[v] -> initializeCurrentPosition();
-      u = myLists[v] -> getState();
-      t = myLists[v] -> getTime();
-
-      ///1st element
-      temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
-      temp_indState = u;
-      temp_chpt = t;
-      nbPosition = nbPosition + 1;
-
-      while(myLists[v] -> canMove() == true)
-      {
-        myLists[v] -> move();
-        nbPosition = nbPosition + 1;
-        u = myLists[v] -> getState();
-        t = myLists[v] -> getTime();
-
-        temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
-        if(temp_Q > temp_cost)
-        {
-          temp_Q = temp_cost;
-          temp_indState = u;
-          temp_chpt = t;
-        }
-      }
-
-      /////
-      ///// Write response
-      /////
-      Q[v][T] = temp_Q;
-      lastIndState[v][T] = temp_indState;
-      lastChpt[v][T] = temp_chpt;
-
-      ////////////////////////
-      ///// PRUNING STEP /////
-      ////////////////////////
-      myLists[v] -> initializeCurrentPosition();
-      while(myLists[v] -> canMove() == true)
-      {
-        u = myLists[v] -> getState();
-        t = myLists[v] -> getTime();
-        Tp1 = T + 1;
-
-        DELTA = states[u] - states[v];
-        if(DELTA >= 0){delta = MAX_Y[T] - states[v];}
-          else{delta = MIN_Y[T] - states[v];}
-
-        K = S12P[2][T] - S12P[2][t] -  (t + 1) * (S12P[0][T] - S12P[0][t]);
-
-        if((Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) > temp_Q) && cost.pruningTest(t, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(t, T, nm1, delta, DELTA, K, states[v]))
-        {
-          myLists[v] -> deletePoint();
-        }else{myLists[v] -> move();}
-      }
-
-        ///LAST ELEMENT IN LIST
-        u = myLists[v] -> getState();
-        t = myLists[v] -> getTime();
-        Tp1 = T + 1;
-
-        DELTA = states[u] - states[v];
-        if(DELTA >= 0){delta = MAX_Y[T] - states[v];}
-        else{delta = MIN_Y[T] - states[v];}
-
-        K = S12P[2][T] - S12P[2][t] -  (t + 1) * (S12P[0][T] - S12P[0][t]);
-
-        if((Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) > temp_Q) && cost.pruningTest(t, T, Tp1, delta, DELTA, K, states[v]) && cost.pruningTest(t, T, nm1, delta, DELTA, K, states[v]))
-        {
-          myLists[v] -> deletePoint();
-        }
-    }
-  }
-
-  pruning = 2.0*nbPosition/(1.0*p*p*n*(n-1)); //nbPosition seen / nbPosition total
-
-  delete [] S1decay;
-  S1decay = NULL;
-  delete [] MAX_Y;
-  MAX_Y = NULL;
-  delete [] MIN_Y;
-  MIN_Y = NULL;
-  delete [] myLists;
-  myLists = NULL;
-}
-
-//####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
-//####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
-//####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
-//####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
-//####### algoPruningPELT #######////####### algoPruningPELT #######////####### algoPruningPELT #######//
-
-void OmegaOP::algoPruningPELT(std::vector< double >& data)
-{
-  unsigned int n = data.size();
-  unsigned int p = nbStates;
-
-  /// PREPROCESSING
-  S12P = preprocessing(data);
-
-  double* S1decay = new double[n];
-  S1decay[0] = 0;
-  for(unsigned int i = 1; i < n; i++){S1decay[i] = S1decay[i-1] + data[i-1];} //cumsum from 0, y_1,...
-
-  Costs cost;
-  ///
-  /// FILL FIRST COLUMN in Q
-  ///
-  for(unsigned int i = 0; i < p; i++)
-  {
-    Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
-    lastChpt[i][0] = 0;
-    lastIndState[i][0] = 0;
-  }
-
-  ///
-  /// ALGO
-  ///
-  double temp_cost = 0;
-  double temp_Q = -1;
-  unsigned int temp_chpt = 0;
-  unsigned int temp_indState = 0;
-  ///variables for pruning
-  int nbPosition = 0;
-
-  ///
-  /// states u to v -> time position t to T
-  /// explore in (u,t) for fixed (v,T)
-  ///
-
-  ListPoint** myLists = new ListPoint*[p];
-  for(unsigned int q = 0; q < p; q++)
-  {
-    myLists[q] = new ListPoint(n*p);
-  }
-
-  unsigned int t;
-  unsigned int u;
-
-  for(unsigned int T = 1; T < n; T++)
-  {
-    for(unsigned int v = 0; v < p; v++)
-    {
-      /////
-      ///// Add last column to explore
-      /////
-      for(unsigned int w = 0; w < p; w++)
-      {
-        myLists[v] -> addPoint(w,T-1);
-      }
-
-      /// FIRST ELEMENT
-      myLists[v] -> initializeCurrentPosition();
-      u = myLists[v] -> getState();
-      t = myLists[v] -> getTime();
-
-      ///1st element
-      temp_Q = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
-      temp_indState = u;
-      temp_chpt = t;
-      nbPosition = nbPosition + 1;
-
-      while(myLists[v] -> canMove() == true)
-      {
-        myLists[v] -> move();
-        nbPosition = nbPosition + 1;
-        u = myLists[v] -> getState();
-        t = myLists[v] -> getTime();
-
-        temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
-        if(temp_Q > temp_cost)
-        {
-          temp_Q = temp_cost;
-          temp_indState = u;
-          temp_chpt = t;
-        }
-      }
-
-      /////
-      ///// Write response
-      /////
-      Q[v][T] = temp_Q;
-      lastIndState[v][T] = temp_indState;
-      lastChpt[v][T] = temp_chpt;
-
-      ////////////////////////
-      ///// PRUNING STEP /////
-      ////////////////////////
-      myLists[v] -> initializeCurrentPosition();
-      while(myLists[v] -> canMove() == true)
-      {
-        u = myLists[v] -> getState();
-        t = myLists[v] -> getTime();
-
-        if(Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) > temp_Q)
-        {
-          myLists[v] -> deletePoint();
-        }else{myLists[v] -> move();}
-      }
-
-      ///LAST ELEMENT IN LIST
-      u = myLists[v] -> getState();
-      t = myLists[v] -> getTime();
-
-      if(Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) > temp_Q)
-      {
-        myLists[v] -> deletePoint();
-      }
-    }
-  }
-
-  pruning = 2.0*nbPosition/(1.0*p*p*n*(n-1)); //nbPosition seen / nbPosition total
-
-  delete [] S1decay;
-  S1decay = NULL;
-  delete [] myLists;
-  myLists = NULL;
-}
-
-//####### backtracking #######////####### backtracking #######////####### backtracking #######//
-//####### backtracking #######////####### backtracking #######////####### backtracking #######//
-//####### backtracking #######////####### backtracking #######////####### backtracking #######//
 //####### backtracking #######////####### backtracking #######////####### backtracking #######//
 //####### backtracking #######////####### backtracking #######////####### backtracking #######//
 
@@ -706,47 +395,26 @@ void OmegaOP::backtracking(unsigned int n)
 
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
-//####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
-//####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
-//####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
 //channel pruning
 
 void OmegaOP::algoISOTONIC(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
-  unsigned int zero = 0;
-
-  /// PREPROCESSING
-  S12P = preprocessing(data);
-
   Costs cost;
-  ///
-  /// FILL FIRST COLUMN in Q
-  ///
-  for(unsigned int i = 0; i < p; i++)
-  {
-    Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
-    lastIndState[i][0] = 0;
-    lastChpt[i][0] = 0;
-  }
-
-  ///
-  /// ALGO
-  ///
   double temp_cost = 0;
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
 
+  /// PREPROCESSING
+  S12P = preprocessing(data);
+
   //////////////////////////////////////////////////
-  //////////////////////////////////////////////////
-  ///
   /// CHANNEL INFORMATION
   /// u1 / u2 = "min / max" in each column of Q
-  ///
-  unsigned int* u1 = new unsigned int[n];
-  unsigned int* u2 = new unsigned int[n];
+  unsigned int* u1 = new unsigned int[n + 1];
+  unsigned int* u2 = new unsigned int[n + 1];
   unsigned int theStart;
   unsigned int theEnd;
   double theV = 0;
@@ -757,68 +425,58 @@ void OmegaOP::algoISOTONIC(std::vector< double >& data)
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
   ///
-  for(unsigned int T = 1; T < n; T++)
+  for(unsigned int T = 2; T < (n + 1); T++)
   {
-    ///
-    /// FILL u1 and u2 vectors
-    ///
+    /// FILL u1 and u2 vectors in position T-1
     theStart = 0;
     while(theStart < (p - 1) && Q[theStart][T - 1] > Q[theStart + 1][T - 1])
-      {theStart = theStart + 1;}
+    {theStart = theStart + 1;}
     u1[T-1] = theStart;
-
     theEnd = p - 1;
     while(theEnd > 0 && Q[theEnd][T - 1] > Q[theEnd - 1][T - 1])
-      {theEnd = theEnd - 1;}
+    {theEnd = theEnd - 1;}
     u2[T-1] = theEnd;
-
 
     for(unsigned int v = 0; v < p; v++)
     {
-      /////
-      ///// EXPLORE MATRIX size p*T -> restricted on each column
-      /////
-      temp_Q = Q[0][0] + cost.slopeCost(states[0], states[v], zero, T, S12P[0][0], S12P[0][T], S12P[1][0], S12P[1][T], S12P[2][0], S12P[2][T]) + penalty;
+      ///// EXPLORE MATRIX size p*T
+      temp_Q = INFINITY;
       temp_indState = 0;
       temp_chpt = 0;
 
-      for(unsigned int t = 0; t < T; t++)
+      for(unsigned int t = 1; t < T; t++)
       {
-        /////
         ///// FIND the minimum of the cost in start state
-        /////
-        if(t < T-1)
+        if(t < (T-1))
         {
           theV = cost.vhat(states[v], t, T, S12P[0][t], S12P[0][T], S12P[2][t], S12P[2][T]);
           indexTheV = cost.closestStateIndex(theV, states, p);
         }
         else
         {
-          indexTheV = u1[T-1];
+          indexTheV = u1[T-1]; // if t = T-1 cost.slopeCost does not depend on u
         }
 
-        ///
-        /// explore values between std::min(std::min(u1[t],indexTheV), v); u < std::min(std::max(u2[t],indexTheV), v) + 1
-        ///
+        /// explore values (in column of states) with add. constaint u <= v
         for(unsigned int u = std::min(std::min(u1[t],indexTheV), v); u < std::min(std::max(u2[t],indexTheV), v) + 1; u++) /////explore column of states
         {
-          nbPosition = nbPosition + 1;
+          nbPosition = nbPosition + 1; //we explore +1 position
           temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]) + penalty;
+          //std::cout <<" t2 "<<  t << " v2 " << states[u] << " t3 "<< T <<" v3 " << states[v] << " cost  " << temp_cost;
           if(temp_Q > temp_cost)
           {
             temp_Q = temp_cost;
             temp_indState = u;
             temp_chpt = t;
           }
+          //std::cout << std::endl;
         }
       }
 
-      /////
       ///// Write response
-      /////
+      Q[v][T] = temp_Q;
       lastChpt[v][T] = temp_chpt;
       lastIndState[v][T] = temp_indState;
-      Q[v][T] = temp_Q;
     }
   }
 
@@ -844,51 +502,33 @@ void OmegaOP::algoUNIMODAL(std::vector< double >& data)
 {
   unsigned int n = data.size();
   unsigned int p = nbStates;
-
-  /// PREPROCESSING
-  S12P = preprocessing(data);
-
-  int** SLOPE = new int*[p];
-  for(unsigned int i = 0; i < p; i++){SLOPE[i] = new int[n];}
-
   Costs cost;
-  ///
-  /// FILL FIRST COLUMN in Q
-  ///
-  for(unsigned int i = 0; i < p; i++)
-  {
-    Q[i][0] = (data[0] - states[i])*(data[0] - states[i]);
-    lastChpt[i][0] = 0;
-    lastIndState[i][0] = 0;
-    SLOPE[i][0] = 0;
-  }
-
-  ///
-  /// ALGO
-  ///
   double temp_cost = 0;
   double temp_Q = -1;
   int temp_chpt = -1;
   unsigned int temp_indState = 0;
 
+  int** SLOPE = new int*[p];
+  for(unsigned int i = 0; i < p; i++){SLOPE[i] = new int[n];}
+
+  /// PREPROCESSING
+  S12P = preprocessing(data);
+
   ///
+  /// ALGO
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
   ///
-
-
-  for(unsigned int T = 1; T < n; T++)
+  for(unsigned int T = 2; T < (n + 1); T++)
   {
     for(unsigned int v = 0; v < p; v++)
     {
-      /////
       ///// EXPLORE MATRIX size p*T
-      /////
       temp_Q = INFINITY;
       temp_indState = 0;
       temp_chpt = 0;
 
-      for(unsigned int t = 0; t < T; t++)
+      for(unsigned int t = 1; t < T; t++)
       {
         for(unsigned int u = 0; u < p; u++) /////explore column of states
         {
@@ -928,9 +568,6 @@ void OmegaOP::algoUNIMODAL(std::vector< double >& data)
 
 
 
-//####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
-//####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
-//####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
 //####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
 //####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
 // NO PRUNING

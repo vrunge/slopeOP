@@ -21,8 +21,6 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
   if(type == "null" && constraint == "null"){omega.algo(data);}
   if(type == "channel" && constraint == "null"){omega.algoChannel(data);}
   if(type == "pruning" && constraint == "null"){omega.algoPruning(data);}
-  if(type == "pruningMyList" && constraint == "null"){omega.algoPruningMyList(data);}
-  if(type == "pruningPELT" && constraint == "null"){omega.algoPruningPELT(data);}
 
   //DIFFERENT CONSTRAINTS
   if(constraint == "isotonic"){omega.algoISOTONIC(data);}
@@ -50,8 +48,6 @@ List slopeSNtransfer(std::vector<double> data, std::vector<double> states, int n
   if(type == "null" && constraint == "null"){omega.algo(data);}
   if(type == "channel" && constraint == "null"){omega.algoChannel(data);}
   if(type == "pruning" && constraint == "null"){omega.algoPruning(data);}
-  if(type == "pruningMyList" && constraint == "null"){omega.algoPruningMyList(data);}
-  if(type == "pruningPELT" && constraint == "null"){omega.algoPruningPELT(data);}
 
   //DIFFERENT CONSTRAINTS
   if(constraint == "isotonic"){omega.algoISOTONIC(data);}

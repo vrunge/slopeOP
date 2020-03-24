@@ -30,8 +30,6 @@ class OmegaOP
     void algo(std::vector< double >& data);
     void algoChannel(std::vector< double >& data);
     void algoPruning(std::vector< double >& data);
-    void algoPruningMyList(std::vector< double >& data);
-    void algoPruningPELT(std::vector< double >& data);
 
     void backtracking(unsigned int n);
 

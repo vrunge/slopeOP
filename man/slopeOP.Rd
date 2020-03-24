@@ -18,7 +18,7 @@ slopeOP(data, states, penalty = 0, constraint = "null", minAngle = 0,
 
 \item{minAngle}{a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"}
 
-\item{type}{string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property or "pruningMyList" = pelt-like property with a hand-made list structure}
+\item{type}{string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property}
 
 \item{testMode}{a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)}
 }
