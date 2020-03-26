@@ -14,7 +14,7 @@
 
 > [Options for constraining inference](#options)
 
-> [[The slopeSN function](#sn)
+> [The slopeSN function](#sn)
 
 > [plot function](#plot)
 
