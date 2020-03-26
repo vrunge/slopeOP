@@ -77,7 +77,7 @@ void Costs::fillCoeffsAG(double** coeffs, double* sumY, unsigned int n)
       gtT[T + 1] = ((T-t)*gtT[T] + (sumY[T]-sumY[t]))/(T-t+1);
     }
     linReg(coeffs[t], gtT, t, n); //consider gtT only from t + 1 to n in this function
-    std::cout << t << " : " << coeffs[t][0] << " "<< coeffs[t][1] << " "<< coeffs[t][2] << " "<< coeffs[t][3] << std::endl;
+    //std::cout << t << " : " << coeffs[t][0] << " "<< coeffs[t][1] << " "<< coeffs[t][2] << " "<< coeffs[t][3] << std::endl;
   }
   coeffs[n - 1][0] = 0;
   coeffs[n - 1][1] = 0;
@@ -168,7 +168,6 @@ bool Costs::angleTest(unsigned int& t1, unsigned int& t2, unsigned int& t3, doub
 
   if(theta >= minAngle){response = true;}
   if((t1 == t2) && (v1 == v2)){response = true;}
-  //std::cout << "t1 " << t1 << " v1 "<< v1 << " t2 "<< t2 << " v2 "<< v2 << " t3 " << t3 << " v3 "<< v3 << " response " << response << " && ";
 
   return(response);
 }

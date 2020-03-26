@@ -47,8 +47,6 @@ List slopeSNtransfer(std::vector<double> data, std::vector<double> states, unsig
   //DIFFERENT CONSTRAINTS
   if(constraint == "null"){omega.algoNULL(data);}
   if(constraint == "isotonic"){omega.algoISOTONIC(data);}
-  if(constraint == "unimodal"){omega.algoUNIMODAL(data);}
-  if(constraint == "smoothing"){omega.algoSMOOTHING(data, minAngle);}
 
   omega.backtracking(data.size());
 

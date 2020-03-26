@@ -30,8 +30,6 @@ public:
 
   void algoNULL(std::vector< double >& data);
   void algoISOTONIC(std::vector< double >& data);
-  void algoUNIMODAL(std::vector< double >& data);
-  void algoSMOOTHING(std::vector< double >& data, double minAngle);
 
   void backtracking(unsigned int n);
 

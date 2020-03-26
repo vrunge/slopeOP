@@ -140,6 +140,7 @@ void OmegaSN::Q0init(std::vector< double >& data) const
 
 //####### algoNULL #######////####### algoNULL #######////####### algoNULL #######//
 //####### algoNULL #######////####### algoNULL #######////####### algoNULL #######//
+//no pruning
 
 void OmegaSN::algoNULL(std::vector< double >& data)
 {
@@ -195,97 +196,12 @@ void OmegaSN::algoNULL(std::vector< double >& data)
 }
 
 
-
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
 //####### algoISOTONIC #######////####### algoISOTONIC #######////####### algoISOTONIC #######//
-//channel pruning
+//no pruning
 
 void OmegaSN::algoISOTONIC(std::vector< double >& data)
 {
-
-}
-
-
-//####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
-//####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
-// NO PRUNING
-
-void OmegaSN::algoUNIMODAL(std::vector< double >& data)
-{
-  unsigned int n = data.size();
-  unsigned int p = nbStates;
-  Costs cost;
-  double temp_cost = 0;
-  double temp_Q = -1;
-  int temp_chpt = -1;
-  unsigned int temp_indState = 0;
-
-  int** SLOPE = new int*[p];
-  for(unsigned int i = 0; i < p; i++){SLOPE[i] = new int[n];}
-
-  /// PREPROCESSING
-  S12P = preprocessing(data);
-
-  ///
-  /// ALGO
-  /// states u to v -> time position t to T
-  /// explore in (u,t) for fixed (v,T)
-  ///
-  for(unsigned int T = 2; T < (n + 1); T++)
-  {
-    for(unsigned int v = 0; v < p; v++)
-    {
-      ///// EXPLORE MATRIX size p*T
-      temp_Q = INFINITY;
-      temp_indState = 0;
-      temp_chpt = 0;
-
-      for(unsigned int t = 1; t < T; t++)
-      {
-        for(unsigned int u = 0; u < p; u++) /////explore column of states
-        {
-          if(!(u < v && SLOPE[u][t] == -1))
-          {
-           // temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
-            if(temp_Q > temp_cost)
-            {
-              temp_Q = temp_cost;
-              temp_indState = u;
-              temp_chpt = t;
-            }
-          }
-        }
-
-      }
-      /////
-      ///// Write response
-      /////
-      //Q[v][T] = temp_Q;
-     // lastIndState[v][T] = temp_indState;
-     // lastChpt[v][T] = temp_chpt;
-
-      if(temp_indState > v){SLOPE[v][T] = -1;}
-      if(temp_indState < v){SLOPE[v][T] = 1;}
-      if(temp_indState == v){if(SLOPE[temp_indState][temp_chpt] == -1){SLOPE[v][T] = -1;}}
-    }
-  }
-
-  pruning = 1;
-
-  for(unsigned int i = 0; i < p; i++){delete(SLOPE[i]);}
-  delete [] SLOPE;
-  SLOPE = NULL;
-
-}
-
-
-
-//####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
-//####### algoSMOOTHING #######////####### algoSMOOTHING #######////####### algoSMOOTHING #######//
-// NO PRUNING
-
-void OmegaSN::algoSMOOTHING(std::vector< double >& data, double minAngle)
-{
   unsigned int n = data.size();
   unsigned int p = nbStates;
   Costs cost;
@@ -296,29 +212,27 @@ void OmegaSN::algoSMOOTHING(std::vector< double >& data, double minAngle)
 
   /// PREPROCESSING
   S12P = preprocessing(data);
+  Q0init(data);
 
-  ///
   /// ALGO
   /// states u to v -> time position t to T
   /// explore in (u,t) for fixed (v,T)
-  ///
   for(unsigned int T = 2; T < (n + 1); T++)
   {
-    for(unsigned int v = 0; v < p; v++)
+    for(unsigned int nb = 1; nb < nbSegments; nb++)
     {
-      ///// EXPLORE MATRIX size p*T
-      temp_Q = INFINITY;
-      temp_indState = 0;
-      temp_chpt = 0;
-
-      for(unsigned int t = 1; t < T; t++)
+      for(unsigned int v = 0; v < p; v++)
       {
-        for(unsigned int u = 0; u < p; u++) /////explore column of states
+        ///// EXPLORE MATRIX size p*T
+        temp_Q = INFINITY;
+        temp_indState = 0;
+        temp_chpt = 0;
+
+        for(unsigned int t = nb + 1; t < T; t++)
         {
-      //    if(cost.angleTest(lastChpt[u][t], t, T, states[lastIndState[u][t]], states[u], states[v], minAngle))
+          for(unsigned int u = 0; u < (v + 1); u++) /////explore column of states
           {
-      //      temp_cost = Q[u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
-            //std::cout <<" t2 "<<  t << " v2 " << states[u] << " t3 "<< T <<" v3 " << states[v] << " cost  " << temp_cost;
+            temp_cost = Q[nb-1][u][t] + cost.slopeCost(states[u], states[v], t, T, S12P[0][t], S12P[0][T], S12P[1][t], S12P[1][T], S12P[2][t], S12P[2][T]);
             if(temp_Q > temp_cost)
             {
               temp_Q = temp_cost;
@@ -326,17 +240,17 @@ void OmegaSN::algoSMOOTHING(std::vector< double >& data, double minAngle)
               temp_chpt = t;
             }
           }
-          std::cout << std::endl;
         }
-
+        ///// Write response
+        Q[nb][v][T] = temp_Q;
+        lastChpt[nb][v][T] = temp_chpt;
+        lastIndState[nb][v][T] = temp_indState;
+        //std::cout << "nb " << nb << " v "<< v << " T " << T << " Q " << temp_Q << " --- " << temp_indState << " && " << temp_chpt << std::endl;
       }
-      ///// Write response
-     // Q[v][T] = temp_Q;
-     // lastChpt[v][T] = temp_chpt;
-     // lastIndState[v][T] = temp_indState;
     }
   }
   pruning = 1;
+
 }
 
 

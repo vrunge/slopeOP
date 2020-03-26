@@ -65,7 +65,7 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 #' @param data vector of data to segment: a univariate time series
 #' @param states vector of states = set of accessible starting/ending values for segments in increasing order.
 #' @param nbSegments the number of segments to infer
-#' @param constraint string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"
+#' @param constraint string defining a constraint : "null", "isotonic"
 #' @param minAngle a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"
 #' @param testMode a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)
 #' @return a list of 3 elements  = (changepoints, states, globalCost). (Pruning is optional)
@@ -94,12 +94,11 @@ slopeSN <- function(data, states, nbSegments = 1, constraint = "null", minAngle 
   if(!is.double(minAngle)){stop('minAngle is not a double.')}
   if(minAngle < 0 || minAngle > 180){stop('minAngle must lie between 0 and 180')}
 
-  allowed.constraints <- c("null", "isotonic", "unimodal", "smoothing")
+  allowed.constraints <- c("null", "isotonic")
   if(!constraint %in% allowed.constraints){stop('constraint must be one of: ', paste(allowed.constraints, collapse=", "))}
 
   if(!is.logical(testMode)){stop('testMode must be a boolean')}
   if(nbSegments + 1 > length(data)){stop('you can not have more segments that data points')}
-
 
   ###CALL Rcpp functions###
   res <- slopeSNtransfer(data, states, nbSegments, constraint, minAngle)

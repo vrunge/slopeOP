@@ -608,7 +608,7 @@ void OmegaOP::algoSMOOTHING(std::vector< double >& data, double minAngle)
               temp_chpt = t;
             }
           }
-          std::cout << std::endl;
+          //std::cout << std::endl;
         }
 
       }
