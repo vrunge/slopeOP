@@ -14,6 +14,8 @@
 
 > [Options for constraining inference](#options)
 
+> [[The slopeSN function](#sn)
+
 > [plot function](#plot)
 
 > [Python bindings](#python)
@@ -195,6 +197,34 @@ slopeOP(data, states = 70:80, penalty = 5, constraint = "smoothing", minAngle = 
 ```
 
 <a id="plot"></a>
+
+
+<a id="sn"></a>
+
+## The slopeSN function
+
+With `slopeSN`, we are able to constrain to number of segments in the inference
+
+
+```r
+myData <- slopeData(index = c(1,10,20,30), states = c(0,5,3,6), noise = 1)
+res <- slopeSN(data = myData, states = 0:6, nbSegments = 2)
+res
+```
+
+```
+## changepoints
+## [1]  1  6 30
+## 
+## parameters
+## [1] 0 3 5
+## 
+## globalCost
+## [1] 35.42239
+## 
+## attr(,"class")
+## [1] "slopeOP"
+```
 
 ## Plot function
 

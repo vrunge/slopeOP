@@ -186,8 +186,7 @@ void OmegaSN::algoNULL(std::vector< double >& data)
         Q[nb][v][T] = temp_Q;
         lastChpt[nb][v][T] = temp_chpt;
         lastIndState[nb][v][T] = temp_indState;
-        std::cout << "nb " << nb << " v "<< v << " T " << T << " Q " << temp_Q << std::endl;
-
+        //std::cout << "nb " << nb << " v "<< v << " T " << T << " Q " << temp_Q << std::endl;
       }
     }
   }
