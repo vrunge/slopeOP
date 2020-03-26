@@ -41,15 +41,11 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
 
 
 // [[Rcpp::export]]
-List slopeSNtransfer(std::vector<double> data, std::vector<double> states, int nbSegments, std::string constraint = "null", double minAngle = 0, std::string type = "channel")
+List slopeSNtransfer(std::vector<double> data, std::vector<double> states, unsigned int nbSegments, std::string constraint = "null", double minAngle = 0)
 {
-  OmegaSN omega = OmegaSN(states, nbSegments, data.size());
-  //DIFFERENT PRUNING + NO CONSTRAINT
-  if(type == "null" && constraint == "null"){omega.algo(data);}
-  if(type == "channel" && constraint == "null"){omega.algoChannel(data);}
-  if(type == "pruning" && constraint == "null"){omega.algoPruning(data);}
-
+  OmegaSN omega = OmegaSN(states, data[0], nbSegments, data.size());
   //DIFFERENT CONSTRAINTS
+  if(constraint == "null"){omega.algoNULL(data);}
   if(constraint == "isotonic"){omega.algoISOTONIC(data);}
   if(constraint == "unimodal"){omega.algoUNIMODAL(data);}
   if(constraint == "smoothing"){omega.algoSMOOTHING(data, minAngle);}

@@ -5,8 +5,8 @@ slopeOPtransfer <- function(data, states, penalty, constraint = "null", minAngle
     .Call('_slopeOP_slopeOPtransfer', PACKAGE = 'slopeOP', data, states, penalty, constraint, minAngle, type)
 }
 
-slopeSNtransfer <- function(data, states, nbSegments, constraint = "null", minAngle = 0, type = "channel") {
-    .Call('_slopeOP_slopeSNtransfer', PACKAGE = 'slopeOP', data, states, nbSegments, constraint, minAngle, type)
+slopeSNtransfer <- function(data, states, nbSegments, constraint = "null", minAngle = 0) {
+    .Call('_slopeOP_slopeSNtransfer', PACKAGE = 'slopeOP', data, states, nbSegments, constraint, minAngle)
 }
 
 #' @title linearOP

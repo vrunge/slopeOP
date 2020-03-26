@@ -488,12 +488,6 @@ void OmegaOP::algoISOTONIC(std::vector< double >& data)
   u2 = NULL;
 }
 
-
-
-
-//####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
-//####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
-//####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
 //####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
 //####### algoUNIMODAL #######////####### algoUNIMODAL #######////####### algoUNIMODAL #######//
 // NO PRUNING

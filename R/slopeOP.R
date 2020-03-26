@@ -67,7 +67,6 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 #' @param nbSegments the number of segments to infer
 #' @param constraint string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"
 #' @param minAngle a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"
-#' @param type string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property or "pruningMyList" = pelt-like property with a hand-made list structure
 #' @param testMode a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)
 #' @return a list of 3 elements  = (changepoints, states, globalCost). (Pruning is optional)
 #' \describe{
@@ -79,7 +78,7 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 #' @examples
 #' myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
 #' slopeSN(data = myData, states = 0:6, nbSegments = 2)
-slopeSN <- function(data, states, nbSegments = 1, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
+slopeSN <- function(data, states, nbSegments = 1, constraint = "null", minAngle = 0, testMode = FALSE)
 {
   ############
   ### STOP ###
@@ -89,26 +88,26 @@ slopeSN <- function(data, states, nbSegments = 1, constraint = "null", minAngle 
   if(is.unsorted(states)){stop('states must be in increasing order')}
   if(length(unique(states)) < length(states)){stop('states is not a strictly increasing sequence')}
 
-  #if(!is.double(penalty)){stop('penalty is not a double.')}
-  #if(penalty < 0){stop('penalty must be nonnegative')}
+  if(nbSegments < 1){stop('nbSegments < 1')}
+  if(nbSegments%%1 > 0){stop('nbSegments is not an integer')}
 
   if(!is.double(minAngle)){stop('minAngle is not a double.')}
   if(minAngle < 0 || minAngle > 180){stop('minAngle must lie between 0 and 180')}
 
   allowed.constraints <- c("null", "isotonic", "unimodal", "smoothing")
   if(!constraint %in% allowed.constraints){stop('constraint must be one of: ', paste(allowed.constraints, collapse=", "))}
-  allowed.types <- c("null", "channel", "pruning")
-  if(!type %in% allowed.types){stop('type must be one of: ', paste(allowed.types, collapse=", "))}
 
   if(!is.logical(testMode)){stop('testMode must be a boolean')}
+  if(nbSegments + 1 > length(data)){stop('you can not have more segments that data points')}
+
 
   ###CALL Rcpp functions###
-  res <- slopeSNtransfer(data, states, nbSegments, constraint, minAngle, type)
+  res <- slopeSNtransfer(data, states, nbSegments, constraint, minAngle)
 
   ###Response class slopeOP###
   ### ATTENTION : we here remove one penalty to globalCost
-  if(testMode == FALSE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost )}
-  if(testMode == TRUE){response <- list(changepoints = res$changepoints + 1, parameters = res$parameters, globalCost = res$globalCost, pruning = res$pruningPower)}
+  if(testMode == FALSE){response <- list(changepoints = res$changepoints, parameters = res$parameters, globalCost = res$globalCost )}
+  if(testMode == TRUE){response <- list(changepoints = res$changepoints, parameters = res$parameters, globalCost = res$globalCost, pruning = res$pruningPower)}
 
   attr(response, "class") <- "slopeOP"
 
