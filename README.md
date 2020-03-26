@@ -92,7 +92,7 @@ The changepoint detection is achieved by using the function `slopeOP`
 
 
 ```r
-slopeOP(data, c(0,1,2,3), penalty = 10)
+slopeOP(data = data, states = c(0,1,2,3), penalty = 10)
 ```
 
 ```
@@ -120,8 +120,8 @@ Parameter `constraint` can be set to `isotonic` which corresponds to a restricti
 
 
 ```r
-data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,77,73,80), noise = 1)
-slopeOP(data, states = 71:80, penalty = 5, constraint = "isotonic")
+myData <- slopeData(index = c(1,150,200,350,500,750,1000), states = c(71,73,70,75,77,73,80), noise = 1)
+slopeOP(data = myData, states = 71:80, penalty = 5, constraint = "isotonic")
 ```
 
 ```
@@ -142,8 +142,8 @@ With `constraint` equal to `unimodal` the infered signal is increasing and then 
 
 
 ```r
-data <- slopeData(c(1,150,200,350,500,750,1000), c(71,73,70,75,78,73,75), noise = 1)
-slopeOP(data, states = 71:80, penalty = 5, constraint = "unimodal")
+myData <- slopeData(index = c(1,150,200,350,500,750,1000), states = c(71,73,70,75,78,73,75), noise = 1)
+slopeOP(data = myData, states = 71:80, penalty = 5, constraint = "unimodal")
 ```
 
 ```
@@ -164,8 +164,8 @@ We also can limit the angles between successive segments with `constraint` equal
 
 
 ```r
-data <- slopeData(c(1,30,40,70,100,150,200),c(70,80,70,80,70,80,70), noise = 0.5)
-slopeOP(data, states = 70:80, penalty = 5, constraint = "smoothing", minAngle = 170)
+myData <- slopeData(c(1,30,40,70,100,150,200),c(70,80,70,80,70,80,70), noise = 0.5)
+slopeOP(data = myData, states = 70:80, penalty = 5, constraint = "smoothing", minAngle = 170)
 ```
 
 ```
@@ -182,9 +182,6 @@ slopeOP(data, states = 70:80, penalty = 5, constraint = "smoothing", minAngle = 
 ## attr(,"class")
 ## [1] "slopeOP"
 ```
-
-<a id="plot"></a>
-
 
 <a id="sn"></a>
 
@@ -212,6 +209,8 @@ res
 ## attr(,"class")
 ## [1] "slopeOP"
 ```
+
+<a id="plot"></a>
 
 ## Plot function
 
