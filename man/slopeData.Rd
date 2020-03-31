@@ -4,7 +4,8 @@
 \alias{slopeData}
 \title{slopeData}
 \usage{
-slopeData(index, states, noise = 0)
+slopeData(index, states, noise = 0, outlierDensity = 0,
+  outlierNoise = 50)
 }
 \arguments{
 \item{index}{a vector of increasing changepoint indices}
@@ -12,6 +13,10 @@ slopeData(index, states, noise = 0)
 \item{states}{vector of successive states}
 
 \item{noise}{noise level = standard deviation of an additional normal noise}
+
+\item{outlierDensity}{probability for a datapoint to be an outlier (has to be close to 0)}
+
+\item{outlierNoise}{noise level for outlier data points}
 }
 \value{
 a vector of simulated data

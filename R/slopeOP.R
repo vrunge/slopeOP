@@ -123,10 +123,12 @@ slopeSN <- function(data, states, nbSegments = 1, constraint = "null", minAngle 
 #' @param index a vector of increasing changepoint indices
 #' @param states vector of successive states
 #' @param noise noise level = standard deviation of an additional normal noise
+#' @param outlierDensity probability for a datapoint to be an outlier (has to be close to 0)
+#' @param outlierNoise noise level for outlier data points
 #' @return a vector of simulated data
 #' @examples
 #' myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
-slopeData <- function(index, states, noise = 0)
+slopeData <- function(index, states, noise = 0, outlierDensity = 0, outlierNoise = 50)
 {
   ############
   ### STOP ###
@@ -143,8 +145,16 @@ slopeData <- function(index, states, noise = 0)
   steps <- diff(states)/diff(index)
   response <- rep(steps, diff(index))
   response <- c(states[1], cumsum(response) + states[1])
-  response <- response + rnorm(length(response), 0, noise)
-
+  if(outlierDensity == 0)
+  {
+    response <- response + rnorm(length(response), 0, noise)
+  }
+  else
+  {
+    S <- sample(c(0,1), size = length(response), replace = TRUE, prob = c(1 - outlierDensity, outlierDensity))
+    response <- response + (1-S)*rnorm(length(response), 0, noise)
+    response <- response + S*rnorm(length(response), 0, outlierNoise)
+  }
   return(response)
 }
 

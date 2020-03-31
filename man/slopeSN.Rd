@@ -5,7 +5,7 @@
 \title{slopeSN}
 \usage{
 slopeSN(data, states, nbSegments = 1, constraint = "null",
-  minAngle = 0, type = "channel", testMode = FALSE)
+  minAngle = 0, testMode = FALSE)
 }
 \arguments{
 \item{data}{vector of data to segment: a univariate time series}
@@ -14,11 +14,9 @@ slopeSN(data, states, nbSegments = 1, constraint = "null",
 
 \item{nbSegments}{the number of segments to infer}
 
-\item{constraint}{string defining a constraint : "null", "isotonic", "unimodal" or "smoothing"}
+\item{constraint}{string defining a constraint : "null", "isotonic"}
 
 \item{minAngle}{a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"}
-
-\item{type}{string defining the pruning type to use. "null" = no pruning, "channel" = use monotonicity property, "pruning" = pelt-type property or "pruningMyList" = pelt-like property with a hand-made list structure}
 
 \item{testMode}{a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)}
 }
