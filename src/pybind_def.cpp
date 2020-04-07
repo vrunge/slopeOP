@@ -5,7 +5,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include "op2d.h"
-#include "Omega.h"
+#include "OmegaOP.h"
+#include "OmegaSN.h"
 #include <string>
 
 namespace py = pybind11;
@@ -15,46 +16,40 @@ PeltResult<float, float> op2D_float(vector<float> &x, vector<float> &y, float be
     return op2D(x, y, beta);
 }
 
-Omega *slopeOP(std::vector<double> data, std::vector<double> states, double penalty,
+OmegaOP *slopeOP(std::vector<double> data, std::vector<double> states, double penalty,
                std::string constraint = "null", double minAngle = 0, std::string type = "channel")
 {
-    Omega *omega = new Omega(states, penalty, data.size());
-    //DIFFERENT PRUNING
-    if (type == "null" && constraint == "null")
-    {
-        omega->algo(data);
-    }
-    if (type == "channel" && constraint == "null")
-    {
-        omega->algoChannel(data);
-    }
-    if (type == "pruning" && constraint == "null")
-    {
-        omega->algoPruning(data);
-    }
-    if (type == "pruningMax" && constraint == "null")
-    {
-        omega->algoPruningMyList(data);
-    }
+    OmegaOP *omega = new OmegaOP(states, data[0], penalty, data.size());
+
+    //DIFFERENT PRUNING + NO CONSTRAINT
+    if(type == "null" && constraint == "null"){omega->algo(data);}
+    if(type == "channel" && constraint == "null"){omega->algoChannel(data);}
+    if(type == "pruning" && constraint == "null"){omega->algoPruning(data);}
 
     //DIFFERENT CONSTRAINTS
-    if (constraint == "isotonic")
-    {
-        omega->algoISOTONIC(data);
-    }
-    if (constraint == "unimodal")
-    {
-        omega->algoUNIMODAL(data);
-    }
-    if (constraint == "smoothing")
-    {
-        omega->algoSMOOTHING(data, minAngle);
-    }
+    if(constraint == "isotonic"){omega->algoISOTONIC(data);}
+    if(constraint == "unimodal"){omega->algoUNIMODAL(data);}
+    if(constraint == "smoothing"){omega->algoSMOOTHING(data, minAngle);}
 
     omega->backtracking(data.size());
 
     return omega;
 }
+
+
+OmegaSN *slopeSN(std::vector<double> data, std::vector<double> states,
+                    unsigned int nbSegments, std::string constraint = "null")
+{
+  OmegaSN *omega = new OmegaSN(states, data[0], nbSegments, data.size());
+  //DIFFERENT CONSTRAINTS
+  if(constraint == "null"){omega->algoNULL(data);}
+  if(constraint == "isotonic"){omega->algoISOTONIC(data);}
+
+  omega->backtracking(data.size());
+
+  return omega;
+}
+
 
 PYBIND11_MODULE(slopeOP, m)
 {
@@ -67,15 +62,23 @@ PYBIND11_MODULE(slopeOP, m)
         .def_readwrite("y", &PeltResult<float, float>::y)
         .def_readwrite("cost", &PeltResult<float, float>::cost);
 
-    py::class_<Omega>(m, "Omega")
-        .def("GetChangepoints", &Omega::GetChangepoints, pybind11::return_value_policy::copy)
-        .def("GetParameters", &Omega::GetParameters)
-        .def("GetGlobalCost", &Omega::GetGlobalCost)
-        .def("GetPruning", &Omega::GetPruning);
+    py::class_<OmegaOP>(m, "OmegaOP")
+        .def("GetChangepoints", &OmegaOP::GetChangepoints, pybind11::return_value_policy::copy)
+        .def("GetParameters", &OmegaOP::GetParameters)
+        .def("GetGlobalCost", &OmegaOP::GetGlobalCost)
+        .def("GetPruning", &OmegaOP::GetPruning);
+
+    py::class_<OmegaSN>(m, "OmegaSN")
+        .def("GetChangepoints", &OmegaSN::GetChangepoints, pybind11::return_value_policy::copy)
+        .def("GetParameters", &OmegaSN::GetParameters)
+        .def("GetGlobalCost", &OmegaSN::GetGlobalCost)
+        .def("GetPruning", &OmegaSN::GetPruning);
 
     m.doc() = "python interface to segmentaition algorithms"; // optional module docstring
     m.def("op2D", &op2D_float, "OP algorithm 2D (piece-wise linear fit)", py::arg("x"), py::arg("y"), py::arg("penality"));
     m.def("slopeOP", &slopeOP, "slopeOP algorithm", py::arg("data"), py::arg("states"), py::arg("penality"),
           py::arg("constraint") = "null", py::arg("minAngle") = 0, py::arg("type") = "channel");
+    m.def("slopeSN", &slopeSN, "slopeSN algorithm", py::arg("data"), py::arg("states"), py::arg("nb_segments"),
+          py::arg("constraint") = "null");
 }
 #endif

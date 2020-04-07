@@ -41,7 +41,7 @@ List slopeOPtransfer(std::vector<double> data, std::vector<double> states, doubl
 
 
 // [[Rcpp::export]]
-List slopeSNtransfer(std::vector<double> data, std::vector<double> states, unsigned int nbSegments, std::string constraint = "null", double minAngle = 0)
+List slopeSNtransfer(std::vector<double> data, std::vector<double> states, unsigned int nbSegments, std::string constraint = "null")
 {
   OmegaSN omega = OmegaSN(states, data[0], nbSegments, data.size());
   //DIFFERENT CONSTRAINTS

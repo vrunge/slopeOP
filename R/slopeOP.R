@@ -78,7 +78,7 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 #' @examples
 #' myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
 #' slopeSN(data = myData, states = 0:6, nbSegments = 2)
-slopeSN <- function(data, states, nbSegments = 1, constraint = "null", minAngle = 0, testMode = FALSE)
+slopeSN <- function(data, states, nbSegments = 1, constraint = "null", testMode = FALSE)
 {
   ############
   ### STOP ###
@@ -91,9 +91,6 @@ slopeSN <- function(data, states, nbSegments = 1, constraint = "null", minAngle 
   if(nbSegments < 1){stop('nbSegments < 1')}
   if(nbSegments%%1 > 0){stop('nbSegments is not an integer')}
 
-  if(!is.double(minAngle)){stop('minAngle is not a double.')}
-  if(minAngle < 0 || minAngle > 180){stop('minAngle must lie between 0 and 180')}
-
   allowed.constraints <- c("null", "isotonic")
   if(!constraint %in% allowed.constraints){stop('constraint must be one of: ', paste(allowed.constraints, collapse=", "))}
 
@@ -101,7 +98,7 @@ slopeSN <- function(data, states, nbSegments = 1, constraint = "null", minAngle 
   if(nbSegments + 1 > length(data)){stop('you can not have more segments that data points')}
 
   ###CALL Rcpp functions###
-  res <- slopeSNtransfer(data, states, nbSegments, constraint, minAngle)
+  res <- slopeSNtransfer(data, states, nbSegments, constraint)
 
   ###Response class slopeOP###
   ### ATTENTION : we here remove one penalty to globalCost
