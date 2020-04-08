@@ -66,7 +66,6 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
 #' @param states vector of states = set of accessible starting/ending values for segments in increasing order.
 #' @param nbSegments the number of segments to infer
 #' @param constraint string defining a constraint : "null", "isotonic"
-#' @param minAngle a minimal inner angle in degree between consecutive segments in case constraint = "smoothing"
 #' @param testMode a boolean, if true the function also returns the percent of elements to scan (= ratio scanned elements vs. scanned elements if no pruning)
 #' @return a list of 3 elements  = (changepoints, states, globalCost). (Pruning is optional)
 #' \describe{
