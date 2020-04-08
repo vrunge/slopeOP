@@ -8,6 +8,7 @@
 #include "OmegaOP.h"
 #include "OmegaSN.h"
 #include <string>
+#include <vector>
 
 namespace py = pybind11;
 
@@ -63,13 +64,27 @@ PYBIND11_MODULE(slopeOP, m)
         .def_readwrite("cost", &PeltResult<float, float>::cost);
 
     py::class_<OmegaOP>(m, "OmegaOP")
-        .def("GetChangepoints", &OmegaOP::GetChangepoints, pybind11::return_value_policy::copy)
+        .def("GetChangepoints", [](const OmegaOP &a) {
+                //
+                std::vector<int> cp = a.GetChangepoints();
+                for (size_t i=0; i<cp.size(); i++) {
+                    cp[i] --;
+                }
+                return cp;
+            }, pybind11::return_value_policy::copy)
         .def("GetParameters", &OmegaOP::GetParameters)
         .def("GetGlobalCost", &OmegaOP::GetGlobalCost)
         .def("GetPruning", &OmegaOP::GetPruning);
 
     py::class_<OmegaSN>(m, "OmegaSN")
-        .def("GetChangepoints", &OmegaSN::GetChangepoints, pybind11::return_value_policy::copy)
+        .def("GetChangepoints", [](const OmegaSN &a) {
+                //
+                std::vector<int> cp = a.GetChangepoints();
+                for (size_t i=0; i<cp.size(); i++) {
+                    cp[i] --;
+                }
+                return cp;
+            }, pybind11::return_value_policy::copy)
         .def("GetParameters", &OmegaSN::GetParameters)
         .def("GetGlobalCost", &OmegaSN::GetGlobalCost)
         .def("GetPruning", &OmegaSN::GetPruning);
