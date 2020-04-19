@@ -15,10 +15,6 @@ sdDiff <- function(x, method = 'HALL')
   {
     return(mad(diff(x)/sqrt(2)))
   }
-  if(method == "SD")
-  {
-    return(sd(diff(x)/sqrt(2)))
-  }
   return(NULL)
 }
 
