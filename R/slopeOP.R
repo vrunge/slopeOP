@@ -32,17 +32,14 @@ slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0
   if(!is.numeric(states)){stop('states are not all numeric')}
   if(is.unsorted(states)){stop('states must be in increasing order')}
   if(length(unique(states)) < length(states)){stop('states is not a strictly increasing sequence')}
-
   if(!is.double(penalty)){stop('penalty is not a double.')}
   if(penalty < 0){stop('penalty must be non-negative')}
   if(!is.double(minAngle)){stop('minAngle is not a double.')}
   if(minAngle < 0 || minAngle > 180){stop('minAngle must lie between 0 and 180')}
-
   allowed.constraints <- c("null", "isotonic", "unimodal", "smoothing")
   if(!constraint %in% allowed.constraints){stop('constraint must be one of: ', paste(allowed.constraints, collapse=", "))}
   allowed.types <- c("null", "channel", "pruning")
   if(!type %in% allowed.types){stop('type must be one of: ', paste(allowed.types, collapse=", "))}
-
   if(!is.logical(testMode)){stop('testMode must be a boolean')}
 
   ###CALL Rcpp functions###
