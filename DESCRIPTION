@@ -5,7 +5,7 @@ Version: 0.1.1
 Authors@R: person("Vincent", "Runge", email = "vincent.runge@univ-evry.fr", role = c("aut", "cre"))
 Maintainer: Vincent Runge <vincent.runge@univ-evry.fr>
 Description: Optimal partitioning algorithm for change-in-slope problem with continuity constraint and a finite number of states.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: Rcpp (>= 1.0.0)
