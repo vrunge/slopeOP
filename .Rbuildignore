@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 simulations
-LICENSE
 pybind11
 Rplot.png
 setup.py
