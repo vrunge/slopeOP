@@ -1,13 +1,4 @@
 language: r
+cache: packages
 
-cache:
-  directories:
-  - simulations
-  - LICENSE
-  - pybind11
-  - Rplot.png
-  - setup.py
-  - README.tex.md
-  - CMakeLists.txt
-  - tex
 
