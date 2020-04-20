@@ -9,3 +9,4 @@ CMakeLists.txt
 tex
 .vscode
 .gitmodules
+.travis.yml
