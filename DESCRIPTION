@@ -10,4 +10,5 @@ Encoding: UTF-8
 LazyData: true
 Imports: Rcpp (>= 1.0.0)
 LinkingTo: Rcpp
+Suggests: ggplot2, reshape2
 RoxygenNote: 6.1.1
