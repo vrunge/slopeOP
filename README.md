@@ -3,6 +3,11 @@
 %\VignetteIndexEntry{An Introduction to slopeOP}
 -->
 
+
+[![Build Status](https://travis-ci.com/vrunge/slopeOP.svg?branch=master)](https://travis-ci.com/vrunge/slopeOP)
+[![](https://img.shields.io/badge/docs-vignettes-blue.svg)](https://github.com/vrunge/slopeOP)
+
+
 # slopeOP Vignette
 ### Vincent Runge
 #### LaMME, Evry University
