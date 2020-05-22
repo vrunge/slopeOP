@@ -1,10 +1,10 @@
 Package: slopeOP
 Type: Package
 Title: Optimal partitioning algorithm for change-in-slope problem with a finite number of states
-Version: 0.1.1
+Version: 1.0.0
 Authors@R: person("Vincent", "Runge", email = "vincent.runge@univ-evry.fr", role = c("aut", "cre"))
 Maintainer: Vincent Runge <vincent.runge@univ-evry.fr>
-Description: Optimal partitioning algorithm for change-in-slope problem with continuity constraint and a finite number of states.
+Description: Optimal partitioning algorithm for change-in-slope problem with continuity constraint and a finite number of states. One can also add some constraints in the inference: isotonic, unimodal or smoothing. With the function slopeSN (segment neighborhood) the number of segments to infer is fixed by the user and do not depend on a penalty value.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

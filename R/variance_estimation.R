@@ -14,8 +14,7 @@
 sdHallDiff <- function(data)
 {
   wei <- c(0.1942, 0.2809, 0.3832, -0.8582)
-  corrector <- sqrt(wei[4]^2 + (wei[3]-wei[4])^2 + (wei[2]-wei[3])^2
-                    + (wei[1]-wei[2])^2 + wei[1]^2)
+  corrector <- wei[4]^2 + (wei[3]-wei[4])^2 + (wei[2]-wei[3])^2 + (wei[1]-wei[2])^2 + wei[1]^2
 
   z <- diff(data) #diff data
   n <- length(z)
@@ -23,7 +22,7 @@ sdHallDiff <- function(data)
   mat[2, -n] <- mat[2, -1]
   mat[3, -c(n-1, n)] <- mat[3, -c(1, 2)]
   mat[4, -c(n-2, n-1, n)] <- mat[4, -c(1, 2, 3)]
-  sd <- sqrt(sum(apply(mat[, -c(n-2, n-1, n)], 2, sum)^2)/(n-3))/corrector
+  sd <- sqrt(sum(apply(mat[, -c(n-2, n-1, n)], 2, sum)^2)/((n-3)*corrector))
 
   return(sd)
 }
