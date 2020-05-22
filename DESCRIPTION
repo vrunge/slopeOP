@@ -3,8 +3,11 @@ Type: Package
 Title: Optimal partitioning algorithm for change-in-slope problem with a finite number of states
 Version: 1.0.0
 Authors@R: person("Vincent", "Runge", email = "vincent.runge@univ-evry.fr", role = c("aut", "cre"))
+Authors@R: c(
+	person("Vincent", "Runge", email = "vincent.runge@univ-evry.fr", role = c("aut", "cre")),
+	person("Marco", "Pascucci", role = c("aut")))
 Maintainer: Vincent Runge <vincent.runge@univ-evry.fr>
-Description: Optimal partitioning algorithm for change-in-slope problem with continuity constraint and a finite number of states. One can also add some constraints in the inference: isotonic, unimodal or smoothing. With the function slopeSN (segment neighborhood) the number of segments to infer is fixed by the user and do not depend on a penalty value.
+Description: Optimal partitioning algorithm for change-in-slope problem with continuity constraint and a finite number of states. Some constraints can be enforced in the inference: isotonic, unimodal or smoothing. With the function slopeSN (segment neighborhood) the number of segments to infer is fixed by the user and does not depend on a penalty value.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
