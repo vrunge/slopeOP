@@ -245,7 +245,7 @@ git submodule update
 
 - Build and install the module. You have 2 options:
     1. `pip install -e .` to generate a python importable `".so"` module in this folder
-    2. `pip install` to install the module in the python environment.
+    2. `pip install .` to install the module in the python environment.
 
 - run python and import the module with `import slopeOP`.
 
