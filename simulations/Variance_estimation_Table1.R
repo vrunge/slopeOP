@@ -44,10 +44,10 @@ estim_sigma <- function(signal, sigma, nbSimus)
   response <- c(sdMad = sdMad, sdHall = sdHall, sdHallDiff = sdHallDiff)
   return(response)
 }
-
-#####
-##### SIMULATIONS
-#####
+ 
+########             ########
+######## SIMULATIONS ########
+########             ########
 
 nbSimus <- 100 #number of simulations
 
@@ -64,15 +64,20 @@ res_signal2 <- replicate(nbSimus, estim_sigma(signal2, sigma))
 df_s1 <- as.data.frame(t(res_signal1))
 df_s2 <- as.data.frame(t(res_signal2))
 
-############################# 
-########## results ########## 
-############################# 
+########         ########
+######## results ########
+########         ########
 
 colMeans(df_s1)
 colMeans(df_s2)
 
 apply(df_s1, 2, sd)
 apply(df_s2, 2, sd)
+
+
+########          ########
+######## boxplots ######## 
+########          ########
 
 ## Simple boxplots
 boxplot(df_s1)
@@ -81,10 +86,9 @@ boxplot(df_s2)
 ## Fancy boxplots
 library(ggplot2)
 library(reshape2)
+
 df <- cbind(df_s1, df_s2)
 colnames(df) <- c("sdMad_s1", "sdHall_s1", "sdHallDiff_s1", "sdMad_s2", "sdHall_s2", "sdHallDiff_s2")
+
 ggplot(data = melt(df), aes(x=variable, y=value)) + geom_boxplot(aes(fill=variable)) + theme(legend.position="none")
-
-
-
 

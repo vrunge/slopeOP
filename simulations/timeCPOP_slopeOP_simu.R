@@ -6,6 +6,9 @@ source("CPOP/CPOPexample_functions.R")
 dyn.load("CPOP/coeff.updateR.so")
 dyn.load("CPOP/prune2R.so")
 
+# the CPOP files are available here:
+# http://www.research.lancs.ac.uk/portal/en/datasets/cpop(56c07868-3fe9-4016-ad99-54439ec03b6c).html
+
 #devtools::install_github("vrunge/slopeOP", force = TRUE)
 library(slopeOP)
 
