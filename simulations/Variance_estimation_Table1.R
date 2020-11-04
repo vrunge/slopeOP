@@ -1,3 +1,6 @@
+
+# the sdDiff function gives an estimate of the standard deviation with two possible methods (HALL, MAD)
+
 sdDiff <- function(x, method = 'HALL')
 {
   if(is.numeric(x) == FALSE || length(x) < 2){stop('x is not a numeric vector of length > 1')}
@@ -18,62 +21,70 @@ sdDiff <- function(x, method = 'HALL')
   return(NULL)
 }
 
-####
+# the estim_sigma function gives an estimate of the standard deviation 
+# with three possible methods (HALL, MAD, sdHallDiff) based on the previous sdDiff function
 
-estim_sigma <- function(signal, sigma, p)
+estim_sigma <- function(signal, sigma, nbSimus)
 {
+  # the new normalization coefficient
   d0 <- 0.1942
   d1 <- 0.2809
   d2 <- 0.3832
   d3 <- -0.8582
   corrector <- sqrt(d3^2 + (d2-d3)^2 + (d1-d2)^2 + (d0-d1)^2 + d0^2)
   
-  sdMad <- NULL
-  sdHall <- NULL
-  sdHallDiff <- NULL
-
+  #data generation
   n <- length(signal)
-  for(i in 1:p)
-  {
-    y <- signal + rnorm(n,0,sigma)
-    sdMad <- c(sdMad,sdDiff(y,method = "MAD"))
-    sdHall <- c(sdHall,sdDiff(y,method = "HALL"))
-    sdHallDiff <- c(sdHallDiff,sdDiff(diff(y),method = "HALL")/corrector)
-  }
-
-  response <- list(sdMad = sdMad, sdHall = sdHall, sdHallDiff = sdHallDiff)
+  y <- signal + rnorm(n, 0, sigma)
+  
+  sdMad <- sdDiff(y, method = "MAD")
+  sdHall <- sdDiff(y, method = "HALL")
+  sdHallDiff <- sdDiff(diff(y), method = "HALL")/corrector
+  
+  response <- c(sdMad = sdMad, sdHall = sdHall, sdHallDiff = sdHallDiff)
   return(response)
 }
 
+#####
+##### SIMULATIONS
+#####
 
+nbSimus <- 100 #number of simulations
 
-###############
+sigma <- 1 # We choose a noise level (standard deviation)
+n <- 333 # data length is 3*n
 
-sigma <- 1
-
-n <- 333
 signal1 <- c(seq(from = 0, to = n, length.out = n), seq(from = n, to = 0, length.out = n),  seq(from = 0, to = n, length.out = n))
-signal2 <- n*cos(3*pi/(3*n)*0:(3*n-1))
-p <- 100
+signal2 <- n * cos(3*pi/(3*n) * 0:(3*n-1))
 
-#estimation
-res1 <- estim_sigma(signal1, sigma, p)
-res2 <- estim_sigma(signal2, sigma, p)
+##### estimation nbSimus times of the three sd estimates #####
+res_signal1 <- replicate(nbSimus, estim_sigma(signal1, sigma))
+res_signal2 <- replicate(nbSimus, estim_sigma(signal2, sigma))
 
-#results
-mean(res1$sdMad)
-mean(res1$sdHall)
-mean(res1$sdHallDiff)
-sd(res1$sdMad)
-sd(res1$sdHall)
-sd(res1$sdHallDiff)
+df_s1 <- as.data.frame(t(res_signal1))
+df_s2 <- as.data.frame(t(res_signal2))
 
-mean(res2$sdMad)
-mean(res2$sdHall)
-mean(res2$sdHallDiff)
-sd(res2$sdMad)
-sd(res2$sdHall)
-sd(res2$sdHallDiff)
+############################# 
+########## results ########## 
+############################# 
 
-boxplot(res1$sdMad, res1$sdHall, res1$sdHallDiff)
-boxplot(res2$sdMad, res2$sdHall, res2$sdHallDiff)
+colMeans(df_s1)
+colMeans(df_s2)
+
+apply(df_s1, 2, sd)
+apply(df_s2, 2, sd)
+
+## Simple boxplots
+boxplot(df_s1)
+boxplot(df_s2)
+
+## Fancy boxplots
+library(ggplot2)
+library(reshape2)
+df <- cbind(df_s1, df_s2)
+colnames(df) <- c("sdMad_s1", "sdHall_s1", "sdHallDiff_s1", "sdMad_s2", "sdHall_s2", "sdHallDiff_s2")
+ggplot(data = melt(df), aes(x=variable, y=value)) + geom_boxplot(aes(fill=variable)) + theme(legend.position="none")
+
+
+
+
