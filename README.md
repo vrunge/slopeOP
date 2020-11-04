@@ -258,5 +258,10 @@ The `SlopeOP` python module has 2 functions:
 ### troubleshooting
 In case of error during build, try to delete the `build` folder (if any) and try to build again.
 
+### Note
+
+The competitive `CPOP` algorithm used for simulations and running time comparisons can be found [here](http://www.research.lancs.ac.uk/portal/en/datasets/cpop(56c07868-3fe9-4016-ad99-54439ec03b6c).html) and the compiled files in `simulations/CPOP` folder are those used in our simulation study.
+
+
 [Back to Top](#top)
 
