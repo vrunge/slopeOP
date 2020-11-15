@@ -107,8 +107,7 @@ void OmegaSN::Q0init(std::vector< double >& data) const
   Costs cost;
   double minCost;
   double temp_cost;
-  unsigned int temp_indState;
-  unsigned int temp_chpt = 1;
+  unsigned int temp_indState = 0;
 
   /// fill Q[0] = 1 segment only : first 2 columns
   for(unsigned int j = 0; j < nbStates; j++)
