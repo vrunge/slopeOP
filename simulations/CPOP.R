@@ -1,5 +1,5 @@
-dyn.load("prune2R.so")
-dyn.load("coeff.updateR.so")
+dyn.load("CPOP/prune2R.so")
+dyn.load("CPOP/coeff.updateR.so")
 
 ########
 # CPOP algorithm for finding the best segmentation of data for a change-in-slope model

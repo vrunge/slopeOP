@@ -41,9 +41,9 @@ def signal_4(noise=0, seed=42):
     
     data_a = list(np.linspace(1,10,65))
     data_b = list(np.linspace(10,30,65))
-    data_c = list(np.linspace(30,70,65))
-    data_d = list(np.linspace(70,60,65))
-    data_e = list(np.linspace(60,30,65))
+    data_c = list(np.linspace(30,60,65))
+    data_d = list(np.linspace(60,50,65))
+    data_e = list(np.linspace(50,30,65))
     data_f = list(np.linspace(30,1,26))
     data_g = list(np.linspace(1,10,96))
     data_h = list(np.linspace(10,40,60))

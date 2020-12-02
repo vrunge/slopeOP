@@ -30,11 +30,11 @@ setwd(dir = wd)
 ### ### ### ### ### ### ### ### ### ### ### ### 
 
 ### CPOP ### 
-dyn.load("coeff.updateR.so")
-dyn.load("prune2R.so")
+dyn.load("CPOP/coeff.updateR.so")
+dyn.load("CPOP/prune2R.so")
 library("not")
 library("l1tf") #Trouver sur github
-source("CPOPexample_functions.R")
+source("CPOP/CPOPexample_functions.R")
 
 #### build the signal from changepoints and states
 buildSignal <- function(cp, states)
@@ -54,7 +54,7 @@ buildSignal_fpop <- function(cp, means, signal)
 
 
 
-algoChpt <- function(fileCSV, algo = "slopeOP", states = 0:80, beta = 2, columns = NULL)
+algoChpt <- function(fileCSV, algo = "slopeOP", states = (-10):70, beta = 2, columns = NULL)
 {
   df <- read.csv2(fileCSV, header = TRUE, sep = ",", dec=".")
   dfresponse <- df
