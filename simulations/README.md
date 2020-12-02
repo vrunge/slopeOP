@@ -6,5 +6,5 @@ The main simulation code is contained in the (zipped) Jupyter-lab nootebok **Slo
 The simulated data is stored in the archive **SlopeOP_simulations_data.7z**. It must be un-archived in order to run the simulation analysis.
 
 ## Prerequisites:
-- R packages: _not_ (from CRAN) and [l1tf](https://github.com/hadley/l1tf)
+- R packages: _SlopeOP_,  _not_ (from CRAN) and [l1tf](https://github.com/hadley/l1tf)
 - compile CPOP with `make` in the CPOP subfolder
