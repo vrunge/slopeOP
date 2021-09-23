@@ -15,6 +15,8 @@
 
 > [Introduction](#intro)
 
+> [Setup](#setup)
+
 > [The slopeOP function](#sf)
 
 > [Options for constraining inference](#options)
@@ -75,17 +77,36 @@ where the presence of the same value <img src="/tex/6dbb78540bd76da3f1625782d42d
 
 The slopeOP function computes <img src="/tex/8dfc04a9fbcadb584faf331368654540.svg?invert_in_darkmode&sanitize=true" align=middle width=39.274025999999985pt height=24.65753399999998pt/> for all <img src="/tex/d4982b4fcd5203e3c32cdf5c3ba3211f.svg?invert_in_darkmode&sanitize=true" align=middle width=38.98379759999999pt height=22.465723500000017pt/> and <img src="/tex/28166798932f09dc74160bd665b9663e.svg?invert_in_darkmode&sanitize=true" align=middle width=74.25025244999999pt height=21.18721440000001pt/>. The argminimum state into the set <img src="/tex/44314730b45a8f895f72c002bb5251d5.svg?invert_in_darkmode&sanitize=true" align=middle width=21.550742399999987pt height=22.465723500000017pt/> gives the last value of the last inferred segment. A backtracking procedure eventually returns the optimal changepoint vector with all its associated state values.
 
+
+
+<a id="setup"></a>
+
+## Install SlopeOP
+
+SlopeOP is mainly implemented in C++ and wrapped both for R and Python.
+The instruction for the python wrapper are at the end of this README.
+
+### Install as R package
+
+**REQUIREMENTS:**
+- R >= 3.4
+- devtools : `install.packages('devtools')`
+
+The package can then be installed from the github repo with the following command:
+    
+    devtools::install_github("vrunge/slopeOP")
+
+and imported with:
+
+    library(slopeOP)
+
+
+
 <a id="sf"></a>
 
 ## The slopeOP function
 
 We install the package from Github:
-
-
-```r
-#devtools::install_github("vrunge/slopeOP")
-library(slopeOP)
-```
 
 We simulate data with the function `slopeData` with arguments `index` (a changepoint vector), `states` its associated state values and the `noise` level which is the standard deviation of a normal standard noise (iid).
 
@@ -262,6 +283,11 @@ In case of error during build, try to delete the `build` folder (if any) and try
 
 The competitive `CPOP` algorithm used for simulations and running time comparisons can be found [here](http://www.research.lancs.ac.uk/portal/en/datasets/cpop(56c07868-3fe9-4016-ad99-54439ec03b6c).html) and the compiled files in `simulations/CPOP` folder are those used in our simulation study.
 
+The simulation code has some dependencies that need to be installed first, namely:
+
+- `gfpop` can be installed via `install.packages('gfpop')` and requires R >= 3.5
+- `not` can be installed via `install.packages('not')` 
+- `l1tf` can be installed via `devtools::install_github("hadley/l1tf")`
 
 [Back to Top](#top)
 
