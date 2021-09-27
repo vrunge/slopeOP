@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // slopeOPtransfer
 List slopeOPtransfer(std::vector<double> data, std::vector<double> states, double penalty, std::string constraint, double minAngle, std::string type);
 RcppExport SEXP _slopeOP_slopeOPtransfer(SEXP dataSEXP, SEXP statesSEXP, SEXP penaltySEXP, SEXP constraintSEXP, SEXP minAngleSEXP, SEXP typeSEXP) {

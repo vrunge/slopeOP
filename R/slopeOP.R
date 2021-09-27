@@ -21,8 +21,8 @@
 #' \item{\emph{pruning}}{is the percent of positions to consider in cost matrix Q  (returned only if testMode = TRUE)}
 #' }
 #' @examples
-#' myData <- slopeData(index = c(1,100,200,300), states = c(0,5,3,6), noise = 1)
-#' slopeOP(data = myData, states = 0:6, penalty = 10)
+#' myData <- slopeData(index = c(1,100,200,300), states = c(0,10,0,10), noise = 2)
+#' slopeOP(data = myData, states = 0:10, penalty = 2*sdHallDiff(myData)^2*log(300))
 slopeOP <- function(data, states, penalty = 0, constraint = "null", minAngle = 0, type = "channel", testMode = FALSE)
 {
   ############
