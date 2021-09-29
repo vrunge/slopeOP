@@ -1,16 +1,23 @@
-######## ######## ######## ######## ######## ######## ######## ######## ######## ######## ######## ########
 
-######## get the code in package slopeOP
+
+########           ########
+######## packages  ########
+########           ########
+
 #devtools::install_github("vrunge/slopeOP", force = TRUE)
 library(slopeOP)
-
-############## parallel computing ##############
 library(parallel)
-library(fields)
-cores <- detectCores()
-cores <- 40
+library(ggplot2)
+library(reshape2)
+library(cowplot)
 
-################################################
+#cores <- detectCores()
+cores <- 95
+
+
+########                       ########
+######## One hat-shaped signal ########
+########                       ########
 
 ######## building the model scenario 4
 n <- 500 #data length
@@ -18,10 +25,20 @@ y1 <- seq(from = 10, to = 70, length.out = 250)
 y2 <- seq(from = 70, to = 10, length.out = 251)
 y <- c(y1, y2[-1])
 
-################################################
-### one.simu function
 
-one.simu <- function(i, data, penalty, sigma, states, angle, type = "gaussian", deg = 3)
+
+########                   ########
+######## one.simu function ########
+########                   ########
+
+one.simu <- function(i,
+                     data,
+                     penalty,
+                     sigma,
+                     states,
+                     angle,
+                     type = "gaussian",
+                     deg = 3) #degree pf freedom for student type
 {
   #generate data with outliers
   n <- length(data)
@@ -31,7 +48,7 @@ one.simu <- function(i, data, penalty, sigma, states, angle, type = "gaussian", 
   }
   if(type == "student")
   {
-    coeff <- sigma*sqrt((deg - 2)/deg)
+    coeff <- sigma * sqrt((deg - 2)/deg)
     z <- data + coeff*rt(n = 1000, df = 3)
   }
 
@@ -59,11 +76,11 @@ one.simu <- function(i, data, penalty, sigma, states, angle, type = "gaussian", 
 }
 
 
-#############################################
-#######  GRAPH 1 : MSE and NbSegment  #######
-#############################################
+####################################
+####### : MSE and NbSegment  #######
+####################################
 
-nbSimus <- 10 ### nb simu for each experiment
+nbSimus <- 100 ### nb simu for each experiment
 
 sigma <- 24 #initial standard deviation
 myAngle <- 130
@@ -84,40 +101,74 @@ for(beta in myBetas)
 }
 
 df <- do.call(rbind, res)
-df
-write.csv(df, file="minAngles.csv")
 
+write.csv(df, file="minAngles.csv", row.names = FALSE)
 
-##################################################
-#################################################
-
-library(ggplot2)
-library(reshape2)
 
 
 ###############################
-####### plot the result #######
+####### read the result #######
 ###############################
 
 df <- read.csv("minAngles.csv")
-df <- df[,-1]
 
 
-dfmean <- aggregate(df,list(rep(1:(nrow(df)%/%nbSimus+1),each=nbSimus,len=nrow(df))),mean)[-1]
+data_summary <- function(data, varname, groupnames)
+{
+  require(plyr)
+  summary_func <- function(x, col)
+  {
+    c(mean = mean(x[[col]], na.rm=TRUE),
+      q1 = quantile(x[[col]], 0.025), q3 = quantile(x[[col]], 0.975))
+  }
+  data_sum<-ddply(data, groupnames, .fun=summary_func,
+                  varname)
+  data_sum <- rename(data_sum, c("mean" = varname))
+  return(data_sum)
+}
 
-#####
+
+########                      ########
+######## data transformation  ########
+########                      ########
+
+
+df1 <- data_summary(df, varname="MSE_minAngle",
+             groupnames=c("penalty"))
+df1 <- cbind(type = "minAngle", df1)
+colnames(df1)[3] <- "MSE"
+
+df2 <- data_summary(df, varname="MSE_std",
+             groupnames=c("penalty"))
+df2 <- cbind(type = "std", df2)
+colnames(df2)[3] <- "MSE"
+
+df12 <- rbind(df1,df2)
+
+df3 <- data_summary(df, varname="nbSeg_minAngle",
+             groupnames=c("penalty"))
+df3 <- cbind(type = "minAngle", df3)
+colnames(df3)[3] <- "nbSeg"
+
+df4 <- data_summary(df, varname="nbSeg_std",
+                    groupnames=c("penalty"))
+df4 <- cbind(type = "std", df4)
+colnames(df4)[3] <- "nbSeg"
+
+df34 <- rbind(df3,df4)
 
 
 
-df_plot <- dfmean[,c(5,8,9)]
-colnames(df_plot) <- c("penalty",  "nb segments minAngle", "nb segments std", "MSE minAngle", "MSE std")
-df_plot <- melt(df_plot, id.vars = "penalty")
 
-# Everything on the same plot
-plot1 <- ggplot(df_plot, aes(penalty, value, col=variable)) +
-  geom_point(size = 2) + geom_line() +
-  labs(y = "MSE") +
-  labs(x = "penalty /"~sigma^2~"log(n)") +
+########                    ########
+######## plot with ggplot2  ########
+########                    ########
+
+
+plot1 <- ggplot(df12, aes(x = penalty, y = MSE, col=type))   +
+  labs(y = "MSE") +  labs(x = "penalty /"~sigma^2~"log(n)") +
+  geom_point(size = 2, aes(shape = type)) +
+  geom_errorbar(aes(ymin=`q1.2.5%`, ymax=`q3.97.5%`), width=.05) +
   theme(axis.text.x = element_text(size=18),
         axis.text.y = element_text(size=18),
         legend.text=element_text(size=18),
@@ -127,17 +178,11 @@ plot1 <- ggplot(df_plot, aes(penalty, value, col=variable)) +
         legend.title = element_blank())
 
 
-
-df_plot <- dfmean[,c(5,6,7)]
-colnames(df_plot) <- c("penalty",  "nb segments minAngle", "nb segments std", "MSE minAngle", "MSE std")
-df_plot <- melt(df_plot, id.vars = "penalty")
-
-# Everything on the same plot
-plot2 <- ggplot(df_plot, aes(penalty, value, col=variable)) +
-  geom_point(size = 2) + geom_line() +
-  scale_color_manual(values = c("nbSeg_minAngle" = "#ff9c33", "nbSeg_std" = "#33beff")) +
-  labs(y = "number of segments") +
-  labs(x = "penalty /"~sigma^2~"log(n)") +
+plot2 <- ggplot(df34, aes(x = penalty, y = nbSeg, col=type))   +
+  labs(y = "number of segments") +  labs(x = "penalty /"~sigma^2~"log(n)") +
+  geom_point(size = 2, aes(shape = type)) +
+  geom_errorbar(aes(ymin=`q1.2.5%`, ymax=`q3.97.5%`), width=.05) +
+  scale_colour_manual(values = c("minAngle" = "#ff9c33", "std" = "#33beff")) +
   theme(axis.text.x = element_text(size=18),
         axis.text.y = element_text(size=18),
         legend.text=element_text(size=18),
@@ -146,6 +191,5 @@ plot2 <- ggplot(df_plot, aes(penalty, value, col=variable)) +
         legend.position = c(0.7, 0.7),
         legend.title = element_blank())
 
-library(cowplot)
 
 plot_grid(plot1, plot2, labels = "AUTO")
