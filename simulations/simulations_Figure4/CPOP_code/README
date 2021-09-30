@@ -1,0 +1,39 @@
+##################
+#Example R code for CPOP: an algorithm for finding the optimal continuous piecwise linear fit to data under an L_0 penalty on the changes in slope. Full details are in
+#
+#Maidstone, Fearnhead and Letchford (2017) "Detecting changes in slope with an $L_0$ penalty"
+##################
+
+CPOP.R -- the CPOP function. This will find the best set of changepoints.
+Best is defined in terms of minimising
+
+1/(sigma^2) sum_{i=1}^n (y_i-f_i)^2+m*beta,
+
+ where y_i are data, f_i is the fitted mean at point i; m is the number of changepoints and we consider all continuous piecewise-linear functions for f. Changepoints thus correspond to changes in slope.
+
+The quickest version of CPOP uses C to perform the most intensive operations. The C code is in the files prune2R.c and coeff.updateR.c. These need to be compiled (to .so files) using:
+
+R CMD SHLIB prune2R.c coeff.updateR.c
+
+#################
+
+estimateCPOP.R -- function to calculate the best fitting mean given a set of changepoints. Can be used to process the output of CPOP.
+
+#################
+
+CROPS_CPOP.R -- function to run CROPS wrapper: enables CPOP to be run for a range of penalty values (beta).
+
+#################
+
+CPOPexample_functions.R -- functions used in simulation study in Maidstone et al (2017).
+
+These functions use the l1tf package, available from:
+https://github.com/hadley/l1tf
+
+#################
+
+CPOPexamples.R -- example code for using CPOP code and for replicating results in Maidstone et al (2017).
+
+#################
+
+fig2_bfp_fast.txt -- Bacterial Flagellar data from Sowa et al. 2nd column is angular position (in terms of rotations).
